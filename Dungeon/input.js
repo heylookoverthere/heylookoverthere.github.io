@@ -101,6 +101,7 @@ function virtualGamePad()
 				this.buttons.push(daisy);
 			}
 			console.log("Controller detected.");
+			bConsoleBox.log("Controller detected.");
 		}else
 		{
 			this.buttons=[];
