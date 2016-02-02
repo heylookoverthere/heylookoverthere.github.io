@@ -2066,7 +2066,7 @@ function mainMenuUpdate()
 		{
 			showMapList();
 		}
-	}else if((!isLoading)&&((startkey.check()) || (false))// (controller.buttons[9].check())))
+	}else if((!isLoading)&&((startkey.check()) || (false)))// (controller.buttons[9].check())))
 	{	
 		if(mmcur==0)
 		{
