@@ -422,6 +422,7 @@ if(checkMobile())
 {
 	bConsoleBox.log("Xbox Version");
 	MobileMode=false;
+	Xbox=true;
 }else {
 	bConsoleBox.log("Desktop Version");
 	MobileMode=false;
@@ -1395,7 +1396,7 @@ if(MobileMode)
 	concanvasElement.get(0).addEventListener('touchmove', handleTouchMove, false);
 	concanvasElement.get(0).addEventListener('touchstart', handleConTouchStart, false); 
 }
-if(false)//(Xbox)
+if(Xbox)
 {
 	var controller = new GameController.Controller(0); 
 }else
