@@ -418,8 +418,11 @@ if(checkMobile())
 {
 	bConsoleBox.log("Mobile Version");
 	MobileMode=true;
-}else
+}else if(checkXbox())
 {
+	bConsoleBox.log("Xbox Version");
+	MobileMode=false;
+}else {
 	bConsoleBox.log("Desktop Version");
 	MobileMode=false;
 }
@@ -1392,9 +1395,15 @@ if(MobileMode)
 	concanvasElement.get(0).addEventListener('touchmove', handleTouchMove, false);
 	concanvasElement.get(0).addEventListener('touchstart', handleConTouchStart, false); 
 }
-var gamepadSupportAvailable = !!navigator.getGamepads || !!navigator.webkitGamepads;
+if(false)//(Xbox)
+{
 
-var gamepad = navigator.getGamepads && navigator.getGamepads()[0];
+}else
+{
+	var gamepadSupportAvailable = !!navigator.getGamepads || !!navigator.webkitGamepads;
+
+	var gamepad = navigator.getGamepads && navigator.getGamepads()[0];
+}
 
 window.addEventListener("GamepadConnected", function(e) {
   console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
@@ -1664,7 +1673,7 @@ function inventoryUpdate()
 	{
 		mode=1;
 	}
-	if((inventorykey.check()) || (controller.buttons[9].check()))
+	if((inventorykey.check()) || ((controller.buttons[9]) && (controller.buttons[9].check())))
 	{
 		mode=1;
 	}
@@ -2066,7 +2075,7 @@ function mainMenuUpdate()
 		{
 			showMapList();
 		}
-	}else if((!isLoading)&&((startkey.check()) || (false)))// (controller.buttons[9].check())))
+	}else if((!isLoading)&&((startkey.check()) || (controller.buttons[9]) && (controller.buttons[9].check())))
 	{	
 		if(mmcur==0)
 		{
@@ -2478,11 +2487,15 @@ function mainUpdate()
     milliseconds = timestamp.getTime();
     tick++;
 //	thyme.update(); //cause wtf is this even doing anymore?
+	if(controller)
+	{
+		controller.update();
+	}
 	if(optionskey.check())
 	{
 		mode=3;
 	}
-	if((inventorykey.check())  || (controller.buttons[9].check()))
+	if((inventorykey.check())  || ((controller.buttons[9]) && (controller.buttons[9].check())))
 	{
 		mode=4;
 	}
@@ -2807,7 +2820,7 @@ function mainUpdate()
 				bConsoleBox.log("No","Yellow");
 			}
 		}
-	if((mapkey.check()) || (controller.buttons[8].check()))
+	if((mapkey.check()) || ((controller.buttons[9]) && (controller.buttons[8].check())))
 	{
 		//console.log("look");
 		if((editMode) || (miles.has[hasID.Map])) 
@@ -3095,7 +3108,7 @@ function mainUpdate()
 			}
 		}
 	}
-	if((!editMode) && (!Xbox)) //?!
+	if((!editMode) && (controller.buttons.length>0)) //?!
 	{
 		//SNES controls
 		controller.update();
