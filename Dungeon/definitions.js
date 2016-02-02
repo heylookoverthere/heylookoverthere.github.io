@@ -11,6 +11,7 @@ var graph=null;
 var shiftdown=false;
 var graph=null;
 var MobileMode=false;
+var Xbox=false;
 var numSouns=0;
 var curVersion="0.6a";
 var explosions=new Array();

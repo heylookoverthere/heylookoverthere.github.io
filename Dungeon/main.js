@@ -24,7 +24,10 @@ if(checkMobile())
 {
 	MobileMode=false;
 }
-
+if(checkXbox())
+{
+	Xbox=true;
+}
 	
 	//document.addEventListener('touchmove', handleTouchMove, false);
 	//document.concanvasElement.addEventListener('touchmove', handleTouchMove, false);
@@ -507,6 +510,19 @@ function checkMobile()
 		return false;
 	  }
 }
+
+function checkXbox()
+ { 
+	 if( navigator.userAgent.match(/Xbox One/i))
+	 {
+		return true;
+	  }
+	 else
+	 {
+		return false;
+	  }
+}
+
 var timy=new button();
 timy.text="Save";
 timy.x=188;
@@ -2050,7 +2066,8 @@ function mainMenuUpdate()
 		{
 			showMapList();
 		}
-	}else if((!isLoading)&&((startkey.check()) || (controller.buttons[9].check()))){
+	}else if((!isLoading)&&((startkey.check()) || (false))// (controller.buttons[9].check())))
+	{	
 		if(mmcur==0)
 		{
 			startGame(false);
@@ -3078,7 +3095,7 @@ function mainUpdate()
 			}
 		}
 	}
-	if(!editMode)
+	if((!editMode) && (!Xbox)) //?!
 	{
 		//SNES controls
 		controller.update();
