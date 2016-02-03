@@ -343,18 +343,19 @@ virtualGamePad.prototype.update=function()
 	{
 		this.pad = navigator.getGamepads && navigator.getGamepads()[0];
 		if(navigator.getGamepads()[0]){
-		//if(this.pad){
-			this.keyboard=false;
-			this.dpad=new Array();
-			this.dpad.push(this.pad.axes[0])
-			this.dpad.push(this.pad.axes[1]);
-			this.buttons=new Array();
-			for(var i=0;i<this.pad.buttons.length;i++)
-			{
-				var daisy=new aPadButton(i,this.pad);
-				this.buttons.push(daisy);
+			if(this.pad){
+				this.keyboard=false;
+				this.buttons=[];
+				this.dpad=[];
+				this.dpad.push(this.pad.axes[0])
+				this.dpad.push(this.pad.axes[1]);
+				for(var i=0;i<this.pad.buttons.length;i++)
+				{
+					var daisy=new aPadButton(i,this.pad);
+					this.buttons.push(daisy);
+				}
+				bConsoleBox.log("Controller detected.");
 			}
-			bConsoleBox.log("Controller detected.");
 		}
 	}else
 	{
