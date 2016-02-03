@@ -90,6 +90,10 @@ function virtualGamePad()
 	this.keyboard=false;
 		
 		this.pad = navigator.getGamepads && navigator.getGamepads()[0];
+		if(!this.pad)
+		{
+			alert("no pad");
+		}
 		if(navigator.getGamepads()[0]){
 		//if(this.pad){
 			this.keyboard=false;

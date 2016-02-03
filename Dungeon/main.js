@@ -2070,7 +2070,7 @@ function mainMenuUpdate()
 		//bConsoleBox.log(controller.buttons.length);
 		for( var i=0;i<controller.buttons.length;i++)
 		{
-			if(false)//((controller.pad.buttons[i].pressed) || (controller.pad.buttons[i].value>0))
+			if((controller.pad.buttons[i].pressed) || (controller.pad.buttons[i].value>0))
 			{
 				bConsoleBox.log(i);
 			}
@@ -3124,14 +3124,7 @@ function mainUpdate()
 	}
 	if((!editMode) &&(Xbox))
 	{
-		var cstate=controller.getState();
-		if(cstate.connected)
-		{
-			if(cstate.a)
-			{
-				bConsoleBox.log("A");
-			}
-		}
+		
 	}
 	
 	else if((!editMode) && (controller.buttons.length>0)) //?!
