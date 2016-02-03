@@ -421,7 +421,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 15");
+	bConsoleBox.log("Xbox Version 16");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -1682,9 +1682,12 @@ function inventoryUpdate()
 	{
 		mode=1;
 	}
-	if((controller.buttons[SNESKey.Select].check()) && (miles.has[hasID.Map]))
+	if(miles.has[hasID.Map])
 	{
-		mode=2;
+		if(((Xbox) && (controller.pad) && (controller.pad.buttons[10].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.Select].check())))
+		{
+			mode=2;
+		}
 	}
 	if(upkey.check())
 	{
@@ -2545,7 +2548,7 @@ function mainUpdate()
 	{
 		mode=3;
 	}
-	if((inventorykey.check())  || ((controller.buttons[9]) && (controller.buttons[9].check())))
+	if((inventorykey.check())  ||((Xbox) && (controller.pad) && (controller.pad.buttons[11].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
 	{
 		mode=4;
 	}
