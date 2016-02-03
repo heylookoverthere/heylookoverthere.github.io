@@ -1398,7 +1398,7 @@ if(MobileMode)
 }
 if(Xbox)
 {
-	var controller = new GameController.Controller(0); 
+	var controller = navigator.getGamepads()[0];
 }else
 {
 	var gamepadSupportAvailable = !!navigator.getGamepads || !!navigator.webkitGamepads;
