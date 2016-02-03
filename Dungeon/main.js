@@ -2075,6 +2075,9 @@ function mainMenuUpdate()
 				bConsoleBox.log(i);
 			}
 		}
+	}else 
+	{
+		bConsoleBox.log("look what you've reduced me to you fucking xbox.");
 	}
 	
 	if(false)//(controller.buttons[7].check())
