@@ -18,15 +18,15 @@ var explosions=new Array();
 var dugsprite=Sprite("shovelhole");
 var divesprite=Sprite("dive");
 
-var SNESKeys={}
-SNESKeys.A=1;
-SNESKeys.B=0;
-SNESKeys.X=3;
-SNESKeys.Y=2;
-SNESKeys.R=5;
-SNESKeys.L=6;
-SNESKeys.Select=8;
-SNESKeys.Start=9;
+var SNESKey={}
+SNESKey.A=1;
+SNESKey.B=0;
+SNESKey.X=3;
+SNESKey.Y=2;
+SNESKey.R=5;
+SNESKey.L=6;
+SNESKey.Select=8;
+SNESKey.Start=9;
 
 
 function party()
