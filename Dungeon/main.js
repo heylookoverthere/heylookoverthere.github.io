@@ -2099,7 +2099,7 @@ function mainMenuUpdate()
 		{
 			for( var i=0;i<controller.pad.buttons.length;i++)
 			{
-				if((controller.pad.buttons[i].pressed) )
+				if((controller.buttons[i].check()) )
 				{
 					//bConsoleBox.log(i+":"+controller.pad.buttons[i].value);
 					if(!isLoading)
