@@ -3179,7 +3179,7 @@ function mainUpdate()
 			}*/
 			if ($("#dialogBox").length > 0) 
 			{
-				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[0].check())))
+				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
 				{
 					$("#dialogBox").remove();
 					if(gameOver)
@@ -3193,7 +3193,7 @@ function mainUpdate()
 		{
 			if(buttons[i].hasFocus)
 			{
-				iif(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[1].check())))
+				iif(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.a].check())))
 				{
 					if((!buttons[i].unClickable))
 					{
@@ -3230,10 +3230,10 @@ function mainUpdate()
 			}
 			if(miles.holding)
 			{
-				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
-					{
-						miles.holding=false;
-					}
+				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && ((controller.buttons[SNESKey.B].check()) ||(controller.buttons[SNESKey.A].check()))))
+				{
+					miles.holding=false;
+				}
 			}
 			if(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.B].check())))
 			{
@@ -3246,7 +3246,7 @@ function mainUpdate()
 					miles.swingSword();
 				}
 			}
-			if(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.B].check())) && (miles.has[hasID.Sword]) && (!miles.swimming) && (!miles.swinging))
+			if(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.B].checkDown())) && (miles.has[hasID.Sword]) && (!miles.swimming) && (!miles.swinging))
 			{
 				miles.poking=true;			
 			}else
