@@ -3197,7 +3197,7 @@ function mainUpdate()
 			}
 		}
 			
-			if(controller.buttons[1].check())
+			if(controller.buttons[1].check()) penis
 			{
 				//contextual. if NPC in talk range, talk. 
 				//if object in front, activate
@@ -3222,7 +3222,7 @@ function mainUpdate()
 				for(var i=0;i<controller.buttons.length;i++)
 				{
 				
-					if(controller.buttons[i].check())
+					if((controller.buttons[i].check())  || ((controller.pad) &&(controller.pad.buttons[i].pressed)))
 					{
 						miles.holding=false;
 						break;
