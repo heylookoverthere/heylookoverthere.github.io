@@ -1396,9 +1396,9 @@ if(MobileMode)
 	concanvasElement.get(0).addEventListener('touchmove', handleTouchMove, false);
 	concanvasElement.get(0).addEventListener('touchstart', handleConTouchStart, false); 
 }
-if(Xbox)
+if(false)
 {
-	var controller = navigator.getGamepads()[0];
+	//var controller = navigator.getGamepads()[0];
 }else
 {
 	var gamepadSupportAvailable = !!navigator.getGamepads || !!navigator.webkitGamepads;
