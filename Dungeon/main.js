@@ -420,7 +420,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version");
+	bConsoleBox.log("Xbox CUNT Version");
 	MobileMode=false;
 	Xbox=true;
 }else {
