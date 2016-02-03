@@ -338,7 +338,7 @@ virtualGamePad.prototype.checkDownRight=function()
 virtualGamePad.prototype.update=function()
 {
 	
-	if(Xbox) && (!this.pad))
+	if((Xbox) && (!this.pad))
 	{
 		this.pad = navigator.getGamepads && navigator.getGamepads()[0];
 		if(navigator.getGamepads()[0]){
