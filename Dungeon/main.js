@@ -417,7 +417,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 7");
+	bConsoleBox.log("Xbox Version 8");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -2092,9 +2092,9 @@ function mainMenuUpdate()
 		{
 			for( var i=0;i<controller.pad.buttons.length;i++)
 			{
-				if((controller.pad.buttons[i].pressed) || (controller.pad.buttons[i].value>0))
+				if((controller.pad.buttons[i].pressed) )
 				{
-					bConsoleBox.log(controller.pad.buttons.length);
+					bConsoleBox.log(i+":"controller.pad.buttons[i].value);
 					if(false)// !isLoading)
 					{
 						startGame(true,"asword");	
