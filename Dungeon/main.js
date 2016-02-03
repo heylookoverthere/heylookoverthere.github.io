@@ -5,9 +5,6 @@ var bullshitHack=true; //right click to link doors
 var existingDungeons=new Array();
 var countIndex=0;
 
-alert("cunt");
-
-
 var bulbsprite=Sprite("bulb");
 var bulboffsprite=Sprite("bulboff");
 
@@ -420,7 +417,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox CUNT Version 2");
+	bConsoleBox.log("Xbox Version 5");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -2075,7 +2072,8 @@ function mainMenuUpdate()
 			{
 				if((controller.pad.buttons[i].pressed) || (controller.pad.buttons[i].value>0))
 				{
-					//bConsoleBox.log(i);
+					bConsoleBox.log(i);
+					
 					startGame(true);
 				}
 			}
