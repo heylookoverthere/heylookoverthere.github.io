@@ -33,7 +33,7 @@ var yDown = null;
 var downSince=new Date().getTime();	
 var downLast=new Date().getTime();	
 
-bConsoleBox.exists=true;
+
 
 function handleTouchStart(evt) {  
 	//evt.preventDefault();         
@@ -412,6 +412,7 @@ function logControls()
 bConsoleBox=new textbox();
 bConsoleBox.width=300;
 bConsoleBox.height=CANVAS_HEIGHT-12;
+bConsoleBox.exists=true;
 bConsoleBox.log("Loading...");
 if(checkMobile())
 {
