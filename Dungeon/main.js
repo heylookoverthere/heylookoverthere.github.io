@@ -2098,6 +2098,7 @@ function mainMenuUpdate()
 					if(!isLoading)
 					{
 						startGame(true,"asword");	
+						actuallyStartGame(); //yeah. what. 
 					}
 				}
 			}
