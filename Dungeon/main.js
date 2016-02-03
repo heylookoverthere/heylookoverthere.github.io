@@ -33,6 +33,8 @@ var yDown = null;
 var downSince=new Date().getTime();	
 var downLast=new Date().getTime();	
 
+bConsoleBox.exists=true;
+
 function handleTouchStart(evt) {  
 	//evt.preventDefault();         
     downSince=new Date().getTime();	
@@ -1659,7 +1661,10 @@ function mainMenuDraw(){
 	{
 		canvas.fillText("LOADING . . .",478,660);
 	}
-	bConsoleBox.draw(concanvas);
+	if(bConsoleBox.exists)
+	{
+		bConsoleBox.draw(concanvas);
+	}
 	//monsta.draw(canvas,camera);
 	//canvas.fillText("Particles: "+ monsta.particles.length,460,550);
 };
@@ -3154,6 +3159,10 @@ function mainUpdate()
 	if((!editMode) && (controller.buttons.length>0)) //?!
 	{	
 		controller.update();
+		if((Xbox) && (controller.pad) && (controller.pad.buttons[10].pressed))
+		{
+			bConsoleBox.exists=false;
+		}
 		if((!Xbox) || (controller.pad))
 		{
 			//SNES controls
