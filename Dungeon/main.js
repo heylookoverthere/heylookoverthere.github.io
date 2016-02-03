@@ -420,7 +420,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox CUNT Version");
+	bConsoleBox.log("Xbox CUNT Version 2");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -2070,7 +2070,7 @@ function mainMenuUpdate()
 		//bConsoleBox.log(controller.buttons.length);
 		for( var i=0;i<controller.buttons.length;i++)
 		{
-			if(controller.buttons[i].parentPad.buttons[i].value>0)
+			if((controller.pad.buttons[i].pressed) || (controller.pad.buttons[i].value>0))
 			{
 				bConsoleBox.log(i);
 			}
