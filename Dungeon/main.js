@@ -2096,7 +2096,7 @@ function mainMenuUpdate()
 				{
 					bConsoleBox.log(i);
 					
-					startGame(true,"dungeon1");
+					startGame(true,"asword");
 				}
 			}
 		}
