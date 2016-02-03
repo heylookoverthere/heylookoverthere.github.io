@@ -743,11 +743,7 @@ function mouseClick(e) {  //represents the mouse
 				}
 			}else if(editor.mode==editModes.Objects)
 			{
-				editor.objectType++;
-				if(editor.objectType>editor.numObjectTypes)
-				{
-					editor.objectType=0;
-				}
+				editor.cycleObjects(true)
 			}else
 			{
 				editor.brushType++;
