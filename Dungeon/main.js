@@ -417,7 +417,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 5");
+	bConsoleBox.log("Xbox Version 6");
 	MobileMode=false;
 	Xbox=true;
 }else {
