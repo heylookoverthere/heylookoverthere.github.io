@@ -53,7 +53,7 @@ function aPadButton(k,pad) {  //represents a keyboard button
             this.aflag=false;
 			timestamp = new Date();
 			var nurp=timestamp.getTime();
-			if(nurp-this.pressedTime<1000)
+			if((nurp-this.pressedTime<1000) || (Xbox))
 			{	
 				//console.log(nurp-this.pressedTime);
 				
