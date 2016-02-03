@@ -2067,7 +2067,7 @@ function mainMenuUpdate()
 	
 	if(Xbox)
 	{
-		bConsoleBox.log(controller.buttons.length);
+		//bConsoleBox.log(controller.buttons.length);
 		for( var i=0;i<controller.buttons.length;i++)
 		{
 			if(controller.buttons[i].pressed)
