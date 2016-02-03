@@ -5,7 +5,7 @@ var bullshitHack=true; //right click to link doors
 var existingDungeons=new Array();
 var countIndex=0;
 
-
+alert("cunt");
 
 
 var bulbsprite=Sprite("bulb");
