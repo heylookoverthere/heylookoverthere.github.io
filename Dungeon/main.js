@@ -2071,17 +2071,15 @@ function mainMenuUpdate()
 		controller.update();
 		if(controller.pad)
 		{
-		for( var i=0;i<controller.buttons.length;i++)
-		{
-			if((controller.pad.buttons[i].pressed) || (controller.pad.buttons[i].value>0))
+			for( var i=0;i<controller.pad.buttons.length;i++)
 			{
-				bConsoleBox.log(i);
+				if((controller.pad.buttons[i].pressed) || (controller.pad.buttons[i].value>0))
+				{
+					bConsoleBox.log(i);
+				}
 			}
 		}
-		}else
-		{
-			bConsoleBox.log("no pad");
-		}
+		
 	}
 	
 	if(false)//(controller.buttons[7].check())
