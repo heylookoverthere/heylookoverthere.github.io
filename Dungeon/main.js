@@ -1671,11 +1671,11 @@ function inventoryUpdate()
 	{
 		mode=1;
 	}
-	if((inventorykey.check()) || ((controller.buttons[9]) && (controller.buttons[9].check())))
+	if((inventorykey.check()) || ((controller.buttons[9]) && (controller.buttons[SNESKeys.Start].check())))
 	{
 		mode=1;
 	}
-	if((controller.buttons[8].check()) && (miles.has[hasID.Map]))
+	if((controller.buttons[SNESKeys.Select].check()) && (miles.has[hasID.Map]))
 	{
 		mode=2;
 	}
