@@ -3163,7 +3163,7 @@ function mainUpdate()
 		controller.update();
 		if((Xbox) && (controller.pad) && (controller.pad.buttons[10].pressed))
 		{
-			bConsoleBox.exists=false;
+			customConsole=false;
 		}
 		if((!Xbox) || (controller.pad))
 		{
