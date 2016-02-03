@@ -1678,11 +1678,11 @@ function inventoryUpdate()
 	{
 		mode=1;
 	}
-	if((inventorykey.check()) || ((controller.buttons[9]) && (controller.buttons[SNESKeys.Start].check())))
+	if((inventorykey.check()) || ((controller.buttons[9]) && (controller.buttons[SNESKey.Start].check())))
 	{
 		mode=1;
 	}
-	if((controller.buttons[SNESKeys.Select].check()) && (miles.has[hasID.Map]))
+	if((controller.buttons[SNESKey.Select].check()) && (miles.has[hasID.Map]))
 	{
 		mode=2;
 	}
@@ -3208,7 +3208,7 @@ function mainUpdate()
 			}
 		}
 			
-			if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[SNESKeys.A].check())))
+			if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
 			{
 				//contextual. if NPC in talk range, talk. 
 				//if object in front, activate
