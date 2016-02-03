@@ -417,7 +417,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 6");
+	bConsoleBox.log("Xbox Version 7");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -2095,7 +2095,7 @@ function mainMenuUpdate()
 				if((controller.pad.buttons[i].pressed) || (controller.pad.buttons[i].value>0))
 				{
 					bConsoleBox.log(i);
-					if(!curDungeon.isLoading)
+					if(!isLoading)
 					{
 						startGame(true,"dungeon1");	
 					}
