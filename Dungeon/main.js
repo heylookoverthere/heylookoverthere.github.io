@@ -3197,7 +3197,7 @@ function mainUpdate()
 			}
 		}
 			
-			if((Xbox) && (controller.pad) && (controller.buttons[1].pressed)) ||((!Xbox) && (controller.buttons[1].check())))
+			if(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[1].check())))
 			{
 				//contextual. if NPC in talk range, talk. 
 				//if object in front, activate
