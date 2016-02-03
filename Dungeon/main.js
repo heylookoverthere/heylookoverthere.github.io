@@ -3246,12 +3246,15 @@ function mainUpdate()
 					miles.swingSword();
 				}
 			}
-			if(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.B].checkDown())) && (miles.has[hasID.Sword]) && (!miles.swimming) && (!miles.swinging))
+			if((miles.has[hasID.Sword]) && (!miles.swimming) && (!miles.swinging))
 			{
-				miles.poking=true;			
-			}else
-			{
-				miles.poking=false;
+				if(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.B].checkDown()))  )
+				{
+					miles.poking=true;			
+				}else
+				{
+					miles.poking=false;
+				}
 			}
 			if(((Xbox) && (controller.pad) && (controller.pad.buttons[2].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.Y].check())))
 			{
