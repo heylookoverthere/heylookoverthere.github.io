@@ -421,7 +421,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 12");
+	bConsoleBox.log("Xbox Version 13");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -2089,7 +2089,7 @@ function mainMenuUpdate()
 	
 	
 	
-	gamepad = navigator.getGamepads && navigator.getGamepads()[0];
+	//gamepad = navigator.getGamepads && navigator.getGamepads()[0];
 	
 	if(Xbox)
 	{
@@ -2097,7 +2097,7 @@ function mainMenuUpdate()
 		controller.update();
 		if(controller.pad)
 		{
-			for( var i=0;i<controller.pad.buttons.length;i++)
+			for( var i=0;i<controller.buttons.length;i++)
 			{
 				if((controller.buttons[i].check()) )
 				{

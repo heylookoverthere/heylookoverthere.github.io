@@ -90,7 +90,6 @@ function virtualGamePad()
 	this.keyboard=false;
 		
 		this.pad = navigator.getGamepads && navigator.getGamepads()[0];
-	
 		if(navigator.getGamepads()[0]){
 		//if(this.pad){
 			this.keyboard=false;
@@ -338,7 +337,26 @@ virtualGamePad.prototype.checkDownRight=function()
 
 virtualGamePad.prototype.update=function()
 {
-	this.pad = navigator.getGamepads && navigator.getGamepads()[0];
+	
+	if(Xbox) && (!this.pad))
+	{
+		this.pad = navigator.getGamepads && navigator.getGamepads()[0];
+		if(navigator.getGamepads()[0]){
+		//if(this.pad){
+			this.keyboard=false;
+			this.dpad.push(this.pad.axes[0])
+			this.dpad.push(this.pad.axes[1]);
+			for(var i=0;i<this.pad.buttons.length;i++)
+			{
+				var daisy=new aPadButton(i,this.pad);
+				this.buttons.push(daisy);
+			}
+			bConsoleBox.log("Controller detected.");
+		}
+	}else
+	{
+		this.pad = navigator.getGamepads && navigator.getGamepads()[0];
+	}
 	if((!this.keyboard) && (!navigator.getGamepads()[0]))
 	{
 		this.switchToKeyboard();
