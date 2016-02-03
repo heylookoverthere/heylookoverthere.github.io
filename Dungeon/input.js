@@ -51,9 +51,10 @@ function aPadButton(k,pad) {  //represents a keyboard button
         }
         if((!this.parentPad.buttons[this.key].pressed) && (this.aflag===true)){
             this.aflag=false;
+			if(Xbox) {return true;}
 			timestamp = new Date();
 			var nurp=timestamp.getTime();
-			if((nurp-this.pressedTime<1000) || (Xbox))
+			if(nurp-this.pressedTime<1000)
 			{	
 				//console.log(nurp-this.pressedTime);
 				
@@ -344,8 +345,10 @@ virtualGamePad.prototype.update=function()
 		if(navigator.getGamepads()[0]){
 		//if(this.pad){
 			this.keyboard=false;
+			this.dpad=new Array();
 			this.dpad.push(this.pad.axes[0])
 			this.dpad.push(this.pad.axes[1]);
+			this.buttons=new Array();
 			for(var i=0;i<this.pad.buttons.length;i++)
 			{
 				var daisy=new aPadButton(i,this.pad);
