@@ -417,7 +417,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 8");
+	bConsoleBox.log("Xbox Version 9");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -3222,7 +3222,6 @@ function mainUpdate()
 				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
 					{
 						miles.holding=false;
-						break;
 					}
 			}
 			if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.B].check())))
