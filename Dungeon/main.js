@@ -2097,7 +2097,7 @@ function mainMenuUpdate()
 					bConsoleBox.log(i);
 					if(!isLoading)
 					{
-						startGame(true,"dungeon1");	
+						startGame(true,"asword");	
 					}
 				}
 			}
