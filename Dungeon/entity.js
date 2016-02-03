@@ -1512,7 +1512,7 @@ function entity(croom)
 		}
 		for(var i=0;i<entities.length;i++)
 		{
-			if((entities[i].x==this.x) && (entities[i].y==this.y))
+			if((entities[i].x==this.x) && (entities[i].y==this.y) &&(!entities[i].isPlayer))
 			{
 				if((entities[i].room.z==this.room.z)&&(entities[i].room.x==this.room.x) && (entities[i].room.y==this.room.y))
 				{

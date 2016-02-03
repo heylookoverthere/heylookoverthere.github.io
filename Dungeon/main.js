@@ -3193,7 +3193,7 @@ function mainUpdate()
 		{
 			if(buttons[i].hasFocus)
 			{
-				iif(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.a].check())))
+				iif(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
 				{
 					if((!buttons[i].unClickable))
 					{
@@ -3230,7 +3230,7 @@ function mainUpdate()
 			}
 			if(miles.holding)
 			{
-				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && ((controller.buttons[SNESKey.B].check()) ||(controller.buttons[SNESKey.A].check()))))
+				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && ((controller.buttons[SNESKey.B].check()) ||(controller.buttons[SNESKey.A].checkDown()))))
 				{
 					miles.holding=false;
 				}
