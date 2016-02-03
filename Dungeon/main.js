@@ -1950,7 +1950,7 @@ function actuallyStartGame()
 	bConsoleBox.log("Doors and switches linked!","yellow");
 }
 
-function startGame(goolp)
+function startGame(goolp,ploop)
 {
 
 	if(!goolp)
@@ -1973,7 +1973,7 @@ function startGame(goolp)
 		resetMiles();
 		actuallyStartGame();
 		//curDungeon.addFloor();
-	}else
+	}else if(!ploop)
 	{
 		pungname=prompt("Enter name of dungeon to load","dungeon1");
 		if(pungname==null) {return;}
@@ -2024,8 +2024,30 @@ function startGame(goolp)
 			}
 		}
 		checkIfLoaded();
-		
-		
+	}else
+	{
+		pungname=ploop;
+		curDungeon.name=pungname;
+		editMode=false;
+				
+		countIndex=existingDungeons.indexOf(curDungeon.name);
+		curDungeon.load();
+		resetMiles();
+		function checkIfLoaded() 
+		{ 
+			if (LOAD_COUNTS[countIndex] == 0)
+			{ 
+				actuallyStartGame();
+			}else if(LOAD_COUNTS[countIndex]<0)
+			{
+				bConsoleBox.log("Load_Counts problem! Reload page.","yellow");
+			}else			
+			{ 
+				//console.log("waiting for load count to be 0");
+				window.setTimeout(checkIfLoaded, 1000); 
+			}
+		}
+		checkIfLoaded();
 	}
 		
 	
@@ -2074,7 +2096,7 @@ function mainMenuUpdate()
 				{
 					bConsoleBox.log(i);
 					
-					startGame(true);
+					startGame(true,"dungeon1");
 				}
 			}
 		}
