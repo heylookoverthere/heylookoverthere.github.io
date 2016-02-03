@@ -2070,14 +2070,11 @@ function mainMenuUpdate()
 		bConsoleBox.log(controller.buttons.length);
 		for( var i=0;i<controller.buttons.length;i++)
 		{
-			if(controller.buttons[i].check())
+			if(controller.buttons[i].pressed)
 			{
 				bConsoleBox.log(i);
 			}
 		}
-	}else 
-	{
-		bConsoleBox.log("look what you've reduced me to you fucking xbox.");
 	}
 	
 	if(false)//(controller.buttons[7].check())
