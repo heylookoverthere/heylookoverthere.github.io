@@ -2095,8 +2095,10 @@ function mainMenuUpdate()
 				if((controller.pad.buttons[i].pressed) || (controller.pad.buttons[i].value>0))
 				{
 					bConsoleBox.log(i);
-					
-					startGame(true,"asword");
+					if(!curDungeon.isLoading)
+					{
+						startGame(true,"dungeon1");	
+					}
 				}
 			}
 		}
