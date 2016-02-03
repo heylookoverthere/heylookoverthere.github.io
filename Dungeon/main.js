@@ -2094,8 +2094,8 @@ function mainMenuUpdate()
 			{
 				if((controller.pad.buttons[i].pressed) )
 				{
-					bConsoleBox.log(i+":"+controller.pad.buttons[i].value);
-					if(false)// !isLoading)
+					//bConsoleBox.log(i+":"+controller.pad.buttons[i].value);
+					if(!isLoading)
 					{
 						startGame(true,"asword");	
 						actuallyStartGame(); //yeah. what. 
