@@ -3240,7 +3240,7 @@ function mainUpdate()
 					miles.swingSword();
 				}
 			}
-			ifif(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[0].check())) && (miles.has[hasID.Sword]) && (!miles.swimming) && (!miles.swinging)))
+			if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[0].check())) && (miles.has[hasID.Sword]) && (!miles.swimming) && (!miles.swinging)))
 			{
 				miles.poking=true;			
 			}else
