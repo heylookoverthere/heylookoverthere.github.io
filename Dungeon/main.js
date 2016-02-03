@@ -2067,13 +2067,11 @@ function mainMenuUpdate()
 	
 	if(Xbox)
 	{
-		var cstate=controller.getState();
-		if(cstate.connected)
+		for( var i=0;i<controller.buttons.length;i++)
 		{
-			if(cstate.a)
+			if(controller.buttons[i].check())
 			{
-				bConsoleBox.log("A");
-				startGame(true);
+				bConsoleBox.log(i);
 			}
 		}
 	}
