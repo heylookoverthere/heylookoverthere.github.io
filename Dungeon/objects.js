@@ -595,6 +595,13 @@ object.prototype.setup=function(id,par)
 		this.activate=function()
 		{
 			playSound("itemfanfare");
+			if(miles.has[hasID.BestShield])
+			{
+				bConsoleBox.log("You found a shield, but it's not as shiny as the one you already have.");
+				btext="You found a shield, but it's not as shiny as the one you already have.";
+				this.exists=false;
+				return;
+			}
 			bConsoleBox.log("You found a nicer shield!");
 			btext="You found a nice shield!";
 			miles.holding=this.sprites[0];
