@@ -2070,7 +2070,7 @@ function mainMenuUpdate()
 		//bConsoleBox.log(controller.buttons.length);
 		for( var i=0;i<controller.buttons.length;i++)
 		{
-			if((controller.pad.buttons[i].pressed) || (controller.pad.buttons[i].value>0))
+			if(false)//((controller.pad.buttons[i].pressed) || (controller.pad.buttons[i].value>0))
 			{
 				bConsoleBox.log(i);
 			}
