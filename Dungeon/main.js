@@ -24,6 +24,7 @@ if(checkMobile())
 if(checkXbox())
 {
 	Xbox=true;
+	OPTIONS.musicOn=true;
 }
 	
 	//document.addEventListener('touchmove', handleTouchMove, false);
@@ -3178,7 +3179,7 @@ function mainUpdate()
 			}*/
 			if ($("#dialogBox").length > 0) 
 			{
-				if(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[1].check())))
+				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[0].check())))
 				{
 					$("#dialogBox").remove();
 					if(gameOver)
