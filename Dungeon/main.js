@@ -2151,7 +2151,7 @@ function mainMenuUpdate()
 					bConsoleBox.log(i+":"+controller.buttons[i].key);
 					if((!isLoading) && ((i==11) || (i==0)))
 					{
-						startGame(true,"dungeon1");	
+						startGame(true,"asword");	
 						actuallyStartGame(); //yeah. what. 
 					}
 				}
