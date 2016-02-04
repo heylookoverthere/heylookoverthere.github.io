@@ -46,7 +46,7 @@ function aPadButton(k,pad) {  //represents a keyboard button
 		if(Xbox)
 		{
 			bConsoleBox.log(this.key);
-			bconsoleBox.log(this.parentPad.buttons[this.key].pressed);
+			bConsoleBox.log(this.parentPad.buttons[this.key].pressed);
 			
 			if ((this.parentPad.buttons[this.key].pressed) && (true))
 			{ 
