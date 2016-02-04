@@ -42,7 +42,7 @@ function aPadButton(k,pad) {  //represents a keyboard button
 	this.parentPad=pad;
 	this.desc="A small brown mushroom.";
     this.check= function(){
-		if(!this.parentPad) {bConsoleBox.log("no parent pad!");
+		if(!this.parentPad) {bConsoleBox.log("no parent pad!");}
         if ((this.parentPad.buttons[this.key].pressed) && (!this.aflag)){ 
             this.aflag=true;
 			timestamp = new Date();

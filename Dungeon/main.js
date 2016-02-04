@@ -421,7 +421,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 19");
+	bConsoleBox.log("Xbox Version 20");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -3164,7 +3164,7 @@ function mainUpdate()
 	if((!editMode) && (controller.buttons.length>0)) //?!
 	{	
 		controller.update();
-		if((Xbox) && (controller.pad) && (controller.pad.buttons[10].pressed))
+		if((Xbox) && (controller.pad) && (controller.pad.buttons[12].pressed))
 		{
 			customConsole=false;
 		}
