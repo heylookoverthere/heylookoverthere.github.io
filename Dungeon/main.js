@@ -3354,7 +3354,7 @@ function mainUpdate()
 				//console.log("y!");
 				miles.useItem();
 			}
-			if(((Xbox) && (controller.pad) && (controller.Xcheck(2))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.X].check())))
+			if(((Xbox) && (controller.pad) && (controller.Xcheck(3))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.X].check())))
 			{
 				//console.log("x!");
 				miles.useItem(true);
