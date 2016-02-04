@@ -423,7 +423,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 34");
+	bConsoleBox.log("Xbox Version 35");
 	MobileMode=false;
 	Xbox=true;
 	OPTIONS.LightingOn=false;
