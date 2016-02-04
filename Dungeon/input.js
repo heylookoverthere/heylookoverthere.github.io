@@ -341,8 +341,9 @@ virtualGamePad.prototype.update=function()
 	
 	if((Xbox) && (!this.pad))
 	{
-		this.pad = navigator.getGamepads && navigator.getGamepads()[0];
+		
 		if(navigator.getGamepads()[0]){
+			this.pad = navigator.getGamepads && navigator.getGamepads()[0];
 			if(this.pad){
 				this.keyboard=false;
 				this.buttons=[];
@@ -355,6 +356,8 @@ virtualGamePad.prototype.update=function()
 					this.buttons.push(daisy);
 				}
 				bConsoleBox.log("Controller detected.");
+				bConsoleBox.log(this.pad.buttons.length+" pad buttons");
+				bConsoleBox.log(this.buttons.length+" buttons");
 			}
 		}
 	}else
