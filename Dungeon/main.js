@@ -1557,7 +1557,7 @@ function drawGUI(can)
 			xboxysprite.draw(can,760,110);
 			if(miles.has[hasID.Sword])
 			{
-				xboxbsprite.draw(can,760,10);
+				xboxasprite.draw(can,760,10);
 				can.fillStyle="white";
 				can.fillRect(808,6,40,40);
 				can.fillStyle="black";
