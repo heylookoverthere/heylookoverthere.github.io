@@ -423,7 +423,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 32");
+	bConsoleBox.log("Xbox Version 33");
 	MobileMode=false;
 	Xbox=true;
 	OPTIONS.LightingOn=false;
@@ -1551,6 +1551,18 @@ function drawGUI(can)
 			can.fillText("->",760,90);
 			can.fillText("<-",760,140);
 			canvas.restore();
+		}else if (Xbox)
+		{
+			xboxxsprite.draw(canvas,760,90);
+			xboxysprite.draw(canvas,760,90);
+		}else
+		{
+			canvas.save();
+			canvas.font = "30pt Calibri";
+			can.fillStyle="white";
+			can.fillText("Y",770,90);
+			can.fillText("X",770,140);
+			canvas.restore();
 		}
 		if(miles.equippedTrack>0)
 		{
@@ -1569,7 +1581,7 @@ function drawGUI(can)
 			//miles.equippedSprites[miles.equippedTrack].draw(can,812,80);
 			var nep=miles.getUsableInventory();
 			//console.log(nep[miles.equippedTrack]);
-			nep[miles.equippedTrack2].sprites[0].draw(can,812,105);
+			nep[miles.equippedTrack2].sprites[0].draw(can,812,109);
 			can.fillStyle="white";
 			if(true)//miles.inventoryAmounts[miles.equippedTrack]>1)
 			{
@@ -3367,7 +3379,7 @@ function mainUpdate()
 			if((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.L].check()))
 			{
 				//console.log("L")
-				miles.cycleEquipped(true,false);
+				miles.cycleEquipped(true,true);
 			}
 			if((Xbox) && (controller.pad) && (controller.Xcheck(5)))
 			{

@@ -19,6 +19,10 @@ var curVersion="0.6a";
 var explosions=new Array();
 var dugsprite=Sprite("shovelhole");
 var divesprite=Sprite("dive");
+var xboxxsprite=Sprite("xboxy");
+var xboxysprite=Sprite("xboxy");
+var xboxasprite=Sprite("xboxa");
+var xboxbsprite=Sprite("xboxb");
 
 var SNESKey={}
 SNESKey.A=1;
