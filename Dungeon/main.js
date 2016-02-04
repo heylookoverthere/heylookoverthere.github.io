@@ -2104,11 +2104,11 @@ function mainMenuUpdate()
 			{
 				if((controller.pad.buttons[i].pressed) )
 				{
-					bConsoleBox.log(i+":"+controller.buttons[i].key);
+					//bConsoleBox.log(i+":"+controller.buttons[i].key);
 					if(!isLoading)
 					{
 						startGame(true,"asword");	
-						//actuallyStartGame(); //yeah. what. 
+						actuallyStartGame(); //yeah. what. 
 					}
 				}
 			}
