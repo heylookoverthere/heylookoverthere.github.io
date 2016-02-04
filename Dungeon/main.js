@@ -2111,7 +2111,7 @@ function mainMenuUpdate()
 					//bConsoleBox.log(i+":"+controller.buttons[i].key);
 					if(!isLoading)
 					{
-						startGame(true,"asword");	
+						startGame(true,"dungeon1");	
 						actuallyStartGame(); //yeah. what. 
 					}
 				}
@@ -2536,7 +2536,7 @@ function mainDraw() {
 		canvas.fillStyle =  "#DCDCDC";
     	canvas.globalAlpha=1;
 		canvas.font = "24pt Calibri";
-		canvas.fillText((popl-LockTime)/1000,350,250);
+		canvas.fillText(10-(popl-LockTime)/1000,400,250);
 		canvas.restore();
 	}
 
@@ -3181,7 +3181,7 @@ function mainUpdate()
 	if(!milesFree)
 	{
 		var popl=new Date().getTime();
-		if(LockTime-popl>10000)
+		if(popl-LockTime>10000)
 		{
 			milesFree=true;
 			if(Xbox)
