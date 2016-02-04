@@ -294,6 +294,21 @@ virtualGamePad.prototype.checkDown=function()
 	}
 };
 
+virtualGamePad.prototype.checkTwo=function(one,two)
+{
+	
+		if((this.pad.buttons[one].pressed) && (this.pad.buttons[two].pressed) && (!this.buttons[one].aflag) && (!this.buttons[two].aflag)) 
+		{
+			this.buttons[one].aflag=true;
+			this.buttons[two].aflag=true;
+			return true;
+		}else
+		{
+			return false;
+		}
+
+};
+
 virtualGamePad.prototype.checkUpLeft=function()
 {
 	if(this.keyboard)

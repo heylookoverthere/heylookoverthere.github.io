@@ -695,19 +695,30 @@ function entity(croom)
 					this.inventoryAmounts[i]-=amt;
 					if(this.inventoryAmounts[i]<1)
 					{
+						if(this.equippedTrack==i) {this.equippedTrack=0;}
+						if(this.equippedTrack2==i) {this.equippedTrack2=0;}
 						this.inventory.splice(i,1);
 						this.inventoryAmounts.splice(i,1);
 						i--;
-						miles.equippedTrack=0;
 					}
 				}else
 				{
+					if(this.equippedTrack==i) {this.equippedTrack=0;}
+					if(this.equippedTrack2==i) {this.equippedTrack2=0;}
 					this.inventory.splice(i,1);
 					this.inventoryAmounts.splice(i,1);
 					i--;
-					miles.equippedTrack=0;
+
 				}
 			}
+		}
+		if((this.equippedTrack<0) || (this.equippedTrack>this.inventory.length-1)) 
+		{
+			this.equippedTrack=0;
+		}
+		if((this.equippedTrack2<0) || (this.equippedTrack2>this.inventory.length-1)) 
+		{
+			this.equippedTrack2=0;
 		}
 
 	}

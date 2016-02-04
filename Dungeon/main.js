@@ -2067,7 +2067,7 @@ function startGame(goolp,ploop)
 		//curDungeon.addFloor();
 	}else if(!ploop)
 	{
-		pungname=prompt("Enter name of dungeon to load","dungeon1");
+		pungname=prompt("Enter name of dungeon to load","asword");
 		if(pungname==null) {return;}
 		while (!acceptableName(pungname,true)) //doesn't exist
 		{
@@ -3390,15 +3390,63 @@ function mainUpdate()
 			{
 				miles.poking=false;
 			}
-			if(((Xbox) && (controller.pad) && (controller.Xcheck(2))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.Y].check())))
+			if(((miles.getEquipped()==ObjectID.Bow) && (miles.getEquipped(true)==ObjectID.Bomb)) || ((miles.getEquipped(true)==ObjectID.Bow) && (miles.getEquipped()==ObjectID.Bomb)))
 			{
-				//console.log("y!");
-				miles.useItem();
-			}
-			if(((Xbox) && (controller.pad) && (controller.Xcheck(3))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.X].check())))
+				if(((Xbox) && (controller.checkTwo(2,3))) || ((controller.checkTwo(SNESKey.X,SNESKey.Y))))
+				{
+					if((miles.arrows>0) && (miles.bombs>0))
+					{
+						miles.arrows--;
+						miles.removeItem(ObjectID.Bow,1);
+						miles.bombs--;
+						miles.removeItem(ObjectID.Bomb,1);
+						if(miles.dir==0)
+						{
+							miles.shootArrow(90,true);
+						}else if(miles.dir==1)
+						{
+							miles.shootArrow(180,true);
+						}else if(miles.dir==2)
+						{
+							miles.shootArrow(270,true);
+						}else if(miles.dir==3)
+						{
+							miles.shootArrow(0,true);
+						}
+					}else
+					{
+						bConsoleBox.log("Out of arrows or bombs.","yellow");
+						playSound("error");
+					}
+				}else
+				{
+					if(((Xbox) && (controller.pad) && (controller.Xcheck(2))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.Y].check())))
+					{
+						//console.log("y!");
+						miles.useItem();
+						
+					}
+					if(((Xbox) && (controller.pad) && (controller.Xcheck(3))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.X].check())))
+					{
+						//console.log("x!");
+						miles.useItem(true);
+			
+					}
+				}
+			}else 
 			{
-				//console.log("x!");
-				miles.useItem(true);
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(2))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.Y].check())))
+				{
+					//console.log("y!");
+					miles.useItem();
+					
+				}
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(3))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.X].check())))
+				{
+					//console.log("x!");
+					miles.useItem(true);
+		
+				}
 			}
 			if((!Xbox) && (controller.pad) && (controller.buttons[SNESKey.R].check()))
 			{
