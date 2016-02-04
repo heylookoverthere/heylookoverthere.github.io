@@ -1701,6 +1701,10 @@ function dungeon(path)
 	{
 		var xFset=620;
 		var yFset=609;
+		if(Xbox)
+		{
+			yFset=509;
+		}
 		var size=18;
 		canvas.globalAlpha=1;
 		canvas.font = "16pt Calibri";

@@ -2537,9 +2537,24 @@ function mainDraw() {
 		canvas.save();
 		var popl=new Date().getTime();
 		canvas.fillStyle =  "#DCDCDC";
+		var nakl=10-(popl-LockTime)/1000;
+		if(nakl>7)
+		{
+			canvas.fillStyle =  "red";
+		}else if(nakl>3)
+		{
+			canvas.fillStyle =  "orange";
+		}else if(nakl>1)
+		{
+			canvas.fillStyle =  "yellow";
+		}else
+		{
+			canvas.fillStyle =  "green";
+		}
     	canvas.globalAlpha=1;
 		canvas.font = "46pt Calibri";
-		canvas.fillText(10-(popl-LockTime)/1000,400,250);
+		Math.round(nakl*10)/10
+		canvas.fillText(Math.round(nakl*10)/10,400,250);
 		canvas.restore();
 	}
 
