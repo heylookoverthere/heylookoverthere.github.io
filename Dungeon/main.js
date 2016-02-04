@@ -423,7 +423,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 33");
+	bConsoleBox.log("Xbox Version 34");
 	MobileMode=false;
 	Xbox=true;
 	OPTIONS.LightingOn=false;
@@ -1493,9 +1493,9 @@ function drawGUI(can)
 			{
 				surd+=" Going";
 			}
-			canvas.fillRect(500,2,390,68);
+			can.fillRect(500,2,390,68);
 			can.fillStyle="blue";
-			canvas.fillRect(504,6,383,60);
+			can.fillRect(504,6,383,60);
 			can.fillStyle="white";
 			can.fillText("Nancy: "+nancy.status,508,24);
 			can.fillText("Floor: "+nancy.room.z+" "+"RoomX: "+nancy.room.x+" RoomY: "+nancy.room.y+surd,508,48);
@@ -1529,40 +1529,40 @@ function drawGUI(can)
 				surd+=" Going "+nancy.destX+","+nancy.destY;
 			}
 			can.fillStyle="white";
-			canvas.fillRect(500,2,390,68);
+			can.fillRect(500,2,390,68);
 			can.fillStyle="blue";
-			canvas.fillRect(504,6,383,60);
+			can.fillRect(504,6,383,60);
 			can.fillStyle="white";
 			can.fillText("Nancy: "+nancy.status,508,24);
 			can.fillText("Floor: "+nancy.room.z+" "+"RoomX: "+nancy.room.x+" RoomY: "+nancy.room.y+surd,508,48);
 		}
 		can.globalAlpha=1;
 		can.fillStyle="white";
-		canvas.fillRect(808,105,40,40);
-		canvas.fillRect(808,56,40,40);
+		can.fillRect(808,105,40,40);
+		can.fillRect(808,56,40,40);
 		can.fillStyle="black";
-		canvas.fillRect(812,109,32,32);
-		canvas.fillRect(812,60,32,32);
+		can.fillRect(812,109,32,32);
+		can.fillRect(812,60,32,32);
 		if((!Xbox) && (!controller.pad))
 		{
-			canvas.save();
-			canvas.font = "30pt Calibri";
+			can.save();
+			can.font = "30pt Calibri";
 			can.fillStyle="white";
 			can.fillText("->",760,90);
 			can.fillText("<-",760,140);
-			canvas.restore();
+			can.restore();
 		}else if (Xbox)
 		{
-			xboxxsprite.draw(canvas,760,90);
-			xboxysprite.draw(canvas,760,90);
+			xboxxsprite.draw(can,760,90);
+			xboxysprite.draw(can,760,90);
 		}else
 		{
-			canvas.save();
-			canvas.font = "30pt Calibri";
+			can.save();
+			can.font = "30pt Calibri";
 			can.fillStyle="white";
 			can.fillText("Y",770,90);
 			can.fillText("X",770,140);
-			canvas.restore();
+			can.restore();
 		}
 		if(miles.equippedTrack>0)
 		{
