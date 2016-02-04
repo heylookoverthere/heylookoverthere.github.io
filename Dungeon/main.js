@@ -629,7 +629,7 @@ timy.doThings=function()
 				if (LOAD_COUNTS[countIndex] == 0)
 				{ 
 					actuallyStartGame();
-				}else if(LOAD_COUNTS[countIndex]<0)
+				}else if((LOAD_COUNTS[countIndex]<0) && (!Xbox))
 				{
 					bConsoleBox.log("Load_Counts problem! Reload page.","yellow");
 				}else			
