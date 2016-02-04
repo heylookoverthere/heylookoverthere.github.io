@@ -427,7 +427,7 @@ if(checkMobile())
 	MobileMode=false;
 	Xbox=true;
 	OPTIONS.LightingOn=false;
-	bConsoleBox.numLines=38;
+	bConsoleBox.numLines=36;
 	milesFree=false;
 }else {
 	bConsoleBox.log("Desktop Version");
