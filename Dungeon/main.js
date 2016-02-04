@@ -421,7 +421,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 18");
+	bConsoleBox.log("Xbox Version 19");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -2102,7 +2102,7 @@ function mainMenuUpdate()
 		{
 			for( var i=0;i<controller.buttons.length;i++)
 			{
-				if((controller.buttons[i].check()) )
+				if((controller.pad.buttons[i].pressed) )
 				{
 					//bConsoleBox.log(i+":"+controller.pad.buttons[i].value);
 					if(!isLoading)
@@ -3238,7 +3238,7 @@ function mainUpdate()
 					miles.holding=false;
 				}
 			}
-			if(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.B].check())))
+			if(((Xbox) && (controller.pad) && (controller.buttons[1].checkDown())) || ((!Xbox) && (controller.buttons[SNESKey.B].check())))
 			{
 				//console.log("b!");
 				if(miles.swiming)
