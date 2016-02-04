@@ -421,7 +421,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 25");
+	bConsoleBox.log("Xbox Version 26");
 	MobileMode=false;
 	Xbox=true;
 }else {
