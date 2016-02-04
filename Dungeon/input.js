@@ -43,27 +43,36 @@ function aPadButton(k,pad) {  //represents a keyboard button
 	this.desc="A small brown mushroom.";
     this.check= function(){
 		if(!this.parentPad) {bConsoleBox.log("no parent pad!");}
-        if ((this.parentPad.buttons[this.key].pressed) && (!this.aflag)){ 
-            this.aflag=true;
-			timestamp = new Date();
-			this.pressedTime=timestamp.getTime();
-	        return false;
-        }
-        if((!this.parentPad.buttons[this.key].pressed) && (this.aflag===true)){
-            this.aflag=false;
-			if(Xbox) {return true;}
-			timestamp = new Date();
-			var nurp=timestamp.getTime();
-			if(nurp-this.pressedTime<1000)
-			{	
-				//console.log(nurp-this.pressedTime);
-				
-				return true;
-			}else
-			{
+		if(Xbox)
+		{
+			if ((this.parentPad.buttons[this.key].pressed) && (true))
+			{ 
+				return true; 
+			}
+		}else
+		{
+			if ((this.parentPad.buttons[this.key].pressed) && (!this.aflag)){ 
+				this.aflag=true;
+				timestamp = new Date();
+				this.pressedTime=timestamp.getTime();
 				return false;
 			}
-        }
+			if((!this.parentPad.buttons[this.key].pressed) && (this.aflag===true)){
+				this.aflag=false;
+				if(Xbox) {return true;}
+				timestamp = new Date();
+				var nurp=timestamp.getTime();
+				if(nurp-this.pressedTime<1000)
+				{	
+					//console.log(nurp-this.pressedTime);
+					
+					return true;
+				}else
+				{
+					return false;
+				}
+			}
+		}
 		
     };
     this.checkDown= function(){
