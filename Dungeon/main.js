@@ -2104,11 +2104,11 @@ function mainMenuUpdate()
 			{
 				if((controller.pad.buttons[i].pressed) )
 				{
-					//bConsoleBox.log(i+":"+controller.pad.buttons[i].value);
+					bConsoleBox.log(i+":"+controller.buttons[i].key);
 					if(!isLoading)
 					{
 						startGame(true,"asword");	
-						actuallyStartGame(); //yeah. what. 
+						//actuallyStartGame(); //yeah. what. 
 					}
 				}
 			}
@@ -3238,7 +3238,7 @@ function mainUpdate()
 					miles.holding=false;
 				}
 			}
-			if(((Xbox) && (controller.pad) && (controller.buttons[1].checkDown())) || ((!Xbox) && (controller.buttons[SNESKey.B].check())))
+			if(((Xbox) && (controller.pad) && (controller.buttons[1].check())) || ((!Xbox) && (controller.buttons[SNESKey.B].check())))
 			{
 				//console.log("b!");
 				if(miles.swiming)
