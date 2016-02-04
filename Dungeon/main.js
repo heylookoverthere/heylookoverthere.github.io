@@ -3359,15 +3359,35 @@ function mainUpdate()
 				//console.log("x!");
 				miles.useItem(true);
 			}
-			if(((Xbox) && (controller.pad) && (controller.Xcheck(5))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.R].check())))
+			if((!Xbox) && (controller.pad) && (controller.buttons[SNESKey.R].check()))
 			{
 				//console.log("R")
 				miles.cycleEquipped(true);
 			}
-			if(((Xbox) && (controller.pad) && (controller.Xcheck(6))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.L].check())))
+			if((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.L].check()))
 			{
 				//console.log("L")
+				miles.cycleEquipped(true,false);
+			}
+			if((Xbox) && (controller.pad) && (controller.Xcheck(5)))
+			{
+				//console.log("R bumper")
+				miles.cycleEquipped(true);
+			}
+			if((Xbox) && (controller.pad) && (controller.Xcheck(4))) 
+			{
+				//console.log("L bumper")
 				miles.cycleEquipped(false);
+			}
+			if((Xbox) && (controller.pad) && (controller.Xcheck(6)))
+			{
+				//console.log("R trigger")
+				miles.cycleEquipped(true,true);
+			}
+			if((Xbox) && (controller.pad) && (controller.Xcheck(7))) 
+			{
+				//console.log("L trigger")
+				miles.cycleEquipped(false,true);
 			}
 			if(!miles.holding)
 			{
