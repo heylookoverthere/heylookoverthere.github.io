@@ -1555,14 +1555,38 @@ function drawGUI(can)
 		{
 			xboxxsprite.draw(can,760,60);
 			xboxysprite.draw(can,760,110);
+			if(miles.has[hasID.Sword])
+			{
+				xboxbsprite.draw(can,760,10);
+				can.fillStyle="white";
+				can.fillRect(808,6,40,40);
+				can.fillStyle="black";
+				can.fillRect(812,9,32,32);
+				if(miles.has[hasID.MasterSword])
+				{
+					objectSprites[ObjectID.MasterSword].draw(can,812,8);
+				}else
+				{
+					objectSprites[ObjectID.Sword].draw(can,812,8);
+				}
+			}
 		}else
 		{
-			/*can.save();
-			can.font = "30pt Calibri";
-			can.fillStyle="white";
-			can.fillText("Y",770,90);
-			can.fillText("X",770,140);
-			can.restore();*/
+			if(miles.has[hasID.Sword])
+			{
+				xboxbsprite.draw(can,760,10);
+				can.fillStyle="white";
+				can.fillRect(808,6,40,40);
+				can.fillStyle="black";
+				can.fillRect(812,9,32,32);
+				if(miles.has[hasID.MasterSword])
+				{
+					objectSprites[ObjectID.MasterSword].draw(can,812,8);
+				}else
+				{
+					objectSprites[ObjectID.Sword].draw(can,812,8);
+				}
+			}
 			xboxysprite.draw(can,760,60);
 			xboxxsprite.draw(can,760,110);
 		}
@@ -1587,7 +1611,7 @@ function drawGUI(can)
 			can.fillStyle="white";
 			if(true)//miles.inventoryAmounts[miles.equippedTrack]>1)
 			{
-				can.fillText("x"+miles.inventoryAmounts[miles.equippedTrack2],849,145);
+				can.fillText("x"+miles.inventoryAmounts[miles.equippedTrack2],849,135);
 			}
 		}
 	}
@@ -3285,7 +3309,7 @@ function mainUpdate()
 			}*/
 			if ($("#dialogBox").length > 0) 
 			{
-				if(((Xbox) && (controller.pad) && (controller.Xcheck(0))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.A].check())))
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.A].check())))
 				{
 					$("#dialogBox").remove();
 					if(gameOver)
@@ -3299,7 +3323,7 @@ function mainUpdate()
 		{
 			if(buttons[i].hasFocus)
 			{
-				if(((Xbox) && (controller.pad) && (controller.Xcheck(0))) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
 				{
 					if((!buttons[i].unClickable))
 					{
@@ -3314,7 +3338,7 @@ function mainUpdate()
 			}
 		}
 			
-			if(((Xbox) && (controller.pad) && (controller.Xcheck(0))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.A].check())))
+			if(((Xbox) && (controller.pad) && (controller.Xcheck(1))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.A].check())))
 			{
 				//contextual. if NPC in talk range, talk. 
 				//if object in front, activate
@@ -3337,12 +3361,12 @@ function mainUpdate()
 			if(miles.holding)
 			{
 				//todo: why does A have to be held?
-				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.pad)&& ((controller.buttons[SNESKey.B].check()) ||(controller.buttons[SNESKey.A].checkDown()))))
+				if(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.pad)&& ((controller.buttons[SNESKey.B].check()) ||(controller.buttons[SNESKey.A].checkDown()))))
 				{
 					miles.holding=false;
 				}
 			}
-			if(((Xbox) && (controller.pad) && (controller.Xcheck(1))) || ((!Xbox) && (controller.pad)&& (controller.buttons[SNESKey.B].check())))
+			if(((Xbox) && (controller.pad) && (controller.Xcheck(0))) || ((!Xbox) && (controller.pad)&& (controller.buttons[SNESKey.B].check())))
 			{
 				//console.log("b!");
 				if(miles.swimming)
@@ -3355,7 +3379,7 @@ function mainUpdate()
 			}
 			if((miles.has[hasID.Sword]) && (!miles.swimming) && (!miles.swinging))
 			{
-				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.B].checkDown()))  )
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(0))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.B].checkDown()))  )
 				{
 					miles.poking=true;			
 				}else
