@@ -2873,7 +2873,8 @@ function mainUpdate()
 				bConsoleBox.log("No","Yellow");
 			}
 		}
-	if((mapkey.check()) || ((controller.buttons[9]) && (controller.buttons[8].check())))
+	
+	if((mapkey.check()) || ((Xbox) && (controller.pad) && (controller.pad.buttons[10].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.Select].check())))
 	{
 		//console.log("look");
 		if((editMode) || (miles.has[hasID.Map])) 
