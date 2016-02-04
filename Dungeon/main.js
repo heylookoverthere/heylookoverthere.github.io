@@ -421,7 +421,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 30");
+	bConsoleBox.log("Xbox Version 31");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -1952,12 +1952,16 @@ function actuallyStartGame()
 		document.getElementById("deadSong").pause();
 	}
 	starter();
-	for(var i=0;i<curDungeon.floors;i++)
+	if(!Xbox)
 	{
-		curDungeon.linkDoors(i);
-		curDungeon.linkSwitches(i);
+		for(var i=0;i<curDungeon.floors;i++)
+		{
+			curDungeon.linkDoors(i);
+			curDungeon.linkSwitches(i);
+		}
+		bConsoleBox.log("Doors and switches linked!","yellow");
 	}
-	bConsoleBox.log("Doors and switches linked!","yellow");
+	LockTime=new Date().getTime();
 }
 
 function startGame(goolp,ploop)
@@ -2524,6 +2528,18 @@ function mainDraw() {
 		}
 		$("<div id='dialogBox'>").text("Sadly, no trace of them was ever found...").appendTo("body");
 	}
+	
+	if(!milesFree)
+	{
+		canvas.save();
+		var popl=new Date.getTime();
+		canvas.fillStyle =  "#DCDCDC";
+    	canvas.globalAlpha=1;
+		canvas.font = "24pt Calibri";
+		canvas.fillText((popl-LockTime)/1000,350,250);
+		canvas.restore();
+	}
+
 };
 //------------MAIN LOOP-----------------------------------------
 function mainUpdate()
@@ -3162,7 +3178,23 @@ function mainUpdate()
 			}
 		}
 	}
-	if((!editMode) && (controller.buttons.length>0)) //?!
+	if(!milesFree)
+	{
+		var popl=new Date.getTime();
+		if(LockTime-popl>10000)
+		{
+			milesFree=true;
+			if(Xbox)
+			{
+				for(var i=0;i<curDungeon.floors;i++)
+				{
+					curDungeon.linkDoors(i);
+					curDungeon.linkSwitches(i);
+				}
+				bConsoleBox.log("Doors and switches linked!","yellow");
+			}
+		}
+	}else if((!editMode) && (controller.buttons.length>0)) //?!
 	{	
 		controller.update();
 		if((Xbox) && (controller.pad) && (controller.pad.buttons[12].pressed))
