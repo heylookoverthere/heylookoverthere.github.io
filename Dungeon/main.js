@@ -421,7 +421,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 29");
+	bConsoleBox.log("Xbox Version 30");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -1678,13 +1678,13 @@ function inventoryUpdate()
 	{
 		mode=1;
 	}
-	if((inventorykey.check()) || ((controller.buttons[9]) && (controller.buttons[SNESKey.Start].check())))
+	if((inventorykey.check()) || ((Xbox) && (controller.pad) && (controller.Xcheck(9))) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
 	{
 		mode=1;
 	}
 	if(miles.has[hasID.Map])
 	{
-		if(((Xbox) && (controller.pad) && (controller.pad.buttons[10].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.Select].check())))
+		if(((Xbox) && (controller.pad) && (controller.Xcheck(10))) || ((!Xbox) && (controller.buttons[SNESKey.Select].check())))
 		{
 			mode=2;
 		}
@@ -2160,7 +2160,7 @@ function mapUpdate()
 		curDungeon.mapFloor=curDungeon.roomZ;
 		mode=1;
 	}
-	if(controller.buttons[9].check())
+	if((Xbox) && (controller.pad) && (controller.Xcheck(11))) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
 	{
 		mode=4;
 	}
@@ -2548,7 +2548,7 @@ function mainUpdate()
 	{
 		mode=3;
 	}
-	if((inventorykey.check())  ||((Xbox) && (controller.pad) && (controller.pad.buttons[11].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
+	if((inventorykey.check())  ||((Xbox) && (controller.pad) && (controller.Xcheck(11))) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
 	{
 		mode=4;
 	}
@@ -3183,7 +3183,7 @@ function mainUpdate()
 			}*/
 			if ($("#dialogBox").length > 0) 
 			{
-				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(0))) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
 				{
 					$("#dialogBox").remove();
 					if(gameOver)
@@ -3197,7 +3197,7 @@ function mainUpdate()
 		{
 			if(buttons[i].hasFocus)
 			{
-				iif(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
+				iif(((Xbox) && (controller.pad) && (controller.Xcheck(1))) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
 				{
 					if((!buttons[i].unClickable))
 					{
@@ -3212,7 +3212,7 @@ function mainUpdate()
 			}
 		}
 			
-			if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
+			if(((Xbox) && (controller.pad) && (controller.Xcheck(0))) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
 			{
 				//contextual. if NPC in talk range, talk. 
 				//if object in front, activate
@@ -3234,7 +3234,7 @@ function mainUpdate()
 			}
 			if(miles.holding)
 			{
-				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && ((controller.buttons[SNESKey.B].check()) ||(controller.buttons[SNESKey.A].checkDown()))))
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(0))) || ((!Xbox) && ((controller.buttons[SNESKey.B].check()) ||(controller.buttons[SNESKey.A].checkDown()))))
 				{
 					miles.holding=false;
 				}
@@ -3252,7 +3252,7 @@ function mainUpdate()
 			}
 			if((miles.has[hasID.Sword]) && (!miles.swimming) && (!miles.swinging))
 			{
-				if(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.B].checkDown()))  )
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))) || ((!Xbox) && (controller.buttons[SNESKey.B].checkDown()))  )
 				{
 					miles.poking=true;			
 				}else
@@ -3260,17 +3260,17 @@ function mainUpdate()
 					miles.poking=false;
 				}
 			}
-			if(((Xbox) && (controller.pad) && (controller.pad.buttons[2].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.Y].check())))
+			if(((Xbox) && (controller.pad) && (controller.Xcheck(2))) || ((!Xbox) && (controller.buttons[SNESKey.Y].check())))
 			{
 				//console.log("y!");
 				miles.useItem();
 			}
-			if(((Xbox) && (controller.pad) && (controller.pad.buttons[5].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.R].check())))
+			if(((Xbox) && (controller.pad) && (controller.Xcheck(5))) || ((!Xbox) && (controller.buttons[SNESKey.R].check())))
 			{
 				//console.log("R")
 				miles.cycleEquipped(true);
 			}
-			if(((Xbox) && (controller.pad) && (controller.pad.buttons[6].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.L].check())))
+			if(((Xbox) && (controller.pad) && (controller.Xcheck(6))) || ((!Xbox) && (controller.buttons[SNESKey.L].check())))
 			{
 				//console.log("L")
 				miles.cycleEquipped(false);
