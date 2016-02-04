@@ -2128,7 +2128,7 @@ function mainMenuUpdate()
 		{
 			showMapList();
 		}
-	}else if((!isLoading)&&((startkey.check()) || (controller.buttons[9]) && (controller.buttons[9].check())))
+	}else if((!isLoading)&&((startkey.check()) || (controller.buttons[SNESKey.Start]) && (controller.buttons[SNESKey.Start].check())))
 	{	
 		if(mmcur==0)
 		{
@@ -2160,7 +2160,7 @@ function mapUpdate()
 		curDungeon.mapFloor=curDungeon.roomZ;
 		mode=1;
 	}
-	if((Xbox) && (controller.pad) && (controller.Xcheck(11))) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
+	if((Xbox) && (controller.pad) && (controller.Xcheck(11)) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
 	{
 		mode=4;
 	}
