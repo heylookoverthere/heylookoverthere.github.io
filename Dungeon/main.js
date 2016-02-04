@@ -2535,7 +2535,7 @@ function mainDraw() {
 		var popl=new Date().getTime();
 		canvas.fillStyle =  "#DCDCDC";
     	canvas.globalAlpha=1;
-		canvas.font = "24pt Calibri";
+		canvas.font = "46pt Calibri";
 		canvas.fillText(10-(popl-LockTime)/1000,400,250);
 		canvas.restore();
 	}
@@ -3197,9 +3197,9 @@ function mainUpdate()
 	}else if((!editMode) && (controller.buttons.length>0)) //?!
 	{	
 		controller.update();
-		if((Xbox) && (controller.pad) && (controller.pad.buttons[12].pressed))
+		if((Xbox) && (controller.Xcheck(12)))
 		{
-			customConsole=false;
+			customConsole=!customConsole;
 		}
 		if((!Xbox) || (controller.pad))
 		{
@@ -3266,7 +3266,8 @@ function mainUpdate()
 			}
 			if(miles.holding)
 			{
-				if(((Xbox) && (controller.pad) && (controller.Xcheck(0))) || ((!Xbox) && ((controller.buttons[SNESKey.B].check()) ||(controller.buttons[SNESKey.A].checkDown()))))
+				//todo: why does A have to be held?
+				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && ((controller.buttons[SNESKey.B].check()) ||(controller.buttons[SNESKey.A].checkDown()))))
 				{
 					miles.holding=false;
 				}
