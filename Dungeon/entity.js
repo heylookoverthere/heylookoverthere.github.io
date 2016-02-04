@@ -421,6 +421,7 @@ function entity(croom)
 	this.textTrack=0;
 	this.chatterBank=new Array(); //random stuff said
 	this.equippedTrack=0;
+	this.equippedTrack2=0;
 	if(croom)
 	{
 		this.room=croom;
@@ -577,8 +578,12 @@ function entity(croom)
 		edsbomb.timePlaced=new Date().getTime();
 		this.activebombs.push(edsbomb);
 	}
-	this.getEquipped=function()
+	this.getEquipped=function(secondary)
 	{
+		if(secondary)
+		{
+			return this.inventory[this.equippedTrack2].type;
+		}
 		return this.inventory[this.equippedTrack].type;//==ObjectID.Bomb
 	}
 	
@@ -945,13 +950,14 @@ function entity(croom)
 		}
 	}
 	
-	this.useItem=function()
+	this.useItem=function(secondary)
 	{
-		if(this.getEquipped()==ObjectID.Bomb)
+		if(this.swimming) {return false;}
+		if(this.getEquipped(secondary)==ObjectID.Bomb)
 		{
 			this.placeBomb();
 			this.removeItem(ObjectID.Bomb,1);
-		}else if(this.getEquipped()==ObjectID.Shovel)
+		}else if(this.getEquipped(secondary)==ObjectID.Shovel)
 		{
 			if(this.dig())
 			{
@@ -961,7 +967,7 @@ function entity(croom)
 				bConsoleBox.log("You can't dig here.","yellow");
 			}
 
-		}else if(this.getEquipped()==ObjectID.Bow)
+		}else if(this.getEquipped(secondary)==ObjectID.Bow)
 		{
 			if(this.arrows>0)
 			{
@@ -986,7 +992,7 @@ function entity(croom)
 				playSound("error");
 			}
 
-		}else if(this.getEquipped()==ObjectID.Boomarang)
+		}else if(this.getEquipped(secondary)==ObjectID.Boomarang)
 		{
 			if(this.dir==0)
 			{
@@ -1002,17 +1008,17 @@ function entity(croom)
 				this.tossBoomarang(0);
 			}
 			
-		}else if(this.getEquipped()==ObjectID.Flippers)
+		}else if(this.getEquipped(secondary)==ObjectID.Flippers)
 		{
-			if(this.dive())
+			/*if(this.dive())
 			{
 			
 			}else
 			{
 				bConsoleBox.log("You can't dive here. I really shouldn't have had to explain that to you.","yellow");
-			}
+			}*/
 
-		}else if(this.getEquipped()==ObjectID.Mirror)
+		}else if(this.getEquipped(secondary)==ObjectID.Mirror)
 		{
 			playSound("warp");
 			curDungeon.roomZ=curDungeon.startFloor;
@@ -1030,7 +1036,7 @@ function entity(croom)
 				this.removeItem(ObjectID.Mirror,1); 
 				//this.equippedTrack=0;
 			}
-		}else if (this.getEquipped()==ObjectID.Poo)
+		}else if (this.getEquipped(secondary)==ObjectID.Poo)
 		{
 			//remove poop, make new poop object
 			this.has[hasID.Poo]=false;
@@ -1049,7 +1055,7 @@ function entity(croom)
 				var hio= makeObject(this.x-1,this.y,curDungeon.curRoom(),ObjectID.Poo);
 			}
 			hio.on=true;
-		}else if(this.getEquipped()==ObjectID.RedPotion)
+		}else if(this.getEquipped(secondary)==ObjectID.RedPotion)
 		{
 			if(this.hp<this.maxHp)
 			{
@@ -1059,7 +1065,7 @@ function entity(croom)
 			{
 				bConsoleBox.log("You are not hurt.","yellow");
 			}
-		}else if(this.getEquipped()==ObjectID.GreenPotion)
+		}else if(this.getEquipped(secondary)==ObjectID.GreenPotion)
 		{
 			for(var i=0;i<entities.length;i++)
 			{
@@ -1075,29 +1081,51 @@ function entity(croom)
 			}
 			playSound("error");
 			bConsoleBox.log("Nobody there to revive");
-		}else if(this.getEquipped()==ObjectID.BluePotion)
+		}else if(this.getEquipped(secondary)==ObjectID.BluePotion)
 		{
 			this.heal(120);
 			this.removeItem(ObjectID.BluePotion,1); 
 		}
 	}
 	
-	this.cycleEquipped=function(up)
+	this.cycleEquipped=function(up,secondary)
 	{
-		var mup=this.getUsableInventory();
-		if(up)
+		if(secondary)
 		{
-			this.equippedTrack++;
-			if(this.equippedTrack>mup.length-1)
+			var mup=this.getUsableInventory();
+			if(up)
 			{
-				this.equippedTrack=mup.length-1;
+				this.equippedTrack2++;
+				if(this.equippedTrack2>mup.length-1)
+				{
+					this.equippedTrack2=0;//mup.length-1;
+				}
+			}else
+			{
+				this.equippedTrack2--;
+				if(this.equippedTrack2<0)
+				{
+					this.equippedTrack2=mup.length-1;//0;
+				}
 			}
 		}else
 		{
-			this.equippedTrack--;
-			if(this.equippedTrack<0)
+		
+			var mup=this.getUsableInventory();
+			if(up)
 			{
-				this.equippedTrack=0;
+				this.equippedTrack++;
+				if(this.equippedTrack>mup.length-1)
+				{
+					this.equippedTrack=0;//mup.length-1;
+				}
+			}else
+			{
+				this.equippedTrack--;
+				if(this.equippedTrack<0)
+				{
+					this.equippedTrack=mup.length-1;//0;
+				}
 			}
 		}
 		

@@ -1843,7 +1843,7 @@ object.prototype.setup=function(id,par)
 			this.exists=false;
 			miles.canSwim=true; 
 			miles.has[hasID.Flippers]=true;
-			miles.giveItem(this,1);
+			//miles.giveItem(this,1);
 			
 		}
 		this.playerActivate=this.activate;
@@ -2037,7 +2037,7 @@ object.prototype.setup=function(id,par)
 		{
 			//change music
 			//temp!
-			Krugman.textBank.push("Nice, you found a shiney triangle. We're still stuck down here you know.");
+			Krugman.textBank.push("Nice, you found a shiny triangle. We're still stuck down here you know.");
 			var hlop=function(){return true;}
 			Krugman.textConditions.push(hlop);
 			playSound("heartcontainer");

@@ -846,6 +846,18 @@ timy.doThings=function()
 
 var touchshiftkey=new akey("shift");
 
+var SNESAKey=new akey("down");
+var SNESXKey=new akey("left");
+var SNESYKey=new akey("right");
+var SNESBKey=new akey("up");
+var SNESRKey=new akey("shift");
+var SNESLKey=new akey("/");
+
+var SNESUpKey=new akey("w");
+var SNESDownKey=new akey("s");
+var SNESLeftKey=new akey("a");
+var SNESRightKey=new akey("d");
+
 buttons.push(timy);
 timy=new button();
 timy.text="South";
@@ -1526,19 +1538,42 @@ function drawGUI(can)
 		}
 		can.globalAlpha=1;
 		can.fillStyle="white";
-		canvas.fillRect(808,76,40,40);
+		canvas.fillRect(808,105,40,40);
+		canvas.fillRect(808,56,40,40);
 		can.fillStyle="black";
-		canvas.fillRect(812,80,32,32);
+		canvas.fillRect(812,109,32,32);
+		canvas.fillRect(812,60,32,32);
+		if((!Xbox) && (!controller.pad))
+		{
+			canvas.save();
+			canvas.font = "30pt Calibri";
+			can.fillStyle="white";
+			can.fillText("->",760,90);
+			can.fillText("<-",760,140);
+			canvas.restore();
+		}
 		if(miles.equippedTrack>0)
 		{
 			//miles.equippedSprites[miles.equippedTrack].draw(can,812,80);
 			var nep=miles.getUsableInventory();
 			//console.log(nep[miles.equippedTrack]);
-			nep[miles.equippedTrack].sprites[0].draw(can,812,80);
+			nep[miles.equippedTrack].sprites[0].draw(can,812,60);
 			can.fillStyle="white";
 			if(true)//miles.inventoryAmounts[miles.equippedTrack]>1)
 			{
-				can.fillText("x"+miles.inventoryAmounts[miles.equippedTrack],849,100);
+				can.fillText("x"+miles.inventoryAmounts[miles.equippedTrack],849,80);
+			}
+		}
+		if(miles.equippedTrack2>0)
+		{
+			//miles.equippedSprites[miles.equippedTrack].draw(can,812,80);
+			var nep=miles.getUsableInventory();
+			//console.log(nep[miles.equippedTrack]);
+			nep[miles.equippedTrack2].sprites[0].draw(can,812,105);
+			can.fillStyle="white";
+			if(true)//miles.inventoryAmounts[miles.equippedTrack]>1)
+			{
+				can.fillText("x"+miles.inventoryAmounts[miles.equippedTrack2],849,145);
 			}
 		}
 	}
@@ -2113,8 +2148,8 @@ function mainMenuUpdate()
 			{
 				if((controller.pad.buttons[i].pressed) )
 				{
-					//bConsoleBox.log(i+":"+controller.buttons[i].key);
-					if(!isLoading)
+					bConsoleBox.log(i+":"+controller.buttons[i].key);
+					if((!isLoading) && ((i==11) || (i==0)))
 					{
 						startGame(true,"dungeon1");	
 						actuallyStartGame(); //yeah. what. 
@@ -2773,7 +2808,7 @@ function mainUpdate()
 			}
 		}
 	}
-	if (editclickkey.check())
+	if ((editMode) &&(editclickkey.check()))
 	{
 		if(editor.mode==editModes.Pen)
 		{
@@ -3212,9 +3247,10 @@ function mainUpdate()
 					curDungeon.linkSwitches(i);
 				}
 				bConsoleBox.log("Doors and switches linked!","yellow");
+				curDungeon.timeStarted=new Date();
 			}
 		}
-	}else if((!editMode) && (controller.buttons.length>0)) //?!
+	}else if((!editMode) && (controller.pad)) //?!
 	{	
 		controller.update();
 		if((Xbox) && (controller.Xcheck(12)))
@@ -3295,7 +3331,7 @@ function mainUpdate()
 			if(((Xbox) && (controller.pad) && (controller.Xcheck(1))) || ((!Xbox) && (controller.pad)&& (controller.buttons[SNESKey.B].check())))
 			{
 				//console.log("b!");
-				if(miles.swiming)
+				if(miles.swimming)
 				{
 					miles.dive();
 				}else
@@ -3317,6 +3353,11 @@ function mainUpdate()
 			{
 				//console.log("y!");
 				miles.useItem();
+			}
+			if(((Xbox) && (controller.pad) && (controller.Xcheck(2))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.X].check())))
+			{
+				//console.log("x!");
+				miles.useItem(true);
 			}
 			if(((Xbox) && (controller.pad) && (controller.Xcheck(5))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.R].check())))
 			{
@@ -3349,6 +3390,129 @@ function mainUpdate()
 				}
 			}
 		}
+	}else //keyboard
+	{
+		if ($("#dialogBox").length > 0) 
+		{
+			if(SNESAKey.check())
+			{
+				$("#dialogBox").remove();
+				if(gameOver)
+				{
+					mode=0;
+				}
+			}
+		}
+			
+		for(var i=0;i<buttons.length;i++)
+		{
+			if(buttons[i].hasFocus)
+			{
+				if(SNESAKey.check())
+				{
+					if((!buttons[i].unClickable))
+					{
+						buttons[i].hasFocus=false;
+						buttons[i].exists=false;
+						return;
+					}else
+					{
+						
+					}
+				}
+			}
+		}
+			
+			if(SNESAKey.check())
+			{
+				//contextual. if NPC in talk range, talk. 
+				//if object in front, activate
+				var pled=miles.getFacingEntity();
+				if(pled)
+				{
+					pled.say();
+					if((!pled.partyMember) && (pled.autoJoin))
+					{
+						theParty.add(pled);
+					}
+					return;
+				}
+				var gled=miles.getFacingObject();
+				if((gled) && (gled.playerUsable))
+				{
+					gled.playerActivate();
+				}
+			}
+			if(miles.holding)
+			{
+				//todo: why does A have to be held?
+				if( (SNESAKey.checkDown()) || (SNESBKey.check()))
+				{
+					miles.holding=false;
+				}
+			}
+			if(SNESBKey.check())
+			{
+				//console.log("b!");
+				if(miles.swimming)
+				{
+					miles.dive();
+				}else
+				{
+					miles.swingSword();
+				}
+			}
+			if((miles.has[hasID.Sword]) && (!miles.swimming) && (!miles.swinging))
+			{
+				if(SNESBKey.checkDown())
+				{
+					miles.poking=true;			
+				}else
+				{
+					miles.poking=false;
+				}
+			}
+			if(SNESYKey.check())
+			{
+				//console.log("y!");
+				miles.useItem();
+			}
+			if(SNESXKey.check())
+			{
+				//console.log("y!");
+				miles.useItem(true);
+			}
+			if(SNESRKey.check())
+			{
+				//console.log("R")
+				miles.cycleEquipped(true);
+			}
+			if(SNESLKey.check())
+			{
+				//console.log("L")
+				miles.cycleEquipped(true,true);
+			}
+			if(!miles.holding)
+			{
+				if(SNESUpKey.checkDown())
+				{
+					miles.dir=0;
+					miles.incMove();
+				}else if(SNESDownKey.checkDown())
+				{
+					miles.dir=2;
+					miles.incMove();
+				}else if(SNESLeftKey.checkDown())
+				{
+					miles.dir=3;
+					miles.incMove();
+				}else if(SNESRightKey.checkDown())
+				{
+					miles.dir=1;
+					miles.incMove();
+				}
+			}
+		
 	}
 	for (var h=0;h<buttons.length;h++)
 	{
@@ -3375,31 +3539,7 @@ function mainUpdate()
 		curDungeon.changeFloor(false,!editMode);
 		editor.penDown=false;
 	}
-	 if(leftkey.check())
-	 {
-		editor.clearConfirm();
-		curDungeon.changeRoom(3,!editMode);
-		editor.penDown=false;
-	 }
-	 if(rightkey.check())
-	 {
-		editor.clearConfirm();
-		curDungeon.changeRoom(1,!editMode);
-		editor.penDown=false;
-	 }
-	 if(upkey.check())
-	 {
-		editor.clearConfirm();
-		curDungeon.changeRoom(0,!editMode);
-		editor.penDown=false;
-	 }
-	 if(downkey.check())
-	 {
-		editor.clearConfirm();
-		curDungeon.changeRoom(2,!editMode);
-		editor.penDown=false;
-	 }
-
+	 
 	gamepad = navigator.getGamepads && navigator.getGamepads()[0];
 	
 	for(var i=0;i<curDungeon.curRoom().fires.length;i++)
