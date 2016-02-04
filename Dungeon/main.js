@@ -25,6 +25,7 @@ if(checkXbox())
 {
 	Xbox=true;
 	OPTIONS.musicOn=true;
+	OPTIONS.LightingOn=false;
 }
 	
 	//document.addEventListener('touchmove', handleTouchMove, false);
@@ -424,6 +425,8 @@ if(checkMobile())
 	bConsoleBox.log("Xbox Version 31");
 	MobileMode=false;
 	Xbox=true;
+	OPTIONS.LightingOn=false;
+	bConsoleBox.numLines=31;
 }else {
 	bConsoleBox.log("Desktop Version");
 	MobileMode=false;

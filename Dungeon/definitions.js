@@ -605,6 +605,7 @@ function textbox()
 	this.options=0;
 	this.unClickable=false;
 	this.object=null;
+	this.numLines=41;
 	this.target=null;
 	this.choicesStart=1;
 	this.optionTrack=0;//draw the liitle -
@@ -643,7 +644,7 @@ function textbox()
 				this.msg.push(fext);
 				this.colors.push(col);
 				this.log(dext);
-				if(this.msg.length>41)
+				if(this.msg.length>this.numLines)
 				{
 					this.scroll++;
 				}
@@ -651,7 +652,7 @@ function textbox()
 			{
 				this.msg.push(text);
 				this.colors.push(col);
-				if(this.msg.length>41)
+				if(this.msg.length>this.numLines)
 				{
 					this.scroll++;
 				}
