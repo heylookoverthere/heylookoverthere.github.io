@@ -1553,16 +1553,18 @@ function drawGUI(can)
 			can.restore();
 		}else if (Xbox)
 		{
-			xboxxsprite.draw(can,760,90);
-			xboxysprite.draw(can,760,90);
+			xboxxsprite.draw(can,760,60);
+			xboxysprite.draw(can,760,110);
 		}else
 		{
-			can.save();
+			/*can.save();
 			can.font = "30pt Calibri";
 			can.fillStyle="white";
 			can.fillText("Y",770,90);
 			can.fillText("X",770,140);
-			can.restore();
+			can.restore();*/
+			xboxxsprite.draw(can,760,60);
+			xboxysprite.draw(can,760,110);
 		}
 		if(miles.equippedTrack>0)
 		{
@@ -2080,7 +2082,7 @@ function startGame(goolp,ploop)
 			if (LOAD_COUNTS[countIndex] == 0)
 			{ 
 				actuallyStartGame();
-			}else if(LOAD_COUNTS[countIndex]<0)
+			}else if((LOAD_COUNTS[countIndex]<0)  && (!Xbox))
 			{
 				bConsoleBox.log("Load_Counts problem! Reload page.","yellow");
 			}else			
@@ -2104,7 +2106,7 @@ function startGame(goolp,ploop)
 			if (LOAD_COUNTS[countIndex] == 0)
 			{ 
 				actuallyStartGame();
-			}else if(LOAD_COUNTS[countIndex]<0)
+			}else if((LOAD_COUNTS[countIndex]<0)  && (!Xbox))
 			{
 				bConsoleBox.log("Load_Counts problem! Reload page.","yellow");
 			}else			
