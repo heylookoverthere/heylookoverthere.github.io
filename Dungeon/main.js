@@ -3379,7 +3379,7 @@ function mainUpdate()
 			}
 			if((miles.has[hasID.Sword]) && (!miles.swimming) && (!miles.swinging))
 			{
-				if(((Xbox) && (controller.pad) && (controller.Xcheck(0))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.B].checkDown()))  )
+				if(((Xbox) && (controller.pad) && (controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.B].checkDown()))  )
 				{
 					miles.poking=true;			
 				}else
