@@ -1563,8 +1563,8 @@ function drawGUI(can)
 			can.fillText("Y",770,90);
 			can.fillText("X",770,140);
 			can.restore();*/
-			xboxxsprite.draw(can,760,60);
-			xboxysprite.draw(can,760,110);
+			xboxysprite.draw(can,760,60);
+			xboxxsprite.draw(can,760,110);
 		}
 		if(miles.equippedTrack>0)
 		{
