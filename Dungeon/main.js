@@ -421,7 +421,7 @@ if(checkMobile())
 	MobileMode=true;
 }else if(checkXbox())
 {
-	bConsoleBox.log("Xbox Version 26");
+	bConsoleBox.log("Xbox Version 28");
 	MobileMode=false;
 	Xbox=true;
 }else {
@@ -3239,7 +3239,7 @@ function mainUpdate()
 					miles.holding=false;
 				}
 			}
-			if(((Xbox) && (controller.pad) && (controller.buttons[1].check())) || ((!Xbox) && (controller.buttons[SNESKey.B].check())))
+			if(((Xbox) && (controller.pad) && (controller.Xcheck(1))) || ((!Xbox) && (controller.buttons[SNESKey.B].check())))
 			{
 				//console.log("b!");
 				if(miles.swiming)

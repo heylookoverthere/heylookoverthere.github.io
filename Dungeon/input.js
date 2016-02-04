@@ -46,9 +46,9 @@ function aPadButton(k,pad) {  //represents a keyboard button
 		if(Xbox)
 		{
 			//bConsoleBox.log(this.key);
-			bConsoleBox.log(this.parentPad.buttons[this.key].getPressed());
+			bConsoleBox.log(this.parentPad.buttons[this.key].value);
 			
-			if ((this.parentPad.buttons[this.key].getPressed()) && (true))
+			if ((this.parentPad.buttons[this.key].pressed) && (true))
 			{ 
 				return true; 
 			}else
@@ -144,6 +144,17 @@ function virtualGamePad()
 		}
 	
 };
+
+virtualGamePad.prototype.Xcheck=function(k)
+{
+	if ((this.pad.buttons[k].pressed) && (true))
+	{ 
+		return true; 
+	}else
+	{
+		return false;
+	}
+}
 
 virtualGamePad.prototype.switchToKeyboard=function()
 {
