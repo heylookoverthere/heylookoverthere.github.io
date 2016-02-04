@@ -87,7 +87,7 @@ function handleTouchEnd(evt) {
 	//evt.preventDefault();   
 	xDown = evt.touches[0].clientX;                                      
     yDown = evt.touches[0].clientY;  	
-	var now=new Date.getTime();
+	var now=new Date().getTime();
 	if(now-downSince>OPTIONS.HoldTime)
 	{
 		//held
@@ -2532,7 +2532,7 @@ function mainDraw() {
 	if(!milesFree)
 	{
 		canvas.save();
-		var popl=new Date.getTime();
+		var popl=new Date().getTime();
 		canvas.fillStyle =  "#DCDCDC";
     	canvas.globalAlpha=1;
 		canvas.font = "24pt Calibri";
@@ -3180,7 +3180,7 @@ function mainUpdate()
 	}
 	if(!milesFree)
 	{
-		var popl=new Date.getTime();
+		var popl=new Date().getTime();
 		if(LockTime-popl>10000)
 		{
 			milesFree=true;
