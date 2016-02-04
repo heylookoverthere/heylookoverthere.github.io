@@ -416,7 +416,6 @@ bConsoleBox=new textbox();
 bConsoleBox.width=300;
 bConsoleBox.height=CANVAS_HEIGHT-12;
 bConsoleBox.exists=true;
-bConsoleBox.exists=true;
 bConsoleBox.log("Loading...");
 if(checkMobile())
 {
@@ -3310,7 +3309,7 @@ function mainUpdate()
 			}*/
 			if ($("#dialogBox").length > 0) 
 			{
-				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))||(controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.A].check())))
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))||(controller.Xcheck(0))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.A].check())))
 				{
 					$("#dialogBox").remove();
 					if(gameOver)
@@ -3324,7 +3323,7 @@ function mainUpdate()
 		{
 			if(buttons[i].hasFocus)
 			{
-				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))||(controller.pad.buttons[0].pressed)) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))||(controller.Xcheck(0))) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
 				{
 					if((!buttons[i].unClickable))
 					{
@@ -3362,7 +3361,7 @@ function mainUpdate()
 			if(miles.holding)
 			{
 				//todo: why does A have to be held?
-				if(((Xbox) && (controller.pad) && (controller.pad.buttons[1].pressed)) || ((!Xbox) && (controller.pad)&& ((controller.buttons[SNESKey.B].check()) ||(controller.buttons[SNESKey.A].checkDown()))))
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(0)) || (controller.Xcheck(1))) || ((!Xbox) && (controller.pad)&& ((controller.buttons[SNESKey.B].check()) ||(controller.buttons[SNESKey.A].checkDown()))))
 				{
 					miles.holding=false;
 				}
