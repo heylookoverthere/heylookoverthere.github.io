@@ -3309,7 +3309,7 @@ function mainUpdate()
 			}*/
 			if ($("#dialogBox").length > 0) 
 			{
-				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.A].check())))
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))||(controller.Xcheck(0))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.A].check())))
 				{
 					$("#dialogBox").remove();
 					if(gameOver)
@@ -3323,7 +3323,7 @@ function mainUpdate()
 		{
 			if(buttons[i].hasFocus)
 			{
-				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
+				if(((Xbox) && (controller.pad) && (controller.Xcheck(1))||(controller.Xcheck(0))) || ((!Xbox) && (controller.buttons[SNESKey.A].check())))
 				{
 					if((!buttons[i].unClickable))
 					{
@@ -3386,6 +3386,9 @@ function mainUpdate()
 				{
 					miles.poking=false;
 				}
+			}else if (miles.swimming)
+			{
+				miles.poking=false;
 			}
 			if(((Xbox) && (controller.pad) && (controller.Xcheck(2))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.Y].check())))
 			{
