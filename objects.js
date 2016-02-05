@@ -63,6 +63,7 @@ objectName[207]="Brick";
 objectName[208]="Keyhole brick";
 objectName[209]="Rock";
 objectName[210]="Crystal";
+objectName[211]="Crystal2";
 
 objectName[300]="Small key";
 objectName[301]="Triforce";
@@ -145,6 +146,7 @@ ObjectID.Brick=207;
 ObjectID.KeyBrick=208;
 ObjectID.Rock=209;
 ObjectID.Crystal=210;
+ObjectID.Crystal2=211;
 
 //pickups
 ObjectID.Key=300;
@@ -192,7 +194,7 @@ function object(oroom) //not a tile, not an enemy
 	this.blockArrows=false;
 	this.arrowsActivate=false;
 	this.boomarangActivate=false;
-	this.swordActivate=false;
+	this.swordActivate=function(){return false;};
 	this.hookable=false;
 	this.hidden=false;
 	this.active=false;
@@ -983,6 +985,22 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("crystal"));
 		this.name="strange crystal";
 		this.playerActivate=this.activate;
+	}else if (this.type==ObjectID.Crystal2) {
+		this.sprites=new Array();
+		this.alwaysWalkable=false;
+		this.playerUsable=false;
+		this.swordActivate=function() {
+			return (miles.reallyDashing);
+		}
+		this.blockArrows=true;
+		this.sprites.push(Sprite("crystal2"));
+		this.name="stranger crystal";
+		this.activate=function()
+		{
+			this.exists=false
+			playSound("shatter");
+		}
+		//this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.KeyBrick) {
 		this.sprites=new Array();
 		this.alwaysWalkable=false;
@@ -1212,7 +1230,7 @@ object.prototype.setup=function(id,par)
 	}else if (this.type==ObjectID.Bush) {
 		this.sprites=new Array();
 		this.bombable=true;
-		this.swordActivate=true;
+		this.swordActivate=function(){return true;};
 		this.sprites.push(Sprite("bush"));
 		this.sprites.push(Sprite("bushcut")); //todo!
 		this.name="bush";
@@ -1555,7 +1573,7 @@ object.prototype.setup=function(id,par)
 		this.blockArrows=true;
 		this.arrowsActivate=true;
 		this.boomarangActivate=true;
-		this.swordActivate=true;
+		this.swordActivate=function(){return true;};
 		this.cooldown=400;
 		this.activate=function()
 		{
@@ -1585,9 +1603,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Red orb";
 		this.bombable=true;
 		this.blockArrows=true;
-		this.arrowsActivate=true;
+		this.swordActivate=function(){return true;};
 		this.boomarangActivate=true;
-		this.swordActivate=true;
+		this.swordActivate=function(){return true;};
 		this.cooldown=400;
 		this.activate=function()
 		{
@@ -1658,6 +1676,7 @@ object.prototype.setup=function(id,par)
 			miles.holding=this.sprites[0];
 			this.exists=false;
 			miles.has[hasID.Feather]=true;
+			miles.giveItem(this,1);
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Mirror) {
@@ -1875,8 +1894,9 @@ object.prototype.setup=function(id,par)
 			if(!miles.has[hasID.Boots])
 			{
 				playSound("itemfanfare");
-				bConsoleBox.log("You found some boots! they're totally useless for now!");
+				bConsoleBox.log("You found some boots! Use them to dash!");
 				miles.holding=this.sprites[0];
+				miles.giveItem(this,1);
 			}else
 			{
 				playSound("item");
@@ -2425,7 +2445,10 @@ object.prototype.drawTop=function(can,cam,xOffh,yOffh)
 }
 object.prototype.draw=function(can,cam,xOffh,yOffh)
 {
-	
+	if((this.type==ObjectID.Bush) &&(!this.on) && (this.room.tiles[this.x][this.y].data==DungeonTileType.Hole))
+	{
+		return;
+	}
 	if(this.timed)
 	{
 		var knuc=new Date().getTime();
@@ -2447,6 +2470,7 @@ object.prototype.draw=function(can,cam,xOffh,yOffh)
 			return;
 		}
 	}
+	if((this.type==ObjectID.Bush) &&(!this.on) && (this.room.tiles[this.x][this.y].data==DungeonTileType.Hole))
 	if(!xOffh) {xOffh=0;}
 	if(!yOffh) {yOffh=0;}
 	this.sprites[this.curSprite].draw(can, this.x*32+xOffh, this.y*32+yOffh);

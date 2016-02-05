@@ -16,6 +16,7 @@ var milesFree=true;
 var LockTime=0;
 var numSouns=0;
 var curVersion="0.6a";
+var footcloudsprite=Sprite("footcloud");
 var explosions=new Array();
 var dugsprite=Sprite("shovelhole");
 var divesprite=Sprite("dive");
@@ -23,6 +24,13 @@ var xboxxsprite=Sprite("xboxx");
 var xboxysprite=Sprite("xboxy");
 var xboxasprite=Sprite("xboxa");
 var xboxbsprite=Sprite("xboxb");
+var	xboxlbsprite=Sprite("xboxlb");
+var	xboxrbsprite=Sprite("xboxrb");
+var	xboxltsprite=Sprite("xboxlt");
+var	xboxrtsprite=Sprite("xboxrt");
+var	xboxlcsprite=Sprite("xboxlc");
+var	xboxrcsprite=Sprite("xboxrc");
+var	xboxdpadupsprite=Sprite("xboxdpadup");
 
 var SNESKey={}
 SNESKey.A=1;
@@ -292,7 +300,7 @@ objectSprites[207]=Sprite("brick2");
 objectSprites[208]=Sprite("keybrick");
 objectSprites[209]=Sprite("rock");
 objectSprites[210]=Sprite("crystal");
-
+objectSprites[211]=Sprite("crystal2");
 //pickups
 objectSprites[300]=Sprite("key");
 objectSprites[301]=Sprite("triforce");

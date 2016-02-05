@@ -337,6 +337,12 @@ function entity(croom)
 	this.AI=0;
 	this.x=4;
 	this.y=3;
+	this.shaking=false;
+	this.shakingSince=0;
+	this.shakingDur=150;
+	this.shakingRight=true;
+	this.shakeTrack=0;
+	this.baseSpeed=4;
 	this.speed=4;
 	this.team=0;
 	this.swordDamage=10;
@@ -349,6 +355,16 @@ function entity(croom)
 	this.xSmall=0;
 	this.ySmall=0;
 	this.lastX=4;
+	this.dashing=false;
+	this.reallyDashing=false;
+	this.dashDelay=1000;
+	this.dashStart=0;
+	this.dashSpeed=8;
+	this.jumping=false;
+	this.jumpTime=300;
+	this.jumpStart=0;
+	this.jumpPeaked=false;
+	this.jumpSpeed=2;
 	this.maxBombs=10;
 	this.maxArrows=20;
 	this.swimming=false;
@@ -492,6 +508,13 @@ function entity(croom)
 		playSound("playerdying");
 		//this.exists=false;
 		this.alive=false;
+	}
+	
+	this.shake=function()
+	{
+		this.shaking=true;
+		this.shakingSince=new Date().getTime();
+		this.shakingRight=true;
 	}
 	
 	this.dive=function()
@@ -695,8 +718,16 @@ function entity(croom)
 					this.inventoryAmounts[i]-=amt;
 					if(this.inventoryAmounts[i]<1)
 					{
-						if(this.equippedTrack==i) {this.equippedTrack=0;}
-						if(this.equippedTrack2==i) {this.equippedTrack2=0;}
+						if(this.equippedTrack==i) 
+						{
+							this.cycleEquipped(true);
+							//this.equippedTrack=0;
+						}
+						if(this.equippedTrack2==i) 
+						{
+							this.cycleEquipped(true,true);
+							//this.equippedTrack2=0;
+						}
 						this.inventory.splice(i,1);
 						this.inventoryAmounts.splice(i,1);
 						i--;
@@ -714,11 +745,13 @@ function entity(croom)
 		}
 		if((this.equippedTrack<0) || (this.equippedTrack>this.inventory.length-1)) 
 		{
-			this.equippedTrack=0;
+			this.cycleEquipped(true);
+			//this.equippedTrack=0;
 		}
 		if((this.equippedTrack2<0) || (this.equippedTrack2>this.inventory.length-1)) 
 		{
-			this.equippedTrack2=0;
+			this.cycleEquipped(true,true);
+			//this.equippedTrack2=0;
 		}
 
 	}
@@ -726,7 +759,7 @@ function entity(croom)
 	this.incMove=function(dir)
 	{
 		if(!this.alive) {return false;}
-		if(this.fallingY>0) {return false;}
+		if((this.fallingY>0) && (!this.jumping)) {return false;}
 		if(!dir){dir=this.dir;}
 		//if(!this.canMove(dir)) { return false;}
 		if(dir==2)
@@ -738,11 +771,14 @@ function entity(croom)
 				{
 					this.ySmall=-SMALL_BREAK;
 					this.tryMove(dir);
+					return true;
 				}else
 				{
 					this.ySmall=SMALL_BREAK;
+					return false;
 				}
-			}				
+			}
+			return true;
 		}else if(dir==0)
 		{
 			this.ySmall-=this.speed;
@@ -751,12 +787,15 @@ function entity(croom)
 				if(this.canMove(dir))
 				{
 					this.ySmall=SMALL_BREAK;
-					this.tryMove(dir)
+					this.tryMove(dir);
+					return true;
 				}else
 				{
 					this.ySmall=-SMALL_BREAK;
+					return false;
 				}
-			}				
+			}
+			return true;			
 		}else if(dir==1)
 		{
 			this.xSmall+=this.speed;
@@ -766,11 +805,14 @@ function entity(croom)
 				{
 					this.xSmall=-SMALL_BREAK;
 					this.tryMove(dir);
+					return true;
 				}else
 				{
 					this.xSmall=SMALL_BREAK;
+					return false;
 				}
-			}				
+			}		
+			return true;
 		}else if(dir==3)
 		{
 			this.xSmall-=this.speed;
@@ -780,11 +822,14 @@ function entity(croom)
 				{
 					this.xSmall=SMALL_BREAK;
 					this.tryMove(dir)
+					return true;
 				}else
 				{
 					this.xSmall=-SMALL_BREAK;
+					return false;
 				}
-			}				
+			}	
+			return true;			
 		}
 	}
 	
@@ -914,6 +959,14 @@ function entity(croom)
 		return true; 
 	}
 	
+	this.dash=function()
+	{
+		if(this.dashing) {return false;}
+		this.dashing=true;
+		this.dashStart=new Date().getTime();
+		
+	}
+	
 	this.dig=function() //fuck you, it's dig now. It shoulda been dig to begin with! the verb of shovel is dig!
 	{
 		
@@ -970,6 +1023,10 @@ function entity(croom)
 		{
 			this.placeBomb();
 			this.removeItem(ObjectID.Bomb,1);
+		}else if(this.getEquipped(secondary)==ObjectID.Feather)
+		{
+			this.jump();
+
 		}else if(this.getEquipped(secondary)==ObjectID.Shovel)
 		{
 			if(this.dig())
@@ -1021,16 +1078,16 @@ function entity(croom)
 				this.tossBoomarang(0);
 			}
 			
-		}else if(this.getEquipped(secondary)==ObjectID.Flippers)
+		}else if(this.getEquipped(secondary)==ObjectID.Boots)
 		{
-			/*if(this.dive())
+			if(this.dashing)
 			{
-			
+				this.dashing=false;
 			}else
 			{
-				bConsoleBox.log("You can't dive here. I really shouldn't have had to explain that to you.","yellow");
-			}*/
-
+				this.dash();
+			}
+			
 		}else if(this.getEquipped(secondary)==ObjectID.Mirror)
 		{
 			playSound("warp");
@@ -1101,6 +1158,17 @@ function entity(croom)
 		}
 	}
 	
+	this.jump=function()
+	{
+		if(this.jumping) {return false;}
+		//do we even need dir? no jumping is just a status. 
+		playSound("jump");
+		this.jumpStart=new Date().getTime(); 
+		this.fallingY=1;
+		this.jumping=true;
+		this.jumpPeaked=false;
+	}
+	
 	this.cycleEquipped=function(up,secondary)
 	{
 		if(secondary)
@@ -1121,6 +1189,13 @@ function entity(croom)
 					this.equippedTrack2=mup.length-1;//0;
 				}
 			}
+			if(this.equippedTrack2>0)
+			{
+				if(this.equippedTrack2==this.equippedTrack)
+				{
+					this.cycleEquipped(true,true);
+				}
+			}
 		}else
 		{
 		
@@ -1138,6 +1213,13 @@ function entity(croom)
 				if(this.equippedTrack<0)
 				{
 					this.equippedTrack=mup.length-1;//0;
+				}
+			}
+			if(this.equippedTrack>0)
+			{
+				if(this.equippedTrack==this.equippedTrack2)
+				{
+					this.cycleEquipped(true,false);
 				}
 			}
 		}
@@ -1276,7 +1358,6 @@ function entity(croom)
 		{
 			return false;
 		}
-		playSound("swordbeam");
 		if(this.dir==0)
 		{
 			ang=90;
@@ -1290,8 +1371,7 @@ function entity(croom)
 		{
 			ang=0;
 		}
-		//playSound("shoot");
-		console.log("shooting");
+		playSound("swordbeam");
 		var poot=new projectile(this);
 		poot.exists=true; 
 		poot.angle=ang;
@@ -1329,7 +1409,7 @@ function entity(croom)
 		{
 			//if((this.deathAniTrack<2) || (this.isPlayer))//hack
 			//{
-				this.deadSprites[this.deathAniTrack].draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset-14-this.fallingY*2)
+				this.deadSprites[this.deathAniTrack].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2)
 			//}else
 			//{
 			//	this.deadSprites[this.deathAniTrack].draw(can,this.x*32+xOffset-16,this.y*32+yOffset+8-this.fallingY*2)
@@ -1337,8 +1417,8 @@ function entity(croom)
 			return;
 		}else if((this.isPlayer) && (this.holding))
 		{
-			this.sprites[4].draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
-			this.holding.draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset-14-16-this.fallingY*2);
+			this.sprites[4].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+			this.holding.draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-16-this.fallingY*2);
 		}else if((this.isPlayer) && (this.swinging))
 		{
 			var knuckx=-48;
@@ -1365,20 +1445,20 @@ function entity(croom)
 			}
 			if((this.dir==0)&&(this.has[hasID.Shield]))
 			{
-				this.shieldSprites[1].draw(can,this.x*32+this.xSmall+xOffset+shX,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
+				this.shieldSprites[1].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
 			}else if((this.dir==1) &&(this.has[hasID.Shield]))
 			{
-				this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset+shX,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
+				this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
 			}
-			this.swingSprites[this.dir][this.swingtrack].draw(can,this.x*32+this.xSmall+xOffset+knuckx,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky);
+			this.swingSprites[this.dir][this.swingtrack].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky);
 			if((this.dir!=0) && (this.dir!=1) &&(this.has[hasID.Shield]))
 			{
 				if(this.dir==2)
 				{
-					this.shieldSprites[3].draw(can,this.x*32+this.xSmall+xOffset+shX,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
+					this.shieldSprites[3].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
 				}else if(this.dir==3)
 				{
-					this.shieldSprites[2].draw(can,this.x*32+this.xSmall+xOffset+shX,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
+					this.shieldSprites[2].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
 				}
 			}
 		}else if((this.isPlayer) && (this.poking))
@@ -1407,20 +1487,20 @@ function entity(croom)
 			}
 			if((this.dir==0)&&(this.has[hasID.Shield]))
 			{
-				this.shieldSprites[1].draw(can,this.x*32+this.xSmall+xOffset+shX,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
+				this.shieldSprites[1].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
 			}else if((this.dir==1) &&(this.has[hasID.Shield]))
 			{
-				this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset+shX,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
+				this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
 			}
-			this.pokeSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+knuckx,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky);
+			this.pokeSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky);
 			if((this.dir!=0) && (this.dir!=1) &&(this.has[hasID.Shield]))
 			{
 				if(this.dir==2)
 				{
-					this.shieldSprites[3].draw(can,this.x*32+this.xSmall+xOffset+shX,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
+					this.shieldSprites[3].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
 				}else if(this.dir==3)
 				{
-					this.shieldSprites[2].draw(can,this.x*32+this.xSmall+xOffset+shX,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
+					this.shieldSprites[2].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
 				}
 			}
 		}else
@@ -1431,16 +1511,16 @@ function entity(croom)
 				{
 					var jerry=can.globalAlpha;
 					can.globalAlpha=0.75;
-					divesprite.draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+					divesprite.draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
 					can.globalAlpha=jerry; 
 				}else if(this.swimming)
 				{
-					this.swimSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+					this.swimSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
 				}else
 				{
 					if((this.has[hasID.Shield]) && (this.dir==0))
 					{
-						this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+						this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
 					}
 					
 				
@@ -1448,24 +1528,24 @@ function entity(croom)
 					{
 							if((this.dir==0) || (this.dir==1))
 							{
-								this.actingSprites[this.dir][this.action].draw(can,this.x*32+this.xSmall+xOffset-12,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+								this.actingSprites[this.dir][this.action].draw(can,this.x*32+this.xSmall+xOffset-12+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
 							}else
 							{
-								this.actingSprites[this.dir][this.action].draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+								this.actingSprites[this.dir][this.action].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
 							}
 					}else
 					{
-						this.sprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+						this.sprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
 					}
 					
 					if((this.has[hasID.Shield]) && (this.dir>0))
 					{
 						if(this.dir==3)
 						{
-							this.shieldSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset-5,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+							this.shieldSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset-5+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
 						}else
 						{
-							this.shieldSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+							this.shieldSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
 						}
 					
 					}
@@ -1476,20 +1556,28 @@ function entity(croom)
 			{
 				if(this.fallingY>100)
 				{
-					shadowSprite[0].draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset);
+					shadowSprite[0].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset);
 				}else if(this.fallingY>50)
 				{
-					shadowSprite[1].draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset);
+					shadowSprite[1].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset);
 				}else 
 				{
-					shadowSprite[2].draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset);
+					shadowSprite[2].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset);
 				}
 			}
 		}
 		
 		if(this.bunnyHead)
 		{
-			bunnyheadsprite[this.dir].draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset-18-this.fallingY*2);
+			bunnyheadsprite[this.dir].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-18-this.fallingY*2);
+		}
+		
+		if(this.dashing)
+		{
+			/*
+			can.globalAlpha=0.50;
+			footcloudsprite.draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset+10-this.fallingY*2);
+			can.globalAlpha=1;*/
 		}
 		
 		for(var i=0;i<this.activebombs.length;i++)
@@ -1642,6 +1730,98 @@ function entity(croom)
 				i--;
 			}
 		}
+		if(this.shaking)
+		{
+			var plopl=new Date().getTime();
+			if(plopl-this.shakingSince>this.shakingDur)
+			{
+				this.shaking=false;
+				this.shakeTrack=0;
+			}else
+			{
+				if(this.shakingRight)
+				{
+					this.shakeTrack+=2;
+					if(this.shakeTrack>4)
+					{
+						this.shakingRight=false;
+						this.shakeTrack=0;
+					}
+				}else
+				{
+					this.shakeTrack-=2;
+					if(this.shakeTrack<-4)
+					{
+						this.shakingRight=true;
+						this.shakeTrack=0;
+					}
+				}
+			}
+		}
+		if((this.swimming) || (this.holding))
+		{
+			this.dashing=false;
+			this.reallyDashing=false;
+		}
+		if(this.dashing)
+		{
+			
+			var plopl=new Date().getTime();
+			if(plopl-this.dashStart>this.dashDelay)
+			{
+				this.reallyDashing=true;
+				this.speed=this.dashSpeed;
+				if(this.incMove())
+				{
+					playSound("dash");
+					var angrand=Math.random()*12;
+					angrand-=4;
+					var xrand=Math.random()*12;
+					xrand-=4;
+					var poto =monsta.shootTextured(this.x*32+this.xSmall+xOffset+xrand+6,this.y*32+this.ySmall+yOffset+22-this.fallingY*2,270+angrand,0.5,"footcloud");//sprite);
+					poto.durTime=200;
+					poto.alpha=0.25;
+					poto.gravity=false;
+				}else
+				{
+					this.dashing=false;
+					this.reallyDashing=false;
+					//bounce back? 
+					playSound("rebound");
+					this.shake();
+				}
+				
+			}else
+			{
+				//rev up sound, effects
+				playSound("dash");
+				var angrand=Math.random()*12;
+				angrand-=4;
+				var xrand=Math.random()*12;
+				xrand-=4;
+				var poto =monsta.shootTextured(this.x*32+this.xSmall+xOffset+xrand+6,this.y*32+this.ySmall+yOffset+22-this.fallingY*2,270+angrand,2.95,"footcloud");//sprite);
+				poto.durTime=200;
+				poto.alpha=0.25;
+			}	
+		
+		}else
+		{
+			this.speed=this.baseSpeed;
+		}
+		if(this.jumping)
+		{
+			if(!this.jumpPeaked)
+			{
+				this.fallingY+=this.jumpSpeed;
+				var sunt=new Date().getTime();
+				if(sunt-this.jumpStart>this.jumpTime)
+				{
+					this.jumpPeaked=true; 
+					this.falling=true;
+				}
+			}
+		}
+		
 		//if((this.x!=this.lastX) || (this.y!=this.lastY))
 		if(this.isPlayer) 
 		{
@@ -1804,7 +1984,7 @@ function entity(croom)
 				{
 					if((this.room.objects[i].x==hurtx) && (this.room.objects[i].y==hurty))
 					{
-						if(this.room.objects[i].swordActivate) 
+						if(this.room.objects[i].swordActivate()) 
 						{
 							this.room.objects[i].activate();
 						}
@@ -1853,7 +2033,7 @@ function entity(croom)
 				{
 					if((this.room.objects[i].x==hurtx) && (this.room.objects[i].y==hurty))
 					{
-						if(this.room.objects[i].swordActivate) 
+						if(this.room.objects[i].swordActivate()) 
 						{
 							this.room.objects[i].activate();
 						}
@@ -2019,6 +2199,7 @@ function entity(croom)
 		}
 		if(this.fallingY<1)
 		{
+			this.jumping=false;
 			if((this.room.tiles[this.x][this.y].data==DungeonTileType.Unstable) && (OPTIONS.UnsafeWalking))
 			{
 				
@@ -2038,7 +2219,7 @@ function entity(croom)
 					//this.lastX=this.x;
 					//this.lastY=this.y;
 				}
-			}else if((this.room.tiles[this.x][this.y].data==DungeonTileType.Hole) &&(!this.falling))
+			}else if((this.room.tiles[this.x][this.y].data==DungeonTileType.Hole) &&(!this.falling) &&(!this.jumping))
 			{
 				
 				if(this.isPlayer)

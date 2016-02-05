@@ -846,6 +846,7 @@ timy.doThings=function()
 }
 
 var touchshiftkey=new akey("shift");
+var controlskey= new akey("j");
 
 var SNESAKey=new akey("down");
 var SNESXKey=new akey("left");
@@ -1710,6 +1711,9 @@ FPS=countFPS();
 	}else if(mode==4){
 		inventoryUpdate();
 		inventoryDraw();
+	}else if(mode==5){
+		controlsUpdate();
+		controlsDraw();
 	}
 	//canvas.beginPath();
 	//osCanvas.drawImage(canvasElement,0,0);
@@ -1782,6 +1786,7 @@ function inventoryUpdate()
 		mode=1;
 		playSound("unpause");
 	}
+	
 	if((inventorykey.check()) || ((Xbox) && (controller.Xcheck(11))) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
 	{
 		mode=1;
@@ -1960,6 +1965,113 @@ function inventoryDraw() {
 
 
 	
+}
+function controlsUpdate()
+{
+	controller.update();
+	if((escapekey.check()))
+	{
+		mode=1;
+		playSound("unpause");
+	}
+
+	if((controlskey.check()) || ((Xbox) && (controller.Xcheck(15))) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
+	{
+		mode=1;
+		playSound("unpause");
+	}
+	if(miles.has[hasID.Map])
+	{
+		if(((Xbox) && (controller.pad) && (controller.Xcheck(10))) || ((!Xbox) && (controller.buttons[SNESKey.Select].check())))
+		{
+			mode=2;
+		}
+	}
+	if(upkey.check())
+	{
+		
+	}
+	if(downkey.check())
+	{
+		
+	}
+		
+}
+function controlsDraw() {
+	//SHOULDN'T
+	canvas.fillStyle = "black";
+	canvas.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+
+	curDungeon.draw(canvas,camera);
+	var xFset=160;
+	var yFset=35;
+	canvas.fillStyle="white";
+	canvas.fillRect(xFset-8,yFset-28,558,754);
+	canvas.fillStyle="blue";
+	canvas.fillRect(xFset-4,yFset-24,548,744);
+	canvas.font = "20pt Calibri";
+	canvas.fillStyle="white";
+	canvas.fillText("Controls: ",xFset+150,yFset+12-6);
+	
+
+	if(Xbox)
+	{
+		canvas.fillText("Sword: ",xFset+60,yFset+64-6);
+		canvas.fillText("Item1: ",xFset+60,yFset+100-6);
+		canvas.fillText("Item2: ",xFset+60,yFset+138-6);
+		canvas.fillText("Talk: ",xFset+60,yFset+174-6);
+		canvas.fillText("Change item1: ",xFset+60,yFset+208-6);
+		canvas.fillText("Change item2: ",xFset+60,yFset+242-6);
+		canvas.fillText("Aim: ",xFset+60,yFset+272-6);
+		//canvas.fillText("???: ",xFset+60,yFset+306-6);
+		canvas.fillText("Map: ",xFset+60,yFset+306-6);
+		canvas.fillText("Inventory: ",xFset+60,yFset+340-6);
+		canvas.fillText("Toggle Console: ",xFset+60,yFset+396-6);
+		xboxasprite.draw(canvas,xFset+360,yFset+28);
+		xboxxsprite.draw(canvas,xFset+360,yFset+66);
+		xboxysprite.draw(canvas,xFset+360,yFset+102);
+		xboxbsprite.draw(canvas,xFset+360,yFset+138);
+		xboxrtsprite.draw(canvas,xFset+360,yFset+174);
+		xboxltsprite.draw(canvas,xFset+360,yFset+208);
+		xboxlbsprite.draw(canvas,xFset+360,yFset+236);
+		xboxlcsprite.draw(canvas,xFset+360,yFset+266);
+		xboxrcsprite.draw(canvas,xFset+360,yFset+306);
+		xboxdpadupsprite.draw(canvas,xFset+360,yFset+364);
+	}else if(controller.pad)
+	{
+		canvas.fillText("Sword: ",xFset+60,yFset+64-6);
+		canvas.fillText("Item1: ",xFset+60,yFset+100-6);
+		canvas.fillText("Item2: ",xFset+60,yFset+138-6);
+		canvas.fillText("Talk: ",xFset+60,yFset+174-6);
+		canvas.fillText("Change item1: ",xFset+60,yFset+208-6);
+		canvas.fillText("Change item2: ",xFset+60,yFset+242-6);
+		canvas.fillText("Aim: ",xFset+60,yFset+272-6);
+		//canvas.fillText("???: ",xFset+60,yFset+306-6);
+		canvas.fillText("Map: ",xFset+60,yFset+306-6);
+		canvas.fillText("Inventory: ",xFset+60,yFset+340-6);
+		//canvas.fillText("Toggle Console: ",xFset+60,yFset+406-6);
+		xboxbsprite.draw(canvas,xFset+360,yFset+28);
+		xboxxsprite.draw(canvas,xFset+360,yFset+66);
+		xboxysprite.draw(canvas,xFset+360,yFset+102);
+		xboxasprite.draw(canvas,xFset+360,yFset+138);
+		xboxrbsprite.draw(canvas,xFset+360,yFset+174);
+		xboxrbsprite.draw(canvas,xFset+360,yFset+208);
+		xboxxsprite.draw(canvas,xFset+415,yFset+172);
+		xboxysprite.draw(canvas,xFset+415,yFset+206);
+		canvas.fillText("+",xFset+400,yFset+202);
+		canvas.fillText("+",xFset+400,yFset+230);
+		xboxlbsprite.draw(canvas,xFset+360,yFset+236);
+		canvas.fillText("Select",xFset+375,yFset+300);
+		canvas.fillText("Start",xFset+375,yFset+334);
+		//xboxlbsprite.draw(canvas,xFset+360,yFset+266);
+		//xboxdpadupsprite.draw(canvas,xFset+360,yFset+374);
+	}else //keyboard
+	{
+	
+	}
+
+	
+
 }
 var bannedchars=new Array();
 bannedchars.push("/");
@@ -2242,7 +2354,7 @@ function mainMenuUpdate()
 		if(mmcur==0)
 		{
 			startGame(false);
-		}else if(mmcur==1)
+		}else if((mmcur==1) && (existingDungeons.length>0))
 		{
 			startGame(true);
 		}else if(mmcur==2)
@@ -2420,7 +2532,7 @@ function mainDraw() {
 	}
 	if(!gamestart) {return;}
 		
-	monsta.draw(canvas,camera);
+
 
 	if(true)//(!stayDay)
 	{
@@ -2610,6 +2722,7 @@ function mainDraw() {
 	{
 		curDungeon.curRoom().fires[i].draw(canvas,camera);
 	}
+	monsta.draw(canvas,camera);
 	curDungeon.curRoom().darken(canvas,miles.x,miles.y);
 	drawGUI(canvas);
 	for (var h=0;h<buttons.length;h++)
@@ -2685,6 +2798,19 @@ function mainUpdate()
 	if(optionskey.check())
 	{
 		mode=3;
+	}
+	if((Xbox) && (controller.pad) && (controller.Xcheck(13)))
+	{
+		playSound("pause");
+		mode=5;
+	}else if(controller.pad)
+	{
+	 //todo, button for this?
+	}
+	if(controlskey.check())
+	{
+		playSound("pause");
+		mode=5;
 	}
 	if((inventorykey.check())  ||((Xbox) && (controller.pad) && (controller.Xcheck(11))) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.Start].check())))
 	{
@@ -3602,7 +3728,7 @@ function mainUpdate()
 				//console.log("L trigger")
 				miles.cycleEquipped(true,false);
 			}
-			if(!miles.holding)
+			if((!miles.holding) && (!miles.dashing))
 			{
 				if(controller.checkUp())
 				{
@@ -3737,7 +3863,7 @@ function mainUpdate()
 				//console.log("L")
 				miles.cycleEquipped(true,true);
 			}
-			if(!miles.holding)
+			if((!miles.holding) && (!miles.dashing));
 			{
 				if(SNESUpKey.checkDown())
 				{
