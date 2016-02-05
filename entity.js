@@ -964,6 +964,8 @@ function entity(croom)
 	this.useItem=function(secondary)
 	{
 		if(this.swimming) {return false;}
+		if(this.holding) {return false;}
+
 		if(this.getEquipped(secondary)==ObjectID.Bomb)
 		{
 			this.placeBomb();
@@ -1180,6 +1182,10 @@ function entity(croom)
 	}
 	this.tossBoomarang=function(ang)
 	{
+		if((this.swimming) ||(this.holding))
+		{
+			return false;
+		}
 		if(!this.busyrang)
 		{
 			playSound("boomerang");
@@ -1266,6 +1272,10 @@ function entity(croom)
 	
 	this.shootBeam=function()
 	{
+		if((this.swimming) ||(this.holding))
+		{
+			return false;
+		}
 		playSound("swordbeam");
 		if(this.dir==0)
 		{
