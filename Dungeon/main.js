@@ -814,7 +814,8 @@ timy.doThings=function()
 	
 }
 buttons.push(timy);
-
+if(!Xbox)
+{
 var timy=new button();
 timy.text="North";
 timy.x=200-buttonX;
@@ -1019,6 +1020,7 @@ timy.doThings=function()
 	}
 }
 buttons.push(timy);
+}
 //lights.push(new light(7092,3748,14));
 //lights.push(new light(7208,3777,14));
 
@@ -1548,9 +1550,32 @@ function drawGUI(can)
 			can.save();
 			can.font = "30pt Calibri";
 			can.fillStyle="white";
-			can.fillText("->",760,90);
-			can.fillText("<-",760,140);
+			can.fillText(">",780,90);
+			can.fillText("<",780,140);
+			can.fillText("-",777,89);
+			can.fillText("-",789,139);
 			can.restore();
+			if(miles.has[hasID.Sword])
+			{
+				can.save();
+				can.font = "30pt Calibri";
+				can.fillStyle="white";
+		
+				can.fillText("^",782,30);
+				can.fillText("|",783,34);
+				can.restore();
+				can.fillStyle="white";
+				can.fillRect(808,6,40,40);
+				can.fillStyle="black";
+				can.fillRect(812,9,32,32);
+				if(miles.has[hasID.MasterSword])
+				{
+					objectSprites[ObjectID.MasterSword].draw(can,812,8);
+				}else
+				{
+					objectSprites[ObjectID.Sword].draw(can,812,8);
+				}
+			}
 		}else if (Xbox)
 		{
 			xboxxsprite.draw(can,760,60);
@@ -3499,7 +3524,7 @@ function mainUpdate()
 				}
 			}
 		}
-	}else //keyboard
+	}else if(!editMode)//keyboard
 	{
 		if ($("#dialogBox").length > 0) 
 		{
