@@ -2133,7 +2133,10 @@ object.prototype.setup=function(id,par)
 		this.activate=function()
 		{
 				
-			bConsoleBox.log("You found a bomb.");
+			if(OPTIONS.OverLog)
+			{
+				bCosoleBox.log("You found a bomb.");
+			}
 			playSound("item");
 			this.exists=false;
 			var shinex=new object();
@@ -2159,7 +2162,10 @@ object.prototype.setup=function(id,par)
 		this.activate=function()
 		{
 				
-			bConsoleBox.log("You found an Arrow.");
+			if(OPTIONS.OverLog)
+			{
+				bConsoleBox.log("You found an Arrow.");
+			}
 			playSound("item");
 			this.exists=false;
 			var shinex=new object();
@@ -2204,8 +2210,10 @@ object.prototype.setup=function(id,par)
 		}
 		this.activate=function()
 		{
-				
-			bConsoleBox.log("You found a rupee.");
+			if(OPTIONS.OverLog)
+			{
+				bConsoleBox.log("You found a rupee.");
+			}
 			playSound("coin");
 			this.exists=false;
 			miles.money+=1;
@@ -2245,7 +2253,10 @@ object.prototype.setup=function(id,par)
 		this.activate=function()
 		{
 				
-			bConsoleBox.log("You found five rupees.");
+			if(OPTIONS.OverLog)
+			{
+				bConsoleBox.log("You found five rupees.");
+			}
 			playSound("coin");
 			this.exists=false;
 			miles.money+=5;
@@ -2265,7 +2276,10 @@ object.prototype.setup=function(id,par)
 		this.activate=function()
 		{
 				
-			bConsoleBox.log("You found fifty rupees!");
+			if(OPTIONS.OverLog)
+			{
+				bConsoleBox.log("You found fifty rupees!");
+			}
 			playSound("coin");
 			this.exists=false;
 			miles.money+=50;
@@ -2284,8 +2298,10 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
-				
-			bConsoleBox.log("You found a heart.");
+			if(OPTIONS.OverLog)
+			{
+				bConsoleBox.log("You found a heart.");
+			}
 			//playSound("coin");
 			this.exists=false;
 			miles.heal(20);

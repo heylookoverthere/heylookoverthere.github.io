@@ -357,7 +357,8 @@ OPTIONS.ChainingExplosions=false;
 OPTIONS.MirrorBreaks=false;
 OPTIONS.DropsPersist=false; 
 OPTIONS.FriendlyFire=true; 
-OPTIONS.TouchableOrbs=true; 
+OPTIONS.TouchableOrbs=true;
+OPTIONS.OverLog=false; 
 var editHistory=[];
 
 //var snake=0;
