@@ -2809,7 +2809,7 @@ function mainUpdate()
 	{
 	 //todo, button for this?
 	}
-	if(((Xbox) && (controller.pad) && (controller.Xcheck(13))) || (controlskey.check()))
+	if(((Xbox) && (controller.pad) && (controller.Xcheck(13))) || ((!Xbox) &&(controlskey.check())))
 	{
 		playSound("pause");
 		mode=5;
