@@ -3635,7 +3635,7 @@ function mainUpdate()
 				}
 			}
 		}
-	}else if(!editMode)//keyboard
+	}else if((!editMode) && (!Xbox))//keyboard
 	{
 		if ($("#dialogBox").length > 0) 
 		{
