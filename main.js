@@ -13,6 +13,7 @@ document.getElementById("mainSong").addEventListener('ended', function() { //loo
 	this.play();
     }, false);
 
+	
 if(checkMobile())
 {
 	MobileMode=true;
@@ -28,6 +29,8 @@ if(checkXbox())
 	OPTIONS.LightingOn=false;
 	milesFree=false;
 }
+	
+		prompt("hello!");
 	
 	//document.addEventListener('touchmove', handleTouchMove, false);
 	//document.concanvasElement.addEventListener('touchmove', handleTouchMove, false);
