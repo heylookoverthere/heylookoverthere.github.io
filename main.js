@@ -13,6 +13,7 @@ document.getElementById("mainSong").addEventListener('ended', function() { //loo
 	this.play();
     }, false);
 
+
 	
 if(checkMobile())
 {
@@ -29,8 +30,6 @@ if(checkXbox())
 	OPTIONS.LightingOn=false;
 	milesFree=false;
 }
-	
-		prompt("hello!");
 	
 	//document.addEventListener('touchmove', handleTouchMove, false);
 	//document.concanvasElement.addEventListener('touchmove', handleTouchMove, false);
@@ -2810,7 +2809,7 @@ function mainUpdate()
 	{
 	 //todo, button for this?
 	}
-	if(controlskey.check())
+	if(((Xbox) && (controller.pad) && (controller.Xcheck(13))) || (controlskey.check()))
 	{
 		playSound("pause");
 		mode=5;
