@@ -1977,7 +1977,7 @@ function controlsUpdate()
 		playSound("unpause");
 	}
 
-	if(((!Xbox) && (controlskey.check())) || ((Xbox) && (controller.Xcheck(15))) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
+	if(((!Xbox) && (controlskey.check())) || ((Xbox) && (controller.Xcheck(13))) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
 	{
 		mode=1;
 		playSound("unpause");
