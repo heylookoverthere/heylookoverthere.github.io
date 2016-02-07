@@ -17,6 +17,7 @@ $(document).bind("contextmenu",function(e){
 	}
 	if((mode==1) && (!editMode)) //non-edit right click
 	{
+		if(!OPTIONS.MouseControls){return;}
 		if((miles.getEquipped()==105) && (miles.has[hasID.Sword]))
 		{
 			miles.swingSword();
@@ -385,7 +386,7 @@ function mouseClick(e) {  //represents the mouse
 		
 		}else if(bup==15)
 		{
-			OPTIONS.TouchableOrbs=!OPTIONS.TouchableOrbs;
+			OPTIONS.MouseControl=!OPTIONS.MouseControl;
 		
 		}
 
@@ -614,7 +615,7 @@ function mouseClick(e) {  //represents the mouse
 			
 				if(editor.mode==editModes.BuriedObjects)
 				{
-					if(!curDungeon.curRoom().digable(editor.x,editor.y))
+					if(!curDungeon.curRoom().digable(editor.x,editor.y,miles))
 					{
 						bConsoleBox.log("Ground is not digable","yellow");
 						return;
@@ -794,6 +795,7 @@ function mouseClick(e) {  //represents the mouse
 		
 	}else // non-edit mode mouse stuff.
 	{
+		if(!OPTIONS.MouseControls) {return;}
 		if ($("#dialogBox").length > 0) 
 		{
 			$("#dialogBox").remove();

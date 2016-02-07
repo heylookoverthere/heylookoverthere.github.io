@@ -730,13 +730,25 @@ function room(I) { //room object
 		//}
 	}
 	
-	I.digable=function(x,y)
+	I.digable=function(x,y,player)
 	{
 		if( (this.tiles[x][y].data==DungeonTileType.Sand) || (this.tiles[x][y].data==DungeonTileType.FloorEleven)||(this.tiles[x][y].data==DungeonTileType.Grass) ||(this.tiles[x][y].data==DungeonTileType.FloorThirteen))
 		{
-			return true;
-		}//if eds shovel? 
-		return false; 
+			var meg=player.getFacingObject();
+			if(!meg){return true};
+			if((meg.type==ObjectID.Bush) && (!meg.on))
+			{
+				meg.exists=false;//shouldn't do this here.
+				return true;
+			}else
+			{
+				return false; 
+			}
+		}else
+		{
+			return false;
+		}			
+	
 	} 
 	
 	
@@ -803,6 +815,17 @@ function room(I) { //room object
 		return null;
 	}
 
+	I.buriedLoot=function(x,y)
+	{
+		for(var i=0;i<I.objects.length;i++)
+		{
+			if((I.objects[i].x==x) && (I.objects[i].y==y) && (I.objects[i].buried))
+			{
+				return I.objects[i];
+			}
+		}
+		return null;
+	}
 	
 	I.closestAdj=function(you,it,aPlayer)
 	{
@@ -920,52 +943,53 @@ function room(I) { //room object
 		tempstring=hempstring.split(";");
 		I.objects=new Array(); //get first bit of data, that's the number of objects. then loop that many times loading each objects x,y,type
 		var numo =Math.floor(tempstring[0]);
-		var ffset=4;
+		var ffset=5;
 		var mitly=0;
-		for(var i=1;i<numo*4+mitly;i+=ffset)
+		for(var i=1;i<numo*5+mitly;i+=ffset)
 		{
-			ffset=4;
+			ffset=5;
 			var higgins=new object(I);
 			higgins.x=Math.floor(tempstring[i]);
 			higgins.y=Math.floor(tempstring[i+1]);
 			higgins.type=Math.floor(tempstring[i+2]);
 			higgins.hidden=stringTrue(tempstring[i+3]);
+			higgins.buried=stringTrue(tempstring[i+4]);
 			higgins.room=I;
 			if(higgins.type==ObjectID.Sign)
 			{
-				higgins.text=tempstring[i+4];
-				ffset=5;
+				higgins.text=tempstring[i+5];
+				ffset=6;
 				mitly++;
 				higgins.setup(ObjectID.Sign,higgins.text);
 			}else if(higgins.type==ObjectID.Chest)
 			{
-				higgins.loot=Math.floor(tempstring[i+4]);
-				ffset=5;
+				higgins.loot=Math.floor(tempstring[i+5]);
+				ffset=6;
 				mitly++;
 				higgins.setup();
 			}else if(higgins.type==ObjectID.Lamp)
 			{
-				higgins.on=!stringTrue(tempstring[i+4]);
-				ffset=5;
+				higgins.on=!stringTrue(tempstring[i+5]);
+				ffset=6;
 				mitly++;
 				higgins.setup();
 			}else if(higgins.type==ObjectID.Curtains)
 			{
-				higgins.hasSecret=stringTrue(tempstring[i+4]);
-				ffset=5;
+				higgins.hasSecret=stringTrue(tempstring[i+5]);
+				ffset=6;
 				mitly++;
 				higgins.setup();
 			}else if((higgins.type==ObjectID.BlueBlocker) ||(higgins.type==ObjectID.RedBlocker))
 			{
-				var nerp=tempstring[i+4]
+				var nerp=tempstring[i+5]
 				higgins.on=stringTrue(nerp);
-				ffset=5;
+				ffset=6;
 				mitly++;
 				higgins.setup();
 			}else if((higgins.type==ObjectID.ToggleSwitch) || (higgins.type==ObjectID.EyeSwitch))
 			{
-				var nerp=tempstring[i+4] //number of dests
-				var plerp=i+4;
+				var nerp=tempstring[i+5] //number of dests
+				var plerp=i+5;
 				var todestsp=1;
 				for(var j=0;j<nerp;j++)
 				{
@@ -981,7 +1005,7 @@ function room(I) { //room object
 					plerp+=7; //move to the next dest
 					todestsp+=7;
 				}
-				ffset=4+todestsp;//j*7;
+				ffset=5+todestsp;//j*7;
 				mitly+=todestsp;
 				higgins.setup();
 			}else
@@ -1822,7 +1846,7 @@ editCursor.prototype.cycleObjects=function(up)
 		}else if((this.objectType>301) && (this.objectType<400))
 		{
 			this.objectType=400;
-		}else if((this.objectType>211) && (this.objectType<300))
+		}else if((this.objectType>213) && (this.objectType<300))
 		{
 			this.objectType=300;
 		}else if((this.objectType>117) && (this.objectType<200))
@@ -1846,7 +1870,7 @@ editCursor.prototype.cycleObjects=function(up)
 			this.objectType=301;
 		}else if(this.objectType==299)
 		{
-			this.objectType=211;
+			this.objectType=213;
 		}else if(this.objectType==199)
 		{
 			this.objectType=117;

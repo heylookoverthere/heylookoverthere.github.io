@@ -1080,6 +1080,39 @@ var saveaskey=new akey("u");
 var miles= new entity();
 miles.isPlayer=true;
 miles.walkSpeed=6;
+miles.animated=true;
+miles.walkTrack=0;
+miles.walkFrames=7;
+miles.walkSprites[0].push(Sprite("linkup1"));
+miles.walkSprites[0].push(Sprite("linkup2"));
+miles.walkSprites[0].push(Sprite("linkup3"));
+miles.walkSprites[0].push(Sprite("linkup4"));
+miles.walkSprites[0].push(Sprite("linkup5"));
+miles.walkSprites[0].push(Sprite("linkup6"));
+miles.walkSprites[0].push(Sprite("linkup7"));
+miles.walkSprites[1].push(Sprite("linkright1"));
+miles.walkSprites[1].push(Sprite("linkright2"));
+miles.walkSprites[1].push(Sprite("linkright3"));
+miles.walkSprites[1].push(Sprite("linkright4"));
+miles.walkSprites[1].push(Sprite("linkright5"));
+miles.walkSprites[1].push(Sprite("linkright6"));
+miles.walkSprites[1].push(Sprite("linkright7"));
+
+miles.walkSprites[2].push(Sprite("linkdown1"));
+miles.walkSprites[2].push(Sprite("linkdown2"));
+miles.walkSprites[2].push(Sprite("linkdown3"));
+miles.walkSprites[2].push(Sprite("linkdown4"));
+miles.walkSprites[2].push(Sprite("linkdown5"));
+miles.walkSprites[2].push(Sprite("linkdown6"));
+miles.walkSprites[2].push(Sprite("linkdown7"));
+
+miles.walkSprites[3].push(Sprite("linkleft1"));
+miles.walkSprites[3].push(Sprite("linkleft2"));
+miles.walkSprites[3].push(Sprite("linkleft3"));
+miles.walkSprites[3].push(Sprite("linkleft4"));
+miles.walkSprites[3].push(Sprite("linkleft5"));
+miles.walkSprites[3].push(Sprite("linkleft6"));
+miles.walkSprites[3].push(Sprite("linkleft7"));
 miles.sprites=new Array();
 miles.sprites.push(Sprite("linkup"));
 miles.sprites.push(Sprite("linkright"));
@@ -2537,7 +2570,7 @@ function optionsDraw() {
 	canvas.fillText("12) Mirror breaks on use: "+OPTIONS.MirrorBreaks,xFset+15,yFset+350-6);
 	canvas.fillText("13) Drops persist: "+OPTIONS.DropsPersist,xFset+15,yFset+375-6);
 	canvas.fillText("14) Friendly Fire: "+OPTIONS.FriendlyFire,xFset+15,yFset+400-6);
-	canvas.fillText("15) Orbs activate on touch: "+OPTIONS.TouchableOrbs,xFset+15,yFset+425-6);
+	canvas.fillText("15) Point n' click controls: "+OPTIONS.MouseControls,xFset+15,yFset+425-6);
 	//canvas.fillText("14) Bombs set off other bombs: "+OPTIONS.ChainingExplosions,xFset+15,yFset+400-6);
 
 
@@ -3800,6 +3833,8 @@ function mainUpdate()
 				if(controller.checkUp())
 				{
 					miles.dir=0;
+					miles.walkAnimate();
+					miles.stepping=true;
 					if(!(((Xbox) && (controller.pad) && (controller.pad.buttons[4].pressed)) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.L].checkDown()))))
 					{
 						miles.incMove();
@@ -3807,6 +3842,8 @@ function mainUpdate()
 				}else if(controller.checkDown())
 				{
 					miles.dir=2;
+					miles.walkAnimate();
+					miles.stepping=true;
 					if(!(((Xbox) && (controller.pad) && (controller.pad.buttons[4].pressed)) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.L].checkDown()))))
 					{
 						miles.incMove();
@@ -3814,6 +3851,8 @@ function mainUpdate()
 				}else if(controller.checkLeft())
 				{
 					miles.dir=3;
+					miles.walkAnimate();
+					miles.stepping=true;
 					if(!(((Xbox) && (controller.pad) && (controller.pad.buttons[4].pressed)) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.L].checkDown()))))
 					{
 						miles.incMove();
@@ -3821,10 +3860,16 @@ function mainUpdate()
 				}else if(controller.checkRight())
 				{
 					miles.dir=1;
+					miles.walkAnimate();
+					miles.stepping=true;
 					if(!(((Xbox) && (controller.pad) && (controller.pad.buttons[4].pressed)) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.L].checkDown()))))
 					{
 						miles.incMove();
 					}
+				}else
+				{
+					miles.stepping=false;
+					miles.walkTrack=0;
 				}
 			}
 		}
@@ -3935,19 +3980,31 @@ function mainUpdate()
 				if(SNESUpKey.checkDown())
 				{
 					miles.dir=0;
+					miles.stepping=true;
+					miles.walkAnimate();
 					miles.incMove();
 				}else if(SNESDownKey.checkDown())
 				{
 					miles.dir=2;
+					miles.stepping=true;
+					miles.walkAnimate();
 					miles.incMove();
 				}else if(SNESLeftKey.checkDown())
 				{
 					miles.dir=3;
+					miles.stepping=true;
+					miles.walkAnimate();
 					miles.incMove();
 				}else if(SNESRightKey.checkDown())
 				{
+					miles.stepping=true;
 					miles.dir=1;
+					miles.walkAnimate();
 					miles.incMove();
+				}else
+				{
+					miles.stepping=false;
+					miles.walkTrack=0;
 				}
 			}
 		

@@ -25,7 +25,7 @@ for(var i=0;i<4;i++)
 	}
 }
 masterPokeSprites=new Array()
-masterPokeSprites.push(Sprite("masterswordswing04"));
+masterPokeSprites.push(Sprite("masterpoke0"));
 masterPokeSprites.push(Sprite("masterpoke1"));
 masterPokeSprites.push(Sprite("masterpoke2"));
 masterPokeSprites.push(Sprite("masterpoke3"));
@@ -399,10 +399,22 @@ function entity(croom)
 	this.swingtrack=0;
 	this.swingcount=0;
 	this.pokeSprites=new Array()
-	this.pokeSprites.push(Sprite("swordswing04"));
+	this.pokeSprites.push(Sprite("poke0"));
 	this.pokeSprites.push(Sprite("poke1"));
 	this.pokeSprites.push(Sprite("poke2"));
 	this.pokeSprites.push(Sprite("poke3"));
+	this.animated=false;
+	this.walkTrack=0;
+	this.walkFrames=1;
+	this.stepping=false;
+	this.walkAni=0;
+	this.walkAniRate=5;
+	this.walkSprites=new Array();
+	this.walkSprites.push(new Array());
+	this.walkSprites.push(new Array());
+	this.walkSprites.push(new Array());
+	this.walkSprites.push(new Array());
+	
 	this.swingSprites=new Array();
 	this.swingSprites.push(new Array());
 	this.swingSprites.push(new Array());
@@ -994,7 +1006,7 @@ function entity(croom)
 		{
 			spotX--;
 		}
-		if((spotX<2) || (spotY<2) || (spotX>ROOM_WIDTH-3)|| (spotY>ROOM_HEIGHT-3)|| (this.room.tiles[spotX][spotY].dug) || (!this.room.digable(this.x,this.y)))//TODO: check for digability.
+		if((spotX<2) || (spotY<2) || (spotX>ROOM_WIDTH-3)|| (spotY>ROOM_HEIGHT-3)|| (this.room.tiles[spotX][spotY].dug) || (!this.room.digable(spotX,spotY,this)))//TODO: check for digability.
 		{
 			playSound("error");
 			return false;
@@ -1002,9 +1014,10 @@ function entity(croom)
 		{
 			playSound("shovel")
 			this.room.tiles[spotX][spotY].dug=true;
-			if(false)//specifically buried loot somehow
+			var glen=this.room.buriedLoot(spotX,spotY);
+			if(glen)
 			{
-				
+				glen.buried=false;
 			}else if(Math.random()*10>4)
 			{
 				var bmoke=3;
@@ -1421,6 +1434,20 @@ function entity(croom)
 		this.projectiles.push(poot);
 	}
 	
+	this.walkAnimate=function()
+	{
+		this.walkAni++;
+		if(this.walkAni>this.walkAniRate)
+		{
+			this.walkAni=0;
+			this.walkTrack++;
+			if(this.walkTrack>this.walkFrames-1)
+			{
+				this.walkTrack=0;
+			}
+		}
+	}
+	
 	this.draw=function(can)
 	{
 		for(var i=0;i<this.projectiles.length;i++)
@@ -1439,6 +1466,7 @@ function entity(croom)
 			return;
 		}else if((this.isPlayer) && (this.holding))
 		{
+			
 			this.sprites[4].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
 			this.holding.draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-16-this.fallingY*2);
 		}else if((this.isPlayer) && (this.swinging))
@@ -1514,7 +1542,34 @@ function entity(croom)
 			{
 				this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
 			}
-			this.pokeSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky);
+			
+			if((this.animated) && (this.stepping))
+			{
+				if((this.dir==2) || (this.dir==1))
+				{
+					this.walkSprites[this.dir][this.walkTrack].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack+48,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky+46);
+					this.pokeSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky);
+				
+				}else
+				{
+					this.pokeSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky);
+					this.walkSprites[this.dir][this.walkTrack].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack+48,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky+46);
+				}
+				
+			}else
+			{	
+				if((this.dir==2) || (this.dir==1))
+				{
+					this.sprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack+48,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky+49);
+					this.pokeSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky);
+				}else
+				{
+					this.pokeSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky);
+					this.sprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack+48,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky+49);
+				}
+			}
+			//somehow only draw section of sprite. 
+	
 			if((this.dir!=0) && (this.dir!=1) &&(this.has[hasID.Shield]))
 			{
 				if(this.dir==2)
@@ -1557,7 +1612,13 @@ function entity(croom)
 							}
 					}else
 					{
-						this.sprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+						if((this.animated) && (this.stepping))
+						{
+							this.walkSprites[this.dir][this.walkTrack].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+						}else
+						{
+							this.sprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+						}
 					}
 					
 					if((this.has[hasID.Shield]) && (this.dir>0))

@@ -3,6 +3,7 @@ ProjTypes.Arrow=0;
 ProjTypes.Boomarang=1;
 ProjTypes.MagicBoomarang=2;
 ProjTypes.SwordBeam=3;
+ProjTypes.Hookshot=4;
 
 var xOffset = 150;
 var yOffset= 150;
@@ -13,6 +14,8 @@ var silverarrowsprite=Sprite("silverarrow");
 var swordbeamsprite1=Sprite("swordbeam1");
 var swordbeamsprite2=Sprite("swordbeam2");
 var swordbeamsprite3=Sprite("swordbeam3");
+
+var hooksprite=Sprite("hook");
 
 var boomarangsprite1=Sprite("boomarang");
 var boomarangsprite2=Sprite("boomarang1");
@@ -82,6 +85,10 @@ projectile.prototype.setup=function(type)
 		this.sprites.push(swordbeamsprite3);
 		this.damage=10;
 		this.speed=1;
+	}else if(this.type==ProjTypes.Hookshot)
+	{
+		this.sprites.push(hooksprite);
+		this.damage=0;
 	}
 
 }
@@ -89,7 +96,7 @@ projectile.prototype.setup=function(type)
 projectile.prototype.draw=function(can)
 {
 	
-	if((this.type==0) || (this.type==ProjTypes.SwordBeam))
+	if((this.type==0) || (this.type==ProjTypes.SwordBeam) || (this.type==ProjTypes.Hookshot))
 	{
 		can.save();
 		can.translate(this.x+16+xOffset,this.y+16+yOffset);
@@ -110,6 +117,10 @@ projectile.prototype.draw=function(can)
 		this.sprites[0].draw(can, 0,0);//this.x+xOffset, this.y+yOffset);
 		//can.scale(1,1);
 		can.restore();
+	}
+	if(this.type==ProjTypes.Hookshot)
+	{
+		//draw chain.
 	}
 }
 
