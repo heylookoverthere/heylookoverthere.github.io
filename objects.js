@@ -221,7 +221,7 @@ function object(oroom) //not a tile, not an enemy
 		{
 			return true;
 		}
-		if(this.hidden==true)
+		if((this.hidden) && (!miles.has[hasID.Lens]))
 		{
 			return true;
 		}
@@ -448,7 +448,7 @@ object.prototype.setup=function(id,par)
 		//this.loot=0;
 		this.playerActivate=function(){
 			if(this.curSprite==1) {return;}
-			if(this.hidden) {return;}
+			if((this.hidden) &&(!miles.has[hasID.Lens])) {return;}
 			playSound("chestopen");
 			playSound("itemfanfare");
 			
@@ -680,20 +680,18 @@ object.prototype.setup=function(id,par)
 		{
 			playSound("itemfanfare");
 			bConsoleBox.log("You got the super bombs!");
-			btext="You the super bombs!";
+			btext="You got the super bombs!";
 			miles.holding=this.sprites[0];
 			miles.has[hasID.SuperBomb]=true;
-			if(!miles.has[hasID.Bomb])
-			{
-				miles.has[hasID.Bomb]=true;
-				var shinex=new object();
-				//shinex.usable=true;
-				shinex.type=ObjectID.Bomb;
-				shinex.room=this.room;
-				shinex.setup();
-				miles.giveItem(shinex,5);
-				miles.bombs+=5;
-			}
+			miles.has[hasID.Bomb]=true;
+			var shinex=new object();
+			//shinex.usable=true;
+			shinex.type=ObjectID.Bomb;
+			shinex.room=this.room;
+			shinex.setup();
+			miles.giveItem(shinex,5);
+			miles.bombs+=5;
+			//error. but when and why? because you ran out of bombs? 
 			miles.getItem(ObjectID.Bomb).sprites=new Array();
 			miles.getItem(ObjectID.Bomb).sprites.push(superbombsprite);
 			this.exists=false;
@@ -709,11 +707,17 @@ object.prototype.setup=function(id,par)
 		this.activate=function()
 		{
 			playSound("itemfanfare");
-			bConsoleBox.log("You the silver arrows!");
-			btext="You the silver arrows!";
+			bConsoleBox.log("You got the silver arrows!");
+			btext="You got the silver arrows!";
 			miles.holding=this.sprites[0];
 			miles.has[hasID.SilverArrows]=true;
 			this.exists=false;
+			var shinex=new object();
+			shinex.usable=true;
+			shinex.type=ObjectID.Bow;
+			shinex.setup();
+			miles.arrows+=5;
+			miles.giveItem(shinex,5);
 		}
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.RedPotion)
@@ -1603,7 +1607,7 @@ object.prototype.setup=function(id,par)
 	    this.name="Red orb";
 		this.bombable=true;
 		this.blockArrows=true;
-		this.swordActivate=function(){return true;};
+		this.arrowsActivate=true;
 		this.boomarangActivate=true;
 		this.swordActivate=function(){return true;};
 		this.cooldown=400;

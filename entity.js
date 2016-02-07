@@ -60,9 +60,9 @@ function bomb(croom,isSuper)
 		this.exists=false;
 		if(this.isSuper)
 		{
-			for (var n=this.x-2;n<this.x+3;n++)
+			for (var n=this.x-3;n<this.x+3;n++)
 			{
-				for (var m=this.y-2;m<this.y+3;m++)
+				for (var m=this.y-3;m<this.y+3;m++)
 				{
 					//particles, sprites, trigger switches, destroy walls and cracked floors
 					if((n<this.x+2) && (m<this.y+2))
@@ -603,8 +603,17 @@ function entity(croom)
 	}
 	this.getEquipped=function(secondary)
 	{
+		if((this.equippedTrack<0) || (this.equippedTrack>this.inventory.length-1))
+		{
+			this.equippedTrack=0;
+		}
+		if((this.equippedTrack2<0) || (this.equippedTrack2>this.inventory.length-1))
+		{
+			this.equippedTrack2=0;
+		}
 		if(secondary)
 		{
+			//PROBLEM> 
 			return this.inventory[this.equippedTrack2].type;
 		}
 		return this.inventory[this.equippedTrack].type;//==ObjectID.Bomb
@@ -972,8 +981,20 @@ function entity(croom)
 		
 		var spotX=this.x;
 		var spotY=this.y;
-		
-		if((spotX<0) || (spotY<0) || (spotX>ROOM_WIDTH-2)|| (spotY>ROOM_HEIGHT-2)|| (this.room.tiles[spotX][spotY].dug) || (!this.room.digable(this.x,this.y)))//TODO: check for digability.
+		if(this.dir==0)
+		{
+			spotY--;
+		}else if(this.dir==1)
+		{
+			spotX++;
+		}else if(this.dir==2)
+		{
+			spotY++;
+		}else if(this.dir==3)
+		{
+			spotX--;
+		}
+		if((spotX<2) || (spotY<2) || (spotX>ROOM_WIDTH-3)|| (spotY>ROOM_HEIGHT-3)|| (this.room.tiles[spotX][spotY].dug) || (!this.room.digable(this.x,this.y)))//TODO: check for digability.
 		{
 			playSound("error");
 			return false;
@@ -1091,6 +1112,7 @@ function entity(croom)
 		}else if(this.getEquipped(secondary)==ObjectID.Mirror)
 		{
 			playSound("warp");
+			this.busyrang=false;
 			curDungeon.roomZ=curDungeon.startFloor;
 			curDungeon.roomX=curDungeon.startX;
 			curDungeon.roomY=curDungeon.startY;
@@ -1724,6 +1746,13 @@ function entity(croom)
 		for(var i=0;i<this.projectiles.length;i++)
 		{
 			this.projectiles[i].update();
+			if((this.projectiles[i].type==ProjTypes.Boomarang) || (this.projectiles[i].type==ProjTypes.MagicBoomarang))
+			{
+				if(!this.busyrang)
+				{
+					this.projectiles[i].exists=false;
+				}
+			}
 			if(!this.projectiles[i].exists)
 			{
 				this.projectiles.splice(i,1);
@@ -1762,6 +1791,12 @@ function entity(croom)
 		{
 			this.dashing=false;
 			this.reallyDashing=false;
+			if((this.swimming) && (!this.has[hasID.Flippers]))
+			{
+				this.hurt(20);
+				this.x=this.enteredX;
+				this.y=this.enteredY;
+			}
 		}
 		if(this.dashing)
 		{
@@ -2233,6 +2268,8 @@ function entity(croom)
 				//Do better drawing?
 				this.falling=true;
 				this.fallingY=150;
+				this.dashing=false;
+				this.reallyDashing=false;
 				this.xSmall=0;
 				this.ySmall=0;
 				if(this.isPlayer)
@@ -2249,7 +2286,7 @@ function entity(croom)
 					{
 						this.fallingY=0;
 						bConsoleBox.log("no room below");
-						console.log(this.enteredX,this.enteredY);
+						//console.log(this.enteredX,this.enteredY);
 						this.hurt(20);
 						this.x=this.enteredX;
 						this.y=this.enteredY;
@@ -2284,7 +2321,11 @@ function entity(croom)
 				//this.room=curDungeon.rooms[curDungeon.roomZ-1][curDungeon.roomX][curDungeon.roomY];
 			}else if((this.room.tiles[this.x][this.y].data>19) && (this.room.tiles[this.x][this.y].data<25))
 			{
-				this.swimming=true;
+				if(!this.jumping)
+				{
+					this.swimming=true;
+				
+				}
 			}
 		}
 		

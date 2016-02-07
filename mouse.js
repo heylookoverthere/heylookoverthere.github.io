@@ -40,7 +40,7 @@ $(document).bind("contextmenu",function(e){
 			
 			if(editMode)
 			{
-				if(editor.mode==editModes.Objects)
+				if((editor.mode==editModes.Objects) || (editor.mode==editModes.BuriedObjects))
 				{
 					if(editor.grabbed)
 					{
@@ -142,7 +142,7 @@ function mouseWheel(e){
 						{
 							editor.doorType=0;
 						}
-					}else if(editor.mode==editModes.Objects)
+					}else if((editor.mode==editModes.Objects) || (editor.mode==editModes.BuriedObjects))
 					{
 						editor.cycleObjects(true);
 					}else if(editor.mode==editModes.ChestLoot)
@@ -182,7 +182,7 @@ function mouseWheel(e){
 						{
 							editor.doorType=numDoorTypes;
 						}
-					}else if(editor.mode==editModes.Objects)
+					}else if((editor.mode==editModes.Objects) || (editor.mode==editModes.BuriedObjects))
 					{
 						editor.cycleObjects(false);
 					}else if(editor.mode==editModes.ChestLoot)
@@ -609,9 +609,22 @@ function mouseClick(e) {  //represents the mouse
 				{
 					bConsoleBox.log("Can't fill with stairs");
 				}
-			}else if(editor.mode==editModes.Objects)
+			}else if((editor.mode==editModes.Objects) || (editor.mode==editModes.BuriedObjects))
 			{
 			
+				if(editor.mode==editModes.BuriedObjects)
+				{
+					if(!curDungeon.curRoom().digable(editor.x,editor.y))
+					{
+						bConsoleBox.log("Ground is not digable","yellow");
+						return;
+					}
+					if((editor.objectType>99) && ((editor.objectType<300)))
+					{
+						bConsoleBox.log("This item cannot be buried.","yellow");
+						return false;
+					}
+				}
 				var meg=isOverTiledList(curDungeon.curRoom().objects,32);
 				if(meg)
 				{
@@ -662,7 +675,11 @@ function mouseClick(e) {  //represents the mouse
 					}else
 					{
 						//console.log("making object");
-						makeObject(tx,ty,curDungeon.curRoom(),editor.objectType,text);
+						var burtrussel=makeObject(tx,ty,curDungeon.curRoom(),editor.objectType,text);
+						if(editor.mode==editModes.BuriedObjects)
+						{
+							burtrussel.buried=true;
+						}
 					}
 				}
 			}else if(editor.mode==editModes.Pen)
@@ -742,7 +759,7 @@ function mouseClick(e) {  //represents the mouse
 				{
 					editor.doorType=0;
 				}
-			}else if(editor.mode==editModes.Objects)
+			}else if((editor.mode==editModes.Objects) || (editor.mode==editModes.BuriedObjects))
 			{
 				editor.cycleObjects(true)
 			}else

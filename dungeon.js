@@ -135,8 +135,8 @@ function dungeon(path)
 					}
 				}else
 				{
-					bConsoleBox.log("No open door!");
-					playSound("error");
+					//bConsoleBox.log("No open door!");
+					//playSound("error");
 				}
 			}else
 			{
@@ -202,8 +202,8 @@ function dungeon(path)
 					}
 				}else
 				{
-					bConsoleBox.log("No open door!");
-					playSound("error");
+					//bConsoleBox.log("No open door!");
+					//playSound("error");
 				}
 			}else
 			{
@@ -270,8 +270,8 @@ function dungeon(path)
 					}
 				}else
 				{
-					bConsoleBox.log("No open door!");
-					playSound("error");
+					//bConsoleBox.log("No open door!");
+					//playSound("error");
 				}
 			}else
 			{
@@ -340,8 +340,8 @@ function dungeon(path)
 					}
 				}else
 				{
-					bConsoleBox.log("No open door!");
-					playSound("error");
+					//bConsoleBox.log("No open door!");
+					//playSound("error");
 				}
 			}else
 			{
@@ -1378,7 +1378,10 @@ function dungeon(path)
 					}
 				}
 			}
-			curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY-1].darkenAdj(can,txOffset,yOffset);
+			if(curDungeon.roomY>0)
+			{
+				curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY-1].darkenAdj(can,txOffset,yOffset);
+			}
 		}
 		var txOffset=791;//right
 		if((this.roomX<this.getWidth()-1) && (this.rooms[this.roomZ][this.roomX+1][this.roomY].active)&& (!this.rooms[this.roomZ][this.roomX+1][this.roomY].hidden))
@@ -1470,7 +1473,10 @@ function dungeon(path)
 					}
 				}
 			}
-			curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY-1].darkenAdj(can,txOffset,yOffset);
+			if(curDungeon.roomY>0)
+			{
+				curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY-1].darkenAdj(can,txOffset,yOffset);
+			}
 		}
 	}
 	 

@@ -339,7 +339,7 @@ editModes.Stamp=1;
 editModes.Fill=2;
 editModes.Door=3;
 editModes.Objects=4;
-editModes.CopyArea=5;
+editModes.BuriedObjects=5;
 editModes.SwitchLink=9;
 editModes.ChestLoot=10;
 
