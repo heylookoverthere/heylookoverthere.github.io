@@ -771,6 +771,16 @@ function dungeon(path)
 			{
 				for(var v=0;v<this.rooms[fl][i][j].exits.length;v++)
 				{
+					if(this.rooms[fl][i][j].exits[v].type==doorType.Curtains)
+					{
+						for(var h=0;h<this.rooms[fl][i][j].objects.length;h++)
+						{
+							if((this.rooms[fl][i][j].objects[h].type==ObjectID.Curtains) && (this.rooms[fl][i][j].objects[h].x==this.rooms[fl][i][j].exits[v].x) && (this.rooms[fl][i][j].objects[h].y==this.rooms[fl][i][j].exits[v].y))
+							{
+								this.rooms[fl][i][j].exits[v].on=true;
+							}
+						}
+					}
 					if(this.rooms[fl][i][j].exits[v].orientation==0) //top
 					{
 						if((j>0) && (this.rooms[fl][i][j-1].active))
@@ -870,7 +880,7 @@ function dungeon(path)
 	 // Really need to get on that. 
 	}
 	
-	this.changeFloor=function(up,limited)
+	this.changeFloor=function(up,limited,aplayer)
 	{
 		this.busyrang=false;
 		for(var i=0;i<miles.projectiles.length;i++)
@@ -908,6 +918,8 @@ function dungeon(path)
 				this.roomZ++;
 				this.enteredX=this.x;
 				this.enteredY=this.y;
+				aplayer.enteredX=aplayer.x;
+				aplayer.enteredY=aplayer.y;
 				if(limited)
 				{
 					playSound("stairsup");
@@ -949,6 +961,8 @@ function dungeon(path)
 				this.roomZ--;
 				this.enteredX=this.x;
 				this.enteredY=this.y;
+				aplayer.enteredX=aplayer.x;
+				aplayer.enteredY=aplayer.y;
 				if(limited)
 				{
 					playSound("stairsdown");
@@ -1048,7 +1062,7 @@ function dungeon(path)
 				bConsoleBox.log("Warning: Door not linked. No room","Yellow");
 			}
 		}
-		
+		return mindy;
 	};
 	
 	this.cleanSlate=function()
@@ -1160,6 +1174,10 @@ function dungeon(path)
 				if(simplicity.y>10)
 				{
 					this.rooms[this.roomZ][this.roomX][this.roomY-1].objects[g].draw(can,cam,xOffset,tyOffset);
+					if(this.rooms[this.roomZ][this.roomX][this.roomY-1].objects[g].topLayer.length>0)
+					{
+						this.rooms[this.roomZ][this.roomX][this.roomY-1].objects[g].drawTop(can,cam,xOffset,tyOffset);
+					}
 				}
 			}
 			for(var g=0;g<this.rooms[this.roomZ][this.roomX][this.roomY-1].stairs.length;g++)
@@ -1259,6 +1277,10 @@ function dungeon(path)
 				if(simplicity.y<4)
 				{
 					this.rooms[this.roomZ][this.roomX][this.roomY+1].objects[g].draw(can,cam,xOffset,tyOffset);
+					if(this.rooms[this.roomZ][this.roomX][this.roomY+1].objects[g].topLayer.length>0)
+					{
+						this.rooms[this.roomZ][this.roomX][this.roomY+1].objects[g].drawTop(can,cam,xOffset,tyOffset);
+					}
 					//simplicity.sprites[simplicity.curSprite].draw(can,(simplicity.x-cam.tileX)*ROOM_TILE_SIZE+xOffset,(simplicity.y-cam.tileY)*ROOM_TILE_SIZE+tyOffset);
 				}
 			}
@@ -1351,9 +1373,14 @@ function dungeon(path)
 			for(var g=0;g<this.rooms[this.roomZ][this.roomX-1][this.roomY].objects.length;g++)
 			{
 				var simplicity=this.rooms[this.roomZ][this.roomX-1][this.roomY].objects[g];
-				if(simplicity.x>15)
+				if(simplicity.x>13)
 				{
 					this.rooms[this.roomZ][this.roomX-1][this.roomY].objects[g].draw(can,cam,txOffset,yOffset);
+					if(this.rooms[this.roomZ][this.roomX-1][this.roomY].objects[g].topLayer.length>0)
+					{
+						this.rooms[this.roomZ][this.roomX-1][this.roomY].objects[g].drawTop(can,cam,txOffset,yOffset);
+					}
+
 					//simplicity.sprites[simplicity.curSprite].draw(can,(simplicity.x-cam.tileX)*ROOM_TILE_SIZE+txOffset,(simplicity.y-cam.tileY)*ROOM_TILE_SIZE+yOffset);
 				}
 			}
@@ -1378,6 +1405,8 @@ function dungeon(path)
 					}
 				}
 			}
+			can.fillStyle="black"
+			can.fillRect(0,149,20,425);
 			if(curDungeon.roomY>0)
 			{
 				curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY-1].darkenAdj(can,txOffset,yOffset);
@@ -1449,6 +1478,10 @@ function dungeon(path)
 				if(simplicity.x<4)
 				{
 					this.rooms[this.roomZ][this.roomX+1][this.roomY].objects[g].draw(can,cam,txOffset,yOffset);
+					if(this.rooms[this.roomZ][this.roomX+1][this.roomY].objects[g].topLayer.length>0)
+					{
+						this.rooms[this.roomZ][this.roomX+1][this.roomY].objects[g].drawTop(can,cam,txOffset,yOffset);
+					}
 					//simplicity.sprites[simplicity.curSprite].draw(can,(simplicity.x-cam.tileX)*ROOM_TILE_SIZE+txOffset,(simplicity.y-cam.tileY)*ROOM_TILE_SIZE+yOffset);
 				}
 			}
@@ -1557,7 +1590,7 @@ function dungeon(path)
 		var gjk=3;
 		for(var zzTop=this.mapFloor;zzTop<this.mapFloor+gjk;zzTop++)
 		{
-			if(zzTop>this.floors)
+			if(zzTop>this.floors-1)
 			{
 				//gjk+=1;
 				continue;
@@ -1663,22 +1696,22 @@ function dungeon(path)
 					{
 						if(((this.rooms[zzTop][i][k].explored) || (OPTIONS.showUnexploredDoors)) && (!this.rooms[zzTop][i][k].hidden) || (editMode)) 
 						{
-							if(this.rooms[zzTop][i][k].hasDoor(0))
+							if(this.rooms[zzTop][i][k].hasVisibleDoor(0))
 							{
 								can.fillStyle="white";
 								canvas.fillRect(xFset+size*i+size/2,yFset+size*k,4,2);
 							}
-							if(this.rooms[zzTop][i][k].hasDoor(2))
+							if(this.rooms[zzTop][i][k].hasVisibleDoor(2))
 							{
 								can.fillStyle="white";
 								canvas.fillRect(xFset+size*i+size/2,yFset+size*k+size,4,2);
 							}
-							if(this.rooms[zzTop][i][k].hasDoor(1))
+							if(this.rooms[zzTop][i][k].hasVisibleDoor(1))
 							{
 								can.fillStyle="white";
 								canvas.fillRect(xFset+size*i+size,yFset+size*k+size/2,2,4);
 							}
-							if(this.rooms[zzTop][i][k].hasDoor(3))
+							if(this.rooms[zzTop][i][k].hasVisibleDoor(3))
 							{
 								can.fillStyle="white";
 								canvas.fillRect(xFset+size*i,yFset+size*k+size/2,2,4);
@@ -1808,22 +1841,22 @@ function dungeon(path)
 				{
 					if(((this.rooms[this.roomZ][i][k].explored) || (OPTIONS.showUnexploredDoors)) && (!this.rooms[this.roomZ][i][k].hidden) || (editMode)) 
 					{
-						if(this.rooms[this.roomZ][i][k].hasDoor(0))
+						if(this.rooms[this.roomZ][i][k].hasVisibleDoor(0))
 						{
 							can.fillStyle="white";
 							canvas.fillRect(xFset+size*i+size/2,yFset+size*k,2,1);
 						}
-						if(this.rooms[this.roomZ][i][k].hasDoor(2))
+						if(this.rooms[this.roomZ][i][k].hasVisibleDoor(2))
 						{
 							can.fillStyle="white";
 							canvas.fillRect(xFset+size*i+size/2,yFset+size*k+size,2,1);
 						}
-						if(this.rooms[this.roomZ][i][k].hasDoor(1))
+						if(this.rooms[this.roomZ][i][k].hasVisibleDoor(1))
 						{
 							can.fillStyle="white";
 							canvas.fillRect(xFset+size*i+size,yFset+size*k+size/2,1,2);
 						}
-						if(this.rooms[this.roomZ][i][k].hasDoor(3))
+						if(this.rooms[this.roomZ][i][k].hasVisibleDoor(3))
 						{
 							can.fillStyle="white";
 							canvas.fillRect(xFset+size*i,yFset+size*k+size/2,1,2);

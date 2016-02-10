@@ -15,6 +15,9 @@ var swordbeamsprite1=Sprite("swordbeam1");
 var swordbeamsprite2=Sprite("swordbeam2");
 var swordbeamsprite3=Sprite("swordbeam3");
 
+var chainsprite=new Array();
+chainsprite.push(Sprite("chain1"));
+chainsprite.push(Sprite("chain2"));
 var hooksprite=Sprite("hook");
 
 var boomarangsprite1=Sprite("boomarang");
@@ -95,18 +98,49 @@ projectile.prototype.setup=function(type)
 
 projectile.prototype.draw=function(can)
 {
-	
-	if((this.type==0) || (this.type==ProjTypes.SwordBeam) || (this.type==ProjTypes.Hookshot))
+	if(this.type==ProjTypes.Hookshot)
+	{
+		var mangle=this.angle;
+
+		if(this.player.dir==0)
+		{
+			for(var i=this.player.y;i<(this.y-yOffset)/32;i++)
+			{
+				chainsprite[0].draw(can,this.x+xOffset,(this.player.y+i)*32+yOffset-14)
+			}
+		}else if(this.player.dir==2)
+		{
+			for(var i=this.player.y;i>(this.y-yOffset)/32;i--)
+			{
+				chainsprite[0].draw(can,this.x+xOffset,(this.player.y+i)*32+yOffset-14)
+			}
+		}else if(this.player.dir==1)
+		{
+			for(var i=this.player.x;i<(this.x-xOffset)/32;i++)
+			{
+				chainsprite[0].draw(can,(this.player.x+i)*32+xOffset,this.y+yOffset-14)
+			}
+		}else //if(mangle==0)
+		{
+			for(var i=this.player.x;i>(this.x-xOffset)/32;i--)
+			{
+				chainsprite[0].draw(can,(this.player.x+i)*32+xOffset,this.y+yOffset-14)
+			}
+		}
+		this.sprites[this.curSprite].draw(can,this.x+xOffset,this.y+yOffset-14)
+	}else if((this.type==0) || (this.type==ProjTypes.SwordBeam) || (this.type==ProjTypes.Hookshot))
 	{
 		can.save();
 		can.translate(this.x+16+xOffset,this.y+16+yOffset);
 		can.rotate((this.angle-90)* (Math.PI / 180));
+		
 		if(this.bombArrow)
 		{
 			bombsprite.draw(can, 0,0);
 		}
+		
 		this.sprites[this.curSprite].draw(can, 0,0);//this.x+xOffset, this.y+yOffset);
-	
+		
 		//can.scale(1,1);
 		can.restore();
 	}else if((this.type==1) || (this.type==2))

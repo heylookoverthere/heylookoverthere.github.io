@@ -38,6 +38,7 @@ function bomb(croom,isSuper)
 	this.y=0;
 	this.exists=false;
 	this.timePlaced=0;
+	this.name="bomb";
 	this.fuse=4;
 	this.room=croom;
 	this.armed=false;
@@ -46,14 +47,36 @@ function bomb(croom,isSuper)
 	this.sprites.push(Sprite("bomb2"));
 	this.sprites.push(Sprite("superbomb"));
 	this.sprites.push(Sprite("superbomb1"));
+	this.xv=0;
+	this.yv=0;
+	this.xa=0;
+	this.ya=0;
+	this.decel=0.000;
+	this.friction=0.05;
+	this.fallingY=0;
+	this.fallingUp=0;
+	this.xSmall=0;
+	this.ySmall=0;
+	this.peakXV=2;
+	this.peakYV=2;
 	this.update=function()
 	{
+		if(this.fallingUp>0)
+		{
+			this.fallingY+=1;
+			this.fallingUp-=1;
+		}else if(this.fallingY>0)
+		{
+			this.fallingY-=2;
+		}
+		this.incMove();
 		var millip=new Date().getTime();
 		if((millip-this.timePlaced>this.fuse*1000) && (this.armed))
 		{
 			this.explode();
 		}
 	}
+
 	this.explode=function()
 	{
 		playSound("explosion");
@@ -301,6 +324,10 @@ function bomb(croom,isSuper)
 		{
 			var millip= new Date().getTime();
 			var dex=0;
+			if(this.fallingY>0)
+			{
+				shadowSprite[0].draw(can, this.x*32+xoffh+this.xSmall, this.y*32+yoffh+this.ySmall);
+			}
 			if(this.isSuper)
 			{
 				dex=2;
@@ -309,19 +336,329 @@ function bomb(croom,isSuper)
 			{
 				if(millip%2==0)
 				{
-					this.sprites[dex+1].draw(can,this.x*32+xoffh,this.y*32+yoffh);
+					this.sprites[dex+1].draw(can,this.x*32+xoffh+this.xSmall,this.y*32+yoffh+this.ySmall-this.fallingY*2);
 				}else
 				{
-					this.sprites[dex+0].draw(can,this.x*32+xoffh,this.y*32+yoffh);
+					this.sprites[dex+0].draw(can,this.x*32+xoffh+this.xSmall,this.y*32+yoffh+this.ySmall-this.fallingY*2);
 				}
 			}else
 			{
-				this.sprites[dex+0].draw(can,this.x*32+xoffh,this.y*32+yoffh);
+				this.sprites[dex+0].draw(can,this.x*32+xoffh+this.xSmall,this.y*32+yoffh+this.ySmall-this.fallingY*2);
 			}
 		}
 	}
 }
+bomb.prototype.tryMove=function(dir)
+	{
+		if(dir==0)
+		{
+			if(this.y<3)
+			{
+				return false;
+			}
+			if(true)//(this.room.walkable(this.x,this.y-1,false,this))
+			{
+				//this.lastX=this.x;
+				//this.lastY=this.y;
+				this.y--;
+			}else
+			{
+				return false;
+			}
+		}else if(dir==2)
+		{
+			if(this.y>12)
+			{
+				return false;
+			}
+			if(true)//(this.room.walkable(this.x,this.y+1,false,this))
+			{
+				//this.lastX=this.x;
+				//this.lastY=this.y;
+				this.y++;
+			}else
+			{
+				return false;
+			}
+		}else if(dir==3)
+		{
+			if(this.x<3)
+			{
+				return false;
+			}
+			if(true)//(this.room.walkable(this.x-1,this.y,false,this))
+			{
+				//this.lastX=this.x;
+				//this.lastY=this.y;
+				this.x--;
+			}else
+			{
+				return false;
+			}
+		}else if(dir==1)
+		{
+			if(this.x>17)
+			{
+				return false;
+			}
+			if(true)//(this.room.walkable(this.x+1,this.y,false,this))
+			{
+				//this.lastX=this.x;
+				//this.lastY=this.y;
+				this.x++;
+			}else
+			{
+				return false;
+			}
+		}
+		return true; 
+	}
+bomb.prototype.canMove=function(dir)
+	{
+		if(dir==0)
+		{
+			if(this.y<3)
+			{
+				return false;
+			}
+			if(false)//(!this.room.walkable(this.x,this.y-1,false,this))
+			{
+				return false;
+			}else
+			{
+				return true;
+			}
+		}else if(dir==2)
+		{
+			if(this.y>11)
+			{
+				return false;
+			}
+			if(false)//(!this.room.walkable(this.x,this.y+1,false,this))
+			{
+				return false;
+			}else
+			{
+				return true;
+			}
+		}else if(dir==3)
+		{
+			if(this.x<3)
+			{
+				return false;
+			}
+			if(false)//(!this.room.walkable(this.x-1,this.y,false,this))
+			{
+				return false;
+			}else
+			{
+				return true;
+			}
+		}else if(dir==1)
+		{
+			if(this.x>16)
+			{
+				return false;
+			}
+			if(false)//(!this.room.walkable(this.x+1,this.y,false,this))
+			{
+				return false;
+			}else
+			{
+				return true;
+			}
+		}
+		return true; 
+	}
+bomb.prototype.toss=function(dir,force)
+{
+	playSound("throw");
+	this.fallingUp=24;
+	if(force==null) {force=1000000.6;}
+	if(dir==0)
+	{
+		this.ya=-force;
+	}
+	if(dir==1)
+	{
+		this.xa=+force;
+	}
+	if(dir==2)
+	{
+		this.ya=+force;
+	}
+	if(dir==3)
+	{
+		this.xa=-force;
+	}
+}
 
+bomb.prototype.incMove=function()
+{
+	this.xSmall+=this.xv;
+	this.ySmall+=this.yv;
+	this.xv+=this.xa;
+	this.yv+=this.ya;
+	if(this.fallingY<1){
+		if(this.xv>0)
+		{
+			this.xv-=this.friction/2;
+			if(this.xv<0)
+			{
+				this.xv=0;
+			}
+		}else if(this.xv<0)
+		{
+			this.xv+=this.friction/2;
+			if(this.xv>0)
+			{
+				this.xv=0;
+			}
+		}
+	}else
+	{
+		if(this.xv>0)
+		{
+			this.xv-=this.friction/3;
+			if(this.xv<0)
+			{
+				this.xv=0;
+			}
+		}else if(this.xv<0)
+		{
+			this.xv+=this.friction/2;
+			if(this.xv>0)
+			{
+				this.xv=0;
+			}
+		}
+
+	}
+	if(this.yv>0)
+	{
+		this.yv-=this.friction/2;
+		if(this.yv<0)
+		{
+			this.yv=0;
+		}
+	}else if(this.yv<0)
+	{
+		this.yv+=this.friction/2;
+		if(this.yv>0)
+		{
+			this.yv=0;
+		}
+	}
+	/*if(this.xa>0)
+	{
+		this.xa-=this.decel;
+		if(this.xa<0)
+		{
+			this.xa=0;
+		}
+	}if(this.xa<0)
+	{
+		this.xa+=this.decel;
+		if(this.xa>0)
+		{
+			this.xa=0;
+		}
+	}
+	if(this.ya>0)
+	{
+		this.ya-=this.decel;
+		if(this.ya<0)
+		{
+			this.ya=0;
+		}
+	}if(this.ya<0)
+	{
+		this.ya+=this.decel;
+		if(this.ya>0)
+		{
+			this.ya=0;
+		}
+	}(*/
+	if(this.xv>this.peakXV)
+	{
+		this.xv=this.peakXV;
+		this.xa=0;
+	}
+	if(this.yv>this.peakYV)
+	{
+		this.yv=this.peakYV;
+		this.ya=0;
+	}
+	if(this.xv<-this.peakXV)
+	{
+		this.xv=-this.peakXV;
+		this.xa=0;
+	}
+	if(this.yv<-this.peakYV)
+	{
+		this.yv=-this.peakYV;
+		this.ya=0;
+	}
+	if(this.ySmall>SMALL_BREAK)
+	{
+		if(this.canMove(2))
+		{
+			this.ySmall=-SMALL_BREAK;
+			this.tryMove(2);
+			
+			//return true;
+		}else
+		{
+			this.ySmall=SMALL_BREAK;
+			this.ya=0;
+			//return false;
+		}
+	}else if(this.ySmall<-SMALL_BREAK)
+	{
+		if(this.canMove(0))
+		{
+			this.ySmall=SMALL_BREAK;
+			this.tryMove(0);
+			//return true;
+		}else
+		{
+			this.ySmall=SMALL_BREAK;
+			this.ya=0;
+			//return false;
+		}
+	}
+	if(this.xSmall>SMALL_BREAK)
+	{
+		if(this.canMove(1))
+		{
+			this.xSmall=-SMALL_BREAK;
+			this.tryMove(1);
+			//return true;
+		}else
+		{
+			this.xSmall=SMALL_BREAK;
+			this.xa=0;
+			//return false;
+		}
+	}else if(this.xSmall<-SMALL_BREAK)
+	{
+		if(this.canMove(3))
+		{
+			this.xSmall=SMALL_BREAK;
+			this.tryMove(3);
+			//return true;
+		}else
+		{
+			this.xSmall=SMALL_BREAK;
+			this.xa=0;
+			//return false;
+		}
+	}
+	if((this.room.tiles[this.x][this.y].data>19) && (this.room.tiles[this.x][this.y].data<25))
+	{
+		this.underWater=true;
+	}
+}
 var actionID={};
 actionID.Boomarang=0;
 actionID.Bow=1;
@@ -345,6 +682,7 @@ function entity(croom)
 	this.baseSpeed=4;
 	this.speed=4;
 	this.team=0;
+	this.grabbed=null;
 	this.swordDamage=10;
 	this.enteredX=this.x;
 	this.enteredY=this.y;
@@ -529,6 +867,12 @@ function entity(croom)
 		this.shakingRight=true;
 	}
 	
+	this.grab=function(obj)
+	{
+		playSound("grab");
+		this.grabbed=obj;
+	}
+	
 	this.dive=function()
 	{
 		if((this.room.tiles[this.x][this.y].data<20) || (this.room.tiles[this.x][this.y].data>24))
@@ -612,6 +956,7 @@ function entity(croom)
 		edsbomb.armed=true;
 		edsbomb.timePlaced=new Date().getTime();
 		this.activebombs.push(edsbomb);
+		this.room.bombs.push(edsbomb);
 	}
 	this.getEquipped=function(secondary)
 	{
@@ -984,6 +1329,7 @@ function entity(croom)
 	{
 		if(this.dashing) {return false;}
 		this.dashing=true;
+		this.stepping=true;
 		this.dashStart=new Date().getTime();
 		
 	}
@@ -1018,34 +1364,123 @@ function entity(croom)
 			if(glen)
 			{
 				glen.buried=false;
+				glen.toss(miles.dir);
+				glen.fallingUp=12;
+				glen.friction=0.1;
+				return true;
 			}else if(Math.random()*10>4)
 			{
 				var bmoke=3;
 				if(Math.random()*10>8)
 				{
-					makeObject(spotX,spotY,this.room,ObjectID.Shell);
-					return;
+					var ben=makeObject(spotX,spotY,this.room,ObjectID.Shell);
+					ben.toss(miles.dir);
+					ben.fallingUp=12;
+					ben.friction=0.1;
+					return true;
 				}
 				if((this.hp<miles.maxHp) && (Math.random()*10<3))
 				{
-					makeObject(spotX,spotY,this.room,ObjectID.Heart);
-					return;
+					var ben=makeObject(spotX,spotY,this.room,ObjectID.Heart);
+					ben.toss(miles.dir);
+					ben.fallingUp=12;
+					ben.friction=0.1;
+					return true;
 				}
 				if((this.has[hasID.Bow]) && (Math.random()*10<3))
 				{
-					makeObject(spotX,spotY,this.room,ObjectID.Arrow);
-					return;
+					var ben=makeObject(spotX,spotY,this.room,ObjectID.Arrow);
+					ben.toss(miles.dir);
+					ben.fallingUp=12;
+					ben.friction=0.1;
+					return true;
 				}
 				if((this.has[hasID.Bomb]) && (Math.random()*10<3))
 				{
-					makeObject(spotX,spotY,this.room,ObjectID.BombRefill);
-					return;
+					var ben=makeObject(spotX,spotY,this.room,ObjectID.BombRefill);
+					ben.toss(miles.dir);
+					ben.fallingUp=12;
+					ben.friction=0.1;
+					return true;
 				}
 				var pojk=500+Math.floor(Math.random()*2);
-				makeObject(spotX,spotY,this.room,pojk);
+				var ben=makeObject(spotX,spotY,this.room,pojk);
+				ben.toss(miles.dir);
+				ben.fallingUp=12;
+				ben.friction=0.1;
+				return true;
+				
 			}
 			return true;
 		}
+		return false;
+	}
+	
+	this.getContext=function()
+	{
+		var pled=miles.getFacingEntity();
+		if((pled) && (pled.team==this.team))
+		{
+			return "talk to "+pled.name;
+		}
+		if(this.grabbed!=null)
+		{
+			return "throw "+this.grabbed.name;
+		}
+		var mled=this.getFacingBomb();
+		if(mled)
+		{
+			return "grab bomb";
+		}
+		gled=this.getFacingObject();
+		if(gled)
+		{
+			if((gled.type==ObjectID.Peg) && (this.has[hasID.Hammer]))
+			{
+				return "hammer peg";
+			}
+			if((gled.type==ObjectID.Rock) && (this.has[hasID.Glove]))
+			{
+				return "lift rock";
+			}else if((gled.type==ObjectID.Pot) && (this.has[hasID.Glove]))
+			{
+				return "lift pot";
+			}else if((gled.type==ObjectID.Lamp) || (gled.type==ObjectID.TallLamp) && (this.has[hasID.Lantern]))
+			{
+				if(gled.on)
+				{
+					return "extinguish lamp";
+				}else
+				{
+					return "light lamp";
+				}
+			}else if((gled.type==ObjectID.Candle) && (this.has[hasID.Lantern]))
+			{
+				if(gled.on)
+				{
+					return "extinguish candle";
+				}else
+				{
+					return "light candle";
+				}
+			}else if(gled.type==ObjectID.Curtains)
+			{
+				if(gled.on)
+				{
+					return "open curtains";
+				}else
+				{
+					return "close curtains";
+				}
+			}else if((gled.type==ObjectID.Sign) && (gled.y<this.y))
+			{
+				return "read sign";
+			}else if((gled.type==ObjectID.Chest) && (gled.y<this.y))
+			{
+				return "open chest";
+			}
+		}
+		return null;
 	}
 	
 	this.useItem=function(secondary)
@@ -1071,6 +1506,23 @@ function entity(croom)
 				bConsoleBox.log("You can't dig here.","yellow");
 			}
 
+		}else if(this.getEquipped(secondary)==ObjectID.Hookshot)
+		{
+	
+			if(this.dir==0)
+			{
+				this.shootHook(90);
+			}else if(this.dir==1)
+			{
+				this.shootHook(180);
+			}else if(this.dir==2)
+			{
+				this.shootHook(270);
+			}else if(this.dir==3)
+			{
+				this.shootHook(0);
+			}
+			
 		}else if(this.getEquipped(secondary)==ObjectID.Bow)
 		{
 			if(this.arrows>0)
@@ -1117,6 +1569,7 @@ function entity(croom)
 			if(this.dashing)
 			{
 				this.dashing=false;
+				this.stepping=false;
 			}else
 			{
 				this.dash();
@@ -1387,6 +1840,40 @@ function entity(croom)
 		this.projectiles.push(poot);
 	}
 	
+	this.shootHook=function(ang)
+	{
+		//this.acting=true;
+		//this.action=actionID.Hookshot;
+		//this.actfor=750;
+		//this.actStart=new Date().getTime();
+
+		var poot=new projectile(this);
+
+		poot.exists=true; 
+		poot.angle=ang;
+		if(ang==270) //hack
+		{
+			poot.x+=32;
+		}
+		if(ang==0)
+		{
+			poot.y+=28;
+		}
+		if(ang==225)
+		{
+			poot.x+=32;
+		}
+		if(ang==315)
+		{
+			poot.x+=32;
+			poot.y+=32;
+		}
+		poot.xv=-Math.cos((Math.PI / 180)*Math.floor(ang));
+		poot.yv=-Math.sin((Math.PI / 180)*Math.floor(ang));
+		poot.setup(ProjTypes.Hookshot);
+		this.projectiles.push(poot);
+	}
+	
 	this.shootBeam=function()
 	{
 		if((this.swimming) ||(this.holding))
@@ -1635,7 +2122,7 @@ function entity(croom)
 				}
 				
 			}
-			if((this.fallingY>0) && (this.room.tiles[this.x][this.y].data!=DungeonTileType.Hole))
+			if((this.fallingY>0))// && (this.room.isHole(this.x,this.y)))
 			{
 				if(this.fallingY>100)
 				{
@@ -1754,7 +2241,7 @@ function entity(croom)
 		}
 		for(var i=0;i<this.room.objects.length;i++)
 		{
-			if((this.room.objects[i].x==gx) && (this.room.objects[i].y==gy))
+			if((this.room.objects[i].x==gx) && (this.room.objects[i].y==gy)&& (this.room.objects[i].type!=ObjectID.PotStand)&&(this.room.objects[i].type!=ObjectID.ToggleSwitch))
 			{
 				return this.room.objects[i];
 			}
@@ -1802,8 +2289,73 @@ function entity(croom)
 		return null;
 	}
 	
+	this.closeEnoughTo=function(obj)
+	{
+		if((obj.x==this.x) && (obj.y==this.y))
+		{
+			return true;
+		}
+		
+		if((obj.x==this.x+1) &&(obj.y==this.y) && (this.xSmall>8))
+		{
+			return true;
+		}else if((obj.x==this.x-1) &&(obj.y==this.y) && (this.xSmall<-8))
+		{
+			return true;
+		}else if((obj.x==this.x) &&(obj.y==this.y+1) && (this.ySmall>8))
+		{
+			return true;
+		}else if((obj.x==this.x) &&(obj.y==this.y-1) && (this.ySmall<-8))
+		{
+			return true;
+		}
+		
+		return false;
+		
+	}
+	
+	this.getFacingBomb=function()
+	{
+		var gx=this.x;
+		var gy=this.y;
+		if(this.dir==0)
+		{
+			gy--;
+		}else if(this.dir==1)
+		{
+			gx++;
+		}else if(this.dir==2)
+		{
+			gy++;
+		}else if(this.dir==3)
+		{
+			gx--;
+		}
+		for(var i=0;i<this.room.bombs.length;i++)
+		{
+			if((this.room.bombs[i].x==this.x) && (this.room.bombs[i].y==this.y))
+			{
+				return this.room.bombs[i];
+			}else if((this.room.bombs[i].x==gx) && (this.room.bombs[i].y==gy))
+			{
+				return this.room.bombs[i];
+			}
+			
+		}
+		
+		return null;
+	}
+	
 	this.update=function()
 	{
+		if(this.grabbed)
+		{
+			this.grabbed.x=this.x;
+			this.grabbed.y=this.y;
+			this.grabbed.xSmall=this.xSmall;
+			this.grabbed.ySmall=this.ySmall;
+			this.grabbed.fallingY=this.fallingY+24;
+		}
 		for(var i=0;i<this.projectiles.length;i++)
 		{
 			this.projectiles[i].update();
@@ -1852,6 +2404,7 @@ function entity(croom)
 		{
 			this.dashing=false;
 			this.reallyDashing=false;
+			this.stepping=false;
 			if((this.swimming) && (!this.has[hasID.Flippers]))
 			{
 				this.hurt(20);
@@ -1870,6 +2423,8 @@ function entity(croom)
 				if(this.incMove())
 				{
 					playSound("dash");
+					this.walkAnimate();
+					this.stepping=true;
 					var angrand=Math.random()*12;
 					angrand-=4;
 					var xrand=Math.random()*12;
@@ -1882,6 +2437,7 @@ function entity(croom)
 				{
 					this.dashing=false;
 					this.reallyDashing=false;
+					this.stepping=false;
 					//bounce back? 
 					playSound("rebound");
 					this.shake();
@@ -1931,13 +2487,13 @@ function entity(croom)
 						{
 							this.lastX=this.x;
 							this.lastY=this.y;
-							curDungeon.changeFloor(true,true);
+							curDungeon.changeFloor(true,true,this);
 							break;
 						}else
 						{
 							this.lastX=this.x;
 							this.lastY=this.y;
-							curDungeon.changeFloor(false,true);
+							curDungeon.changeFloor(false,true,this);
 							break;
 						}
 					}
@@ -2214,7 +2770,7 @@ function entity(croom)
 		{
 			this.swinging=false;
 			this.poking=false;
-			this.fallingY-=5;
+			this.fallingY-=4;
 			if(this.fallingY<1)
 			{
 				if(this.room.tiles[this.x][this.y].data==DungeonTileType.ReallyUnstable)
@@ -2246,12 +2802,23 @@ function entity(croom)
 		}
 		for(var i=0;i<this.room.objects.length;i++)
 		{
+			
 			if(this.fallingY<1)
 			{
-		
+				
 				if(this.room.objects[i].type==ObjectID.Spikes)
 				{
 					if((this.room.objects[i].on)&&(this.room.objects[i].x==this.x) && (this.room.objects[i].y==this.y))
+					{
+						this.hurt(10); 
+					}
+				}
+				if((this.room.objects[i].hurty) && (this.closeEnoughTo(this.room.objects[i])))
+				{
+					this.hurt(10);
+				}else if(this.room.objects[i].type==ObjectID.SpikeyThing)
+				{
+					if((this.room.objects[i].x==this.x) && (this.room.objects[i].y==this.y))
 					{
 						this.hurt(10); 
 					}
@@ -2275,7 +2842,7 @@ function entity(croom)
 							this.room.objects[i].playerActivate();
 						}
 					}
-				}else if((this.room.objects[i].pickupable) &&(this.room.objects[i].x==this.x) && (this.room.objects[i].y==this.y))
+				}else if((this.room.objects[i].pickupable) &&(this.closeEnoughTo(this.room.objects[i])))//(this.room.objects[i].x==this.x) && (this.room.objects[i].y==this.y))
 				{
 					if(!this.room.objects[i].underWater)
 					{
@@ -2315,9 +2882,20 @@ function entity(croom)
 					//this.lastX=this.x;
 					//this.lastY=this.y;
 				}
-			}else if((this.room.tiles[this.x][this.y].data==DungeonTileType.Hole) &&(!this.falling) &&(!this.jumping))
+			}else if((this.room.isHole(this.x,this.y)) &&(!this.falling) &&(!this.jumping))
 			{
-				
+				if(this.room.tiles[this.x][this.y].data==DungeonTileType.DeathHole)
+				{
+					//this.fallingY=0;
+					this.hurt(20);
+					//this.falling=false;
+					this.x=this.enteredX;
+					this.y=this.enteredY;
+					this.lastX=this.x;
+					this.lastY=this.y;
+					return;
+					//damage and find nearest standable point. 
+				}
 				if(this.isPlayer)
 				{	
 					playSound("fall");
@@ -2331,6 +2909,7 @@ function entity(croom)
 				this.fallingY=150;
 				this.dashing=false;
 				this.reallyDashing=false;
+				this.stepping=false;
 				this.xSmall=0;
 				this.ySmall=0;
 				if(this.isPlayer)
@@ -2342,6 +2921,8 @@ function entity(croom)
 						this.hurt(20);
 						this.x=this.enteredX;
 						this.y=this.enteredY;
+						this.lastX=this.x;
+						this.lastY=this.y;
 						//damage and find nearest standable point. 
 					}else if(!curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active)
 					{
@@ -2351,14 +2932,16 @@ function entity(croom)
 						this.hurt(20);
 						this.x=this.enteredX;
 						this.y=this.enteredY;
-					}else
+						this.lastX=this.x;
+						this.lastY=this.y;
+					}else 
 					{
 						if(this.isPlayer)
 						{
-							curDungeon.roomZ--;
-							this.room=curDungeon.curRoom();
-							this.room.explored=true;
-							this.room.hidden=false;
+								curDungeon.roomZ--;
+								this.room=curDungeon.curRoom();
+								this.room.explored=true;
+								this.room.hidden=false;
 						}else
 						{
 							this.room=curDungeon.rooms[curDungeon.roomZ-1][this.room.x][this.room.y];

@@ -1,6 +1,9 @@
 var numLoots=11;
 var LOAD_COUNT=0;
+var Object_Count=0;
 
+var Spikey_Accel=100;
+var Spikey_Vel=7;
 
 var ObjectID={};
 var objectName=new Array()
@@ -182,6 +185,8 @@ ObjectID.Apple=506;
 function object(oroom) //not a tile, not an enemy
 {
 	this.sprites=new Array();
+	this.ID=Object_Count;
+	Object_Count++;
 	this.curSprite=0;
 	this.on=false;
 	this.ctype=0;
@@ -189,7 +194,15 @@ function object(oroom) //not a tile, not an enemy
 	this.hurty=false; 
 	this.pickupable=false;
 	this.type=0;
+	this.returning=false;
+	this.targetedX=false;
+	this.targetedY=false;
+	this.targX=0;
+	this.targY=0;
+	this.homeX=0;
+	this.homeY=0;
 	this.persistTime=30;
+	this.grabbable=false;
 	this.timed=false;
 	this.underWater=false;
 	this.buried=false; 
@@ -202,8 +215,10 @@ function object(oroom) //not a tile, not an enemy
 	this.hookable=false;
 	this.hidden=false;
 	this.active=false;
+	this.activateOnImpact=false;
 	this.hasSecret=false;
 	this.cooldown=0;
+	this.frontOnly=false;
 	this.lastActivated=0; 
 	this.linkDescriptions=new Array();
 	this.exists=true;
@@ -211,9 +226,21 @@ function object(oroom) //not a tile, not an enemy
 	this.usable=false; //is an item that can be used like a bomb or a potion.
 	this.x=2;
 	this.y=2;
+	this.xv=0;
+	this.yv=0;
+	this.xa=0;
+	this.ya=0;
+	this.decel=0.000;
+	this.friction=0.05;
+	this.fallingY=0;
+	this.xSmall=0;
+	this.ySmall=0;
+	this.peakXV=2;
+	this.peakYV=2;
 	this.topLayer=new Array();
 	this.ani=0;
 	this.aniRate=30;
+	this.orientation=0;
 	this.curTopSprite=0;
 	this.width=32;
 	this.height=32;
@@ -253,10 +280,37 @@ object.prototype.getScreenY=function()
 	return this.y*32;
 }
 
+object.prototype.toss=function(dir,force)
+{
+	this.fallingUp=24;
+	playSound("throw");
+	if(force==null) {force=10000;}
+	if(dir==0)
+	{
+		this.ya=-force;
+	}
+	if(dir==1)
+	{
+		this.xa=+force;
+	}
+	if(dir==2)
+	{
+		this.ya=+force;
+	}
+	if(dir==3)
+	{
+		this.xa=-force;
+	}
+}
+
 object.prototype.move=function(x,y) //brings along what is needed (like the flame of the lamp)
 {
 	this.x=x;
 	this.y=y;
+	this.homeX=this.x;
+	this.homeY=this.y;
+	this.xSmall=0;
+	this.ySmall=0;
 	this.underWater=false;
 	if((this.room.tiles[this.x][this.y].data>19) && (this.room.tiles[this.x][this.y].data<25))
 	{
@@ -264,10 +318,10 @@ object.prototype.move=function(x,y) //brings along what is needed (like the flam
 	}
 	if(this.flame)
 	{
-		this.flame.x=this.x*32+xOffset;
-		this.flame.y=this.y*32+yOffset-16;
-		this.flame.flare.x=this.x*32+xOffset;
-		this.flame.flare.y=this.y*32+yOffset-16;
+		this.flame.x=this.x*32+xOffset+this.xSmall;
+		this.flame.y=this.y*32+yOffset-16+this.ySmall;
+		this.flame.flare.x=this.x*32+xOffset+this.xSmall;
+		this.flame.flare.y=this.y*32+yOffset-16+this.ySmall;
 	}
 }
 
@@ -283,19 +337,21 @@ object.prototype.setup=function(id,par)
 		this.blockArrows=true;
 	    this.sprites=new Array();
 		this.sprites.push(Sprite("talllamp"));
+		this.topLayer.push(Sprite("talllamptopoff"));
 		this.topLayer.push(Sprite("talllamptop0"));
 		this.topLayer.push(Sprite("talllamptop1"));
 		this.topLayer.push(Sprite("talllamptop2"));
 		this.topLayer.push(Sprite("talllamptop3"));
+		this.curTopSprite=1;
 	    this.name="Tall lamp";
 		this.playerUsable=true;
 		this.flame=new flame(this.room.lights);
 		this.flame.x=this.x*32+xOffset;
 		this.flame.y=(this.y-1)*32+yOffset-12;
-		this.flame.flare.alive=true;
+		//this.flame.flare.alive=true;
 		this.flame.type=0;
-		this.flame.alive=true;
-		this.room.fires.push(this.flame);
+		this.flame.alive=false;
+		//this.room.fires.push(this.flame);
 
 		this.playerActivate=function()
 		{
@@ -323,8 +379,6 @@ object.prototype.setup=function(id,par)
 				this.flame.x=this.x*32+xOffset;//miles.x;
 				this.flame.y=(this.y-1)*32+yOffset-16;//miles.y;
 				this.flame.type=0;
-				this.flame.alive=false;
-				this.flame.flare.alive=false;
 				playSound("lamp");
 			}
 		}
@@ -340,7 +394,7 @@ object.prototype.setup=function(id,par)
 		this.flame.type=0;
 		this.playerUsable=true;
 		this.flame.alive=false;
-		this.room.fires.push(this.flame);
+		//this.room.fires.push(this.flame);
 		
 		this.playerActivate=function()
 		{
@@ -382,7 +436,7 @@ object.prototype.setup=function(id,par)
 		this.flame.type=0;
 		this.playerUsable=true;
 		this.flame.alive=false;
-		this.room.fires.push(this.flame);
+		//this.room.fires.push(this.flame);
 		
 		this.playerActivate=function()
 		{
@@ -418,6 +472,7 @@ object.prototype.setup=function(id,par)
 		this.sprites=new Array();
 		this.sprites.push( Sprite("sign"));
 		this.name="sign";
+		this.frontOnly=true;
 		this.text="Snoke";
 		if(par!=null){
 			this.text=par;
@@ -449,6 +504,7 @@ object.prototype.setup=function(id,par)
 		this.sprites.push( Sprite("chest"));
 		this.sprites.push( Sprite("chestopen"));
 		this.name="Chest";
+		this.frontOnly=true;
 		//this.loot=0;
 		this.playerActivate=function(){
 			if(this.curSprite==1) {return;}
@@ -583,6 +639,7 @@ object.prototype.setup=function(id,par)
 		this.alwaysWalkable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			bConsoleBox.log("You found a shield!");
 			btext="You found a shield!";
@@ -600,6 +657,7 @@ object.prototype.setup=function(id,par)
 		this.alwaysWalkable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			if(miles.has[hasID.BestShield])
 			{
@@ -627,6 +685,7 @@ object.prototype.setup=function(id,par)
 		this.alwaysWalkable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			bConsoleBox.log("You found a shiney shield!");
 			btext="You found a shiny shield!";
@@ -647,6 +706,7 @@ object.prototype.setup=function(id,par)
 		this.alwaysWalkable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			bConsoleBox.log("You found a magic boomarang!");
 			btext="You found a magic boomarang";
@@ -682,6 +742,7 @@ object.prototype.setup=function(id,par)
 		this.alwaysWalkable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			bConsoleBox.log("You got the super bombs!");
 			btext="You got the super bombs!";
@@ -710,6 +771,7 @@ object.prototype.setup=function(id,par)
 		this.alwaysWalkable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			bConsoleBox.log("You got the silver arrows!");
 			btext="You got the silver arrows!";
@@ -939,6 +1001,7 @@ object.prototype.setup=function(id,par)
 			editor.linkingFrom=this;
 		}
 		this.activate=function(){
+			if(this.buried){return;}
 			playSound("switch");
 			this.on=!this.on
 			if(this.on)
@@ -983,11 +1046,14 @@ object.prototype.setup=function(id,par)
 		this.playerUsable=false;
 		this.sprites.push(Sprite("potstand"));
 		this.name="Pot stand";
-		this.playerActivate=this.activate;
+		this.playerActivate=function() {};//this.activate;
 	}else if (this.type==ObjectID.SpikeyThing) {
 		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.hurty=true; 
+		//this.friction=0;
+		this.homeX=this.x;
+		this.homeY=this.y;
 		this.playerUsable=false;
 		this.sprites.push(Sprite("spikey"));
 		this.name="Spikey thing";
@@ -1136,6 +1202,8 @@ object.prototype.setup=function(id,par)
 	}else if (this.type==ObjectID.Pot) {
 		this.sprites=new Array();
 		this.bombable=true;
+		this.grababble=true;
+		this.activateOnImpact=true;
 		this.sprites.push(Sprite("pot"));
 		this.sprites.push(Sprite("shatter0"));
 		this.sprites.push(Sprite("shatter1"));
@@ -1146,8 +1214,16 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("shatter6"));
 		this.sprites.push(Sprite("shatter7"));
 		this.name="Pot";
+		this.swordActivate=function() {
+			if(miles.has[hasID.MasterSword])
+			{
+				return true;
+			}
+			return false;
+		}
 		this.activate=function()
 		{
+			
 			if(!this.on)
 			{
 				playSound("shatter");
@@ -1180,12 +1256,14 @@ object.prototype.setup=function(id,par)
 				}
 			}
 		}
-		this.playerActivate=this.activate;
+		this.playerActivate=function(){};//this.activate;
 	}else if (this.type==ObjectID.Rock) {
 		this.sprites=new Array();
 		this.bombable=false;//true;
 		this.on=true;
+		this.grababble=true;
 		this.blockArrows=true;
+		this.activateOnImpact=true;
 		this.sprites.push(Sprite("rock"));
 		this.sprites.push(Sprite("shatter0"));
 		this.sprites.push(Sprite("shatter1"));
@@ -1260,18 +1338,6 @@ object.prototype.setup=function(id,par)
 		this.name="rock";
 		this.activate=function()
 		{
-			if(false)//!miles.has[hasID.Glove]) //need glvoes
-			{
-				if(OPTIONS.SafeMode)
-				{
-					bConsoleBox.log("Too heavy to lift with your bear hands!", "yellow"); 
-				}else
-				{
-					bConsoleBox.log("No glove no love!", "yellow"); 
-					playSound("error");
-				}
-				return false;
-			} 
 			if(this.on)
 			{
 				playSound("shatter");
@@ -1322,18 +1388,6 @@ object.prototype.setup=function(id,par)
 		this.name="cracked rock";
 		this.activate=function()
 		{
-			if(false)// !miles.has[hasID.Glove]) //need glvoes
-			{
-				if(OPTIONS.SafeMode)
-				{
-					bConsoleBox.log("Too heavy to lift with your bear hands!", "yellow"); 
-				}else
-				{
-					bConsoleBox.log("No glove no love!", "yellow"); 
-					playSound("error");
-				}
-				return false;
-			} 
 			if(this.on)
 			{
 				playSound("shatter");
@@ -1427,6 +1481,8 @@ object.prototype.setup=function(id,par)
 		this.sprites=new Array();
 		this.curSprite=1;
 		this.on=true;
+		this.orientation=0;
+		this.swordActivate=function(){return true;};
 		this.alwaysWalkable=true;//false;
 //		console.log(this.x,this.y);
 		if(this.y==1)
@@ -1435,24 +1491,28 @@ object.prototype.setup=function(id,par)
 			this.sprites.push(Sprite("curtains0"));
 			this.width=64;
 			this.height=44
+			this.orientation=0;
 		}else if(this.x==18)
 		{
 			this.sprites.push(Sprite("curtainsopen1"));
 			this.sprites.push(Sprite("curtains1"));
 			this.width=44;
 			this.height=64
+			this.orientation=1;
 		}else if(this.y==13)
 		{
 			this.sprites.push(Sprite("curtainsopen2"));
 			this.sprites.push(Sprite("curtains2"));
 			this.width=64;
 			this.height=44
+			this.orientation=2;
 		}else if(this.x==1)
 		{
 			this.sprites.push(Sprite("curtainsopen3"));
 			this.sprites.push(Sprite("curtains3"));
 			this.width=54;
 			this.height=64
+			this.orientation=3;
 		}else
 		{
 			this.sprites.push(Sprite("curtainsopen0"));
@@ -1478,6 +1538,10 @@ object.prototype.setup=function(id,par)
 			{
 				playSound("secret");
 				this.exists=false;
+				var pend=this.room.getSpecificDoor(this.x,this.y,this.orientation);
+				if(pend){
+					pend.on=false;
+				}
 			}
 		}
 		this.playerActivate=this.activate;
@@ -1794,6 +1858,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			bConsoleBox.log("You found a heart container!");
 			miles.holding=this.sprites[0];
@@ -1811,8 +1876,9 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
-			bConsoleBox.log("You found the Roc's Feather! Eventually it might let you jump.");
+			bConsoleBox.log("You found the Roc's Feather! You can use it to jump.");
 			miles.holding=this.sprites[0];
 			this.exists=false;
 			miles.has[hasID.Feather]=true;
@@ -1828,6 +1894,7 @@ object.prototype.setup=function(id,par)
 		this.usable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			bConsoleBox.log("You found a magic mirror. Use it to return to the start of the dungeon.");
 			miles.holding=this.sprites[0];
@@ -1845,6 +1912,7 @@ object.prototype.setup=function(id,par)
 		this.usable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			bConsoleBox.log("You found a shovel! Look for soft ground!");
 			miles.holding=this.sprites[0];
@@ -1866,6 +1934,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			if(!miles.has[hasID.MasterSword])
 			{
 				playSound("itemfanfare");
@@ -1892,6 +1961,7 @@ object.prototype.setup=function(id,par)
 			this.pickupable=true;
 			this.activate=function()
 			{
+				if(this.buried){return;}
 				if(!miles.has[hasID.Sword])
 				{
 					playSound("itemfanfare");
@@ -1915,6 +1985,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			if(!miles.has[hasID.Bow])
 			{
 				playSound("itemfanfare");
@@ -1940,6 +2011,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			if(!miles.has[hasID.Glove])
 			{
 				playSound("itemfanfare");
@@ -1965,6 +2037,7 @@ object.prototype.setup=function(id,par)
 		this.usable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			if(!miles.has[hasID.Boomarang])
 			{
 				playSound("itemfanfare");
@@ -1989,6 +2062,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			if(!miles.has[hasID.Flippers])
 			{
 				playSound("itemfanfare");
@@ -2014,6 +2088,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			bConsoleBox.log("You found a mushroom!");
 			miles.holding=this.sprites[0];
@@ -2031,6 +2106,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			if(!miles.has[hasID.Boots])
 			{
 				playSound("itemfanfare");
@@ -2056,6 +2132,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			if(!miles.has[hasID.Hookshot])
 			{
 				playSound("itemfanfare");
@@ -2080,6 +2157,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			if(!miles.has[hasID.Lens])
 			{
 				playSound("itemfanfare");
@@ -2105,7 +2183,7 @@ object.prototype.setup=function(id,par)
 		this.usable=true;
 		this.activate=function()
 		{
-				
+			if(this.buried){return;}	
 			if(!miles.has[hasID.Bomb])
 			{
 				bConsoleBox.log("You found your first bombs!");
@@ -2132,6 +2210,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			bConsoleBox.log("You found the lantern. You can light torches with it.");
 			miles.holding=this.sprites[0];
@@ -2147,6 +2226,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			playSound("itemfanfare");
 			bConsoleBox.log("You found the hammer!");
 			miles.holding=this.sprites[0];
@@ -2292,7 +2372,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.activate=function()
 		{
-				
+			if(this.buried){return;}	
 			if(OPTIONS.OverLog)
 			{
 				bCosoleBox.log("You found a bomb.");
@@ -2321,7 +2401,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.activate=function()
 		{
-				
+			if(this.buried){return;}	
 			if(OPTIONS.OverLog)
 			{
 				bConsoleBox.log("You found an Arrow.");
@@ -2350,6 +2430,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			miles.holding=this.sprites[0];
 			bConsoleBox.log("You found a secret seashell! If you collect enough of these, something good is bound to happen!");
 			playSound("itemfanfare");
@@ -2370,6 +2451,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			if(OPTIONS.OverLog)
 			{
 				bConsoleBox.log("You found a rupee.");
@@ -2392,7 +2474,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.activate=function()
 		{
-				
+			if(this.buried){return;}	
 			bConsoleBox.log("You found an apple.");
 			playSound("item");
 			this.exists=false;
@@ -2412,7 +2494,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.activate=function()
 		{
-				
+			if(this.buried){return;}	
 			if(OPTIONS.OverLog)
 			{
 				bConsoleBox.log("You found five rupees.");
@@ -2435,7 +2517,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.activate=function()
 		{
-				
+			if(this.buried){return;}	
 			if(OPTIONS.OverLog)
 			{
 				bConsoleBox.log("You found fifty rupees!");
@@ -2458,6 +2540,7 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.activate=function()
 		{
+			if(this.buried){return;}
 			if(OPTIONS.OverLog)
 			{
 				bConsoleBox.log("You found a heart.");
@@ -2497,9 +2580,324 @@ object.prototype.tileY=function()
 {
 	return Math.floor((this.x-xOffset)/32));
 }*/
+object.prototype.tryMove=function(dir)
+	{
+		if(dir==0)
+		{
+			if(this.y<3)
+			{
+				return false;
+			}
+			if(true)//(this.room.walkable(this.x,this.y-1,false,this))
+			{
+				//this.lastX=this.x;
+				//this.lastY=this.y;
+				this.y--;
+			}else
+			{
+				return false;
+			}
+		}else if(dir==2)
+		{
+			if(this.y>12)
+			{
+				return false;
+			}
+			if(true)//(this.room.walkable(this.x,this.y+1,false,this))
+			{
+				//this.lastX=this.x;
+				//this.lastY=this.y;
+				this.y++;
+			}else
+			{
+				return false;
+			}
+		}else if(dir==3)
+		{
+			if(this.x<3)
+			{
+				return false;
+			}
+			if(true)//(this.room.walkable(this.x-1,this.y,false,this))
+			{
+				//this.lastX=this.x;
+				//this.lastY=this.y;
+				this.x--;
+			}else
+			{
+				return false;
+			}
+		}else if(dir==1)
+		{
+			if(this.x>17)
+			{
+				return false;
+			}
+			if(true)//(this.room.walkable(this.x+1,this.y,false,this))
+			{
+				//this.lastX=this.x;
+				//this.lastY=this.y;
+				this.x++;
+			}else
+			{
+				return false;
+			}
+		}
+		return true; 
+	}
+object.prototype.canMove=function(dir)
+	{
+		if(dir==0)
+		{
+			if(this.y<3)
+			{
+				return false;
+			}
+			if(false)//(!this.room.walkable(this.x,this.y-1,false,this))
+			{
+				return false;
+			}else
+			{
+				return true;
+			}
+		}else if(dir==2)
+		{
+			if(this.y>11)
+			{
+				return false;
+			}
+			if(false)//(!this.room.walkable(this.x,this.y+1,false,this))
+			{
+				return false;
+			}else
+			{
+				return true;
+			}
+		}else if(dir==3)
+		{
+			if(this.x<3)
+			{
+				return false;
+			}
+			if(false)//(!this.room.walkable(this.x-1,this.y,false,this))
+			{
+				return false;
+			}else
+			{
+				return true;
+			}
+		}else if(dir==1)
+		{
+			if(this.x>16)
+			{
+				return false;
+			}
+			if(false)//(!this.room.walkable(this.x+1,this.y,false,this))
+			{
+				return false;
+			}else
+			{
+				return true;
+			}
+		}
+		return true; 
+	}
+
+object.prototype.incMove=function()
+{
+	this.xSmall+=this.xv*2;
+	this.ySmall+=this.yv*2;
+	this.xv+=this.xa*2;
+	this.yv+=this.ya*2;
+	if(this.fallingY<1){
+		if(this.xv>0)
+		{
+			this.xv-=this.friction/2;
+			if(this.xv<0)
+			{
+				this.xv=0;
+			}
+		}else if(this.xv<0)
+		{
+			this.xv+=this.friction/2;
+			if(this.xv>0)
+			{
+				this.xv=0;
+			}
+		}
+	}else
+	{
+		if(this.xv>0)
+		{
+			this.xv-=this.friction/3;
+			if(this.xv<0)
+			{
+				this.xv=0;
+			}
+		}else if(this.xv<0)
+		{
+			this.xv+=this.friction/3;
+			if(this.xv>0)
+			{
+				this.xv=0;
+			}
+		}
+
+	}
+	if(this.yv>0)
+	{
+		this.yv-=this.friction/2;
+		if(this.yv<0)
+		{
+			this.yv=0;
+		}
+	}else if(this.yv<0)
+	{
+		this.yv+=this.friction/2;
+		if(this.yv>0)
+		{
+			this.yv=0;
+		}
+	}
+	/*if(this.xa>0)
+	{
+		this.xa-=this.decel;
+		if(this.xa<0)
+		{
+			this.xa=0;
+		}
+	}if(this.xa<0)
+	{
+		this.xa+=this.decel;
+		if(this.xa>0)
+		{
+			this.xa=0;
+		}
+	}
+	if(this.ya>0)
+	{
+		this.ya-=this.decel;
+		if(this.ya<0)
+		{
+			this.ya=0;
+		}
+	}if(this.ya<0)
+	{
+		this.ya+=this.decel;
+		if(this.ya>0)
+		{
+			this.ya=0;
+		}
+	}*/
+	if(this.xv>this.peakXV)
+	{
+		this.xv=this.peakXV;
+		this.xa=0;
+	}
+	if(this.yv>this.peakYV)
+	{
+		this.yv=this.peakYV;
+		this.ya=0;
+	}
+	if(this.xv<-this.peakXV)
+	{
+		this.xv=-this.peakXV;
+		this.xa=0;
+	}
+	if(this.yv<-this.peakYV)
+	{
+		this.yv=-this.peakYV;
+		this.ya=0;
+	}
+	var frankie=false;
+	if(this.ySmall>SMALL_BREAK)
+	{
+		if(this.canMove(2))
+		{
+			this.ySmall=-SMALL_BREAK;
+			this.tryMove(2);
+			frankie=true;
+			
+		}else
+		{
+			this.ySmall=SMALL_BREAK;
+			this.ya=0;
+
+		}
+	}else if(this.ySmall<-SMALL_BREAK)
+	{
+		if(this.canMove(0))
+		{
+			this.ySmall=SMALL_BREAK;
+			this.tryMove(0);
+			frankie=true;
+		}else
+		{
+			this.ySmall=SMALL_BREAK;
+			this.ya=0;
+		}
+	}
+	if(this.xSmall>SMALL_BREAK)
+	{
+		if(this.canMove(1))
+		{
+			this.xSmall=-SMALL_BREAK;
+			this.tryMove(1);
+			frankie=true;
+		}else
+		{
+			this.xSmall=SMALL_BREAK;
+			this.xa=0;
+	
+		}
+	}else if(this.xSmall<-SMALL_BREAK)
+	{
+		if(this.canMove(3))
+		{
+			this.xSmall=SMALL_BREAK;
+			this.tryMove(3);
+			frankie=true;
+		}else
+		{
+			this.xSmall=SMALL_BREAK;
+			this.xa=0;
+		}
+	}
+	if((this.room.tiles[this.x][this.y].data>19) && (this.room.tiles[this.x][this.y].data<25))
+	{
+		this.underWater=true;
+	}
+	if(this.flame)
+	{
+		this.flame.x=this.x*32+xOffset+this.xSmall;
+		this.flame.y=this.y*32+yOffset-16+this.ySmall;
+		this.flame.flare.x=this.x*32+xOffset+this.xSmall;
+		this.flame.flare.y=this.y*32+yOffset-16+this.ySmall;
+	}
+	return frankie;
+}
+
+
 object.prototype.update=function()
 {
-	if((this.type==0)&&(this.on))
+	if(this.fallingUp>0)
+	{
+		this.fallingY+=1;
+		this.fallingUp-=1;
+	}else if(this.fallingY>0)
+	{
+		this.fallingY-=2;
+		if(this.fallingY<1)
+		{
+			this.fallingY=0;
+			if(this.activateOnImpact)
+			{
+				this.activate();
+			}
+		}
+		
+	}
+	if(((this.type==ObjectID.Lamp) || (this.type==ObjectID.TallLamp))&&(this.on))
 	{
 		this.flame.update();
 	}
@@ -2516,7 +2914,149 @@ object.prototype.update=function()
 			}
 		}
 	}
-	if((this.type==ObjectID.TallLamp)) // && (this.active))
+	
+	if(this.type==ObjectID.SpikeyThing)
+	{
+		if((this.returning)&&(this.x==this.homeX) && (this.y==this.homeY) && (this.xSmall<4) &&(this.ySmall<4))
+		{
+			this.returning=false;
+			this.triggeredX=false;
+			this.triggeredY=false;
+			this.xv=0;
+			this.yv=0;
+			this.xa=0;
+			this.ya=0;
+			this.xSmall=0;
+			this.ySmall=0;
+			//console.log("home");
+		}
+		if(this.returning)
+		{
+			
+			if(this.y==this.homeY)
+			{
+				if(this.homeX>this.x)
+				{
+					this.xv=1;
+				}else if(this.homeX<this.x)
+				{
+					this.xv=-1;
+				}
+			}else if(this.x==this.homeX)
+			{
+				if(this.homeY>this.y)
+				{
+					this.yv=1;
+				}else if(this.homeY<this.y)
+				{
+					this.yv=-1;
+				}
+			}
+		}else if(this.triggeredY)
+		{
+			if((this.room.objectWillBlock(this)) || ((this.x<3)&&(this.xSmall<-4)) ||((this.x>16)&&(this.xSmall>4))|| (this.x==this.targX))
+			{
+				playSound("chink");
+				this.triggeredY=false;
+				this.triggeredX=false;
+				this.returning=true;
+				this.triggeredX=false;
+				this.triggeredY=false;
+				this.xv=0;
+				this.yv=0;
+				this.xa=0;
+				this.ya=0;
+				this.targX=this.homeX;
+				this.targY=this.homeY;
+				this.xSmall=0;
+				this.ySmall=0;
+				return;
+			}
+			if((this.y==this.homeY))
+			{
+				if(this.targX>this.x)
+				{
+					this.xv=Spikey_Vel;
+				}else if(this.targX<this.x)
+				{
+					this.xv=-Spikey_Vel;
+				}else
+				{
+					this.xv=0;
+				}
+			}
+			
+		}else if(this.triggeredX)
+		{
+			if((this.room.objectWillBlock(this))|| ((this.y<3)&&(this.ySmall<-4)) ||((this.y>11) && (this.ySmall>4)) || (this.y==this.targY))
+			{
+				playSound("chink");
+				this.triggeredX=false;
+				this.triggeredY=false;
+				this.returning=true;
+				this.triggeredX=false;
+				this.triggeredY=false;
+				this.xv=0;
+				this.yv=0;
+				this.xa=0;
+				this.ya=0;
+				this.targX=this.homeX;
+				this.targY=this.homeY;
+				this.xSmall=0;
+				this.ySmall=0;
+				return;
+			}
+			if((this.x==this.homeX))
+			{
+				if(this.targY>this.y)
+				{
+					this.yv=Spikey_Vel;
+				}else if(this.targY<this.y)
+				{
+					this.yv=-Spikey_Vel;
+				}else
+				{
+					this.yv=0;
+				}
+			}
+		}else
+		{
+			for(var i=0;i<entities.length;i++)
+			{
+				if((entities[i].room.z==this.room.z) && (entities[i].room.x==this.room.x) &&(entities[i].room.y==this.room.y))
+				{
+					if(entities[i].x==this.x)
+					{
+						if(entities[i].y>this.y)
+						{
+							this.targY=this.y+12;
+						}else
+						{
+							this.targY=this.y-12;
+						}
+						this.triggeredX=true;
+						break;
+					}
+					if(entities[i].y==this.y)
+					{
+						if(entities[i].x>this.x)
+						{
+							this.targX=this.x+18;
+						}else
+						{
+							this.targX=this.x-18;
+						}
+						this.triggeredY=true;
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	this.incMove();
+	
+	if((this.type==ObjectID.TallLamp)  && (this.on))
 	{
 		this.ani++;
 		if(this.ani>this.aniRate)
@@ -2525,7 +3065,7 @@ object.prototype.update=function()
 			this.curTopSprite++;
 			if(this.curTopSprite>this.topLayer.length-1)
 			{
-				this.curTopSprite=0;
+				this.curTopSprite=1;
 			}
 			//console.log(this.curTopSprite);
 		}
@@ -2580,7 +3120,22 @@ object.prototype.drawTop=function(can,cam,xOffh,yOffh)
 	}
 	if(!xOffh) {xOffh=0;}
 	if(!yOffh) {yOffh=0;}
-	this.topLayer[this.curTopSprite].draw(can, this.x*32+xOffh, (this.y-1)*32+1+yOffh);
+	if((this.type==ObjectID.TallLamp) && (this.on))
+	{
+		if((this.room.x==curDungeon.roomX)&& (this.room.y==curDungeon.roomY))
+		{
+			//draw fire?
+			this.flame.draw(can,cam,xOffh+this.xSmall,yOffh-32+this.ySmall-this.fallingY*2);
+		}else
+		{
+			this.flame.sprites[this.flame.aniTrack].draw(can, this.x*32+xOffh+this.xSmall, (this.y-1)*32+yOffh-16+this.ySmall-this.fallingY*2);
+		}
+	}
+	if(!this.on)
+	{
+		this.curTopSprite=0;
+	}
+	this.topLayer[this.curTopSprite].draw(can, this.x*32+xOffh+this.xSmall, (this.y-1)*32+1+yOffh+this.ySmall-this.fallingY*2);
 	can.globalAlpha=1;
 }
 object.prototype.draw=function(can,cam,xOffh,yOffh)
@@ -2613,24 +3168,26 @@ object.prototype.draw=function(can,cam,xOffh,yOffh)
 	if((this.type==ObjectID.Bush) &&(!this.on) && (this.room.tiles[this.x][this.y].data==DungeonTileType.Hole))
 	if(!xOffh) {xOffh=0;}
 	if(!yOffh) {yOffh=0;}
-	this.sprites[this.curSprite].draw(can, this.x*32+xOffh, this.y*32+yOffh);
+	if(this.fallingY>0)
+	shadowSprite[0].draw(can, this.x*32+xOffh+this.xSmall, this.y*32+yOffh+this.ySmall);
+	this.sprites[this.curSprite].draw(can, this.x*32+xOffh+this.xSmall, this.y*32+yOffh+this.ySmall-this.fallingY*2);
 	//this.sprite.draw(can, this.x*32+xOffset, this.y*32+yOffset);
 	if((this.type==ObjectID.Lamp) && (this.on))
 	{
 		if((this.room.x==curDungeon.roomX)&& (this.room.y==curDungeon.roomY))
 		{
 			//draw fire?
-			this.flame.draw(can,cam,xOffh,yOffh);
+			this.flame.draw(can,cam,xOffh+this.xSmall,yOffh+this.ySmall-this.fallingY*2);
 		}else
 		{
-			this.flame.sprites[this.flame.aniTrack].draw(can, this.x*32+xOffh, this.y*32+yOffh-16);
+			this.flame.sprites[this.flame.aniTrack].draw(can, this.x*32+xOffh+this.xSmall, this.y*32+yOffh-16+this.ySmall-this.fallingY*2);
 		}
 	}else if(this.type==ObjectID.Chest)
 	{
 		can.globalAlpha=1;
 		if ((this.messagebox) && (this.messagebox.exists) && (this.loot>19) && (this.loot!=505) && ((this.loot<400) || (this.loot>407)) )
 		{
-			objectSprites[this.loot].draw(can, this.x*32+xOffh, this.y*32+yOffh-20);
+			objectSprites[this.loot].draw(can, this.x*32+xOffh+this.xSmall, this.y*32+yOffh-20+this.ySmall-this.fallingY*2);
 		}
 	}
 	can.globalAlpha=1;

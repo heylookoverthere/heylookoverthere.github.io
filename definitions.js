@@ -83,12 +83,22 @@ function playSound(name){
     
 };
 
+var arrowkeysprite=new Array()
+arrowkeysprite.push(Sprite("arrowkeyup"));
+arrowkeysprite.push(Sprite("arrowkeyright"));
+arrowkeysprite.push(Sprite("arrowkeydown"));
+arrowkeysprite.push(Sprite("arrowkeyleft"));
+
 var downarrowsprite=Sprite("downarrow");
 var uparrowsprite=Sprite("uparrow");
 var moneysprite=Sprite("rupee");
 var bombsprite=Sprite("bomb1");
 var arrowsprite=Sprite("arrow");
 var superbombsprite=Sprite("superbomb");
+
+var holedispsprite=new Sprite("holedisp");
+var deathholedispsprite=new Sprite("deathholedisp");
+
 var shieldSprites=new Array();
 shieldSprites.push(Sprite("shield0"));
 shieldSprites.push(Sprite("shield1"));
@@ -368,7 +378,7 @@ OPTIONS.ChainingExplosions=false;
 OPTIONS.MirrorBreaks=false;
 OPTIONS.DropsPersist=false; 
 OPTIONS.FriendlyFire=true; 
-OPTIONS.TouchableOrbs=true;
+OPTIONS.TouchableOrbs=false;
 OPTIONS.OverLog=false; 
 OPTIONS.MouseControls=false;
 var editHistory=[];
@@ -783,7 +793,7 @@ TileType.Road=8;
 TileType.Bridge=18;
 TileType.Sand=9;
 
-var numDoorTypes=5;
+var numDoorTypes=6;
 
 var DungeonTileType={};
 DungeonTileType.GreenFloor=1;
@@ -817,6 +827,8 @@ DungeonTileType.CurtainDoor=43;
 DungeonTileType.Unstable=7;
 DungeonTileType.ReallyUnstable=70;
 DungeonTileType.Hole=8;
+DungeonTileType.DeathHole=71;
+DungeonTileType.GrassHole=72;
 DungeonTileType.GreenBrick=0;
 DungeonTileType.OrangeBrick=3;
 DungeonTileType.BirdHead=33;
@@ -969,6 +981,14 @@ namesused[0]=new Array(120);
 namesused[1]=new Array(120);
 for( var i=0; i<120; i++ ){ namesused[0][i]=false;namesused[1][i]=false; }
 
+var holeEdgeSprites=new Array()
+{
+	holeEdgeSprites.push(Sprite("dungeontiles/holeedge0"));
+	holeEdgeSprites.push(Sprite("dungeontiles/holeedge1"));
+	holeEdgeSprites.push(Sprite("dungeontiles/holeedge2"));
+	holeEdgeSprites.push(Sprite("dungeontiles/holeedge3"));
+}
+
 var tileSprite=new Array(39);
 tileSprite[TileType.Grass] = Sprite("grass");
 tileSprite[TileType.Forest] = Sprite("darkgrass"); 
@@ -1008,6 +1028,8 @@ dungeonTileSprite[DungeonTileType.BirdHead] = Sprite("dungeontiles/dungeonthing"
 dungeonTileSprite[DungeonTileType.Unstable] = Sprite("dungeontiles/unstable");
 dungeonTileSprite[DungeonTileType.ReallyUnstable] = Sprite("dungeontiles/reallyunstable");
 dungeonTileSprite[DungeonTileType.Hole] = Sprite("dungeontiles/hole");
+dungeonTileSprite[DungeonTileType.DeathHole] = Sprite("dungeontiles/deathhole");
+dungeonTileSprite[DungeonTileType.GrassHole] = Sprite("dungeontiles/grasshole");
 dungeonTileSprite[DungeonTileType.Wall] = Sprite("dungeontiles/wall");
 dungeonTileSprite[DungeonTileType.GreenWall] = Sprite("dungeontiles/wall");   
 dungeonTileSprite[DungeonTileType.LockedDoor] = Sprite("dungeontiles/doortile");

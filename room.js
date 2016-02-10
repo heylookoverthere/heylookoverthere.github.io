@@ -9,7 +9,7 @@ var ROOM_HEIGHT=15;
 var ROOM_TILE_SIZE=32;
 var xOffset = 150;
 var yOffset= 150;
-var doorTypes=6;
+var doorTypes=7;
 
 function imageExists(url) 
 {
@@ -56,6 +56,11 @@ doorSprite[5][1]=Sprite("dungeontiles/curtaindoor1");
 doorSprite[5][2]=Sprite("dungeontiles/curtaindoor2");
 doorSprite[5][3]=Sprite("dungeontiles/curtaindoor3");
 
+doorSprite[6][0]=Sprite("dungeontiles/doorclosed0");
+doorSprite[6][1]=Sprite("dungeontiles/doorclosed1");
+doorSprite[6][2]=Sprite("dungeontiles/doorclosed2");
+doorSprite[6][3]=Sprite("dungeontiles/doorclosed3");
+
 function staircase(up,clone)
 {
 	this.x=0;
@@ -84,6 +89,7 @@ doorType.Locked=2;
 doorType.Bombable=3;
 doorType.Bombed=4;
 doorType.Curtains=5;
+doorType.LampActivated=6;
 	
 function door(or,clone)
 {
@@ -92,6 +98,7 @@ function door(or,clone)
 	this.y=0; 
 	this.ctype=1;
 	//this.source=sorc;
+	this.on=false; 
 	this.height=75;
 	this.width=146;
 	this.dest=null;
@@ -205,7 +212,16 @@ function door(or,clone)
 		if(editMode) {return true;}
 		if((this.type==0) || (this.type==doorType.Bombed) || (this.type==doorType.Curtains)) //todo, if curtains are open. 
 		{
-			return true;
+			if(this.type==doorType.Curtains)
+			{
+				if(!this.on)
+				{
+					return true;
+				}
+			}else
+			{
+				return true;
+			}
 		}
 		if((this.type==doorType.Locked)) 
 		{
@@ -223,6 +239,32 @@ function door(or,clone)
 			}
 		}
 		return false;
+	}
+	
+	door.prototype.update=function()
+	{
+		if(this.type==doorType.LampActivated)
+		{
+			var lamps=0;
+			var litLamps=0;
+			for(var l=0;l<this.room.objects.length;l++)
+			{
+				if((this.room.objects[l].type==ObjectID.Lamp)  || (this.room.objects[l].type==ObjectID.TallLamp)||(this.room.objects[l].type==ObjectID.Candle))
+				{
+					lamps++;
+					if(this.room.objects[l].on)
+					{
+						litLamps++;
+					}
+				}
+			}
+			if((lamps>0) &&(litLamps>lamps-1))
+			{
+				playSound("secret");
+				playSound("dooropen");
+				this.open();
+			}	
+		}
 	}
 	
 	door.prototype.draw=function(can,cam)
@@ -394,6 +436,7 @@ function room(I) { //room object
 	I.lightLevel=0.00;
 	I.miniMapX=0;
 	I.miniMapY=0;
+	I.bombs=new Array();
 	I.explored=false;//TODO
 	I.hidden=false;
 	I.log=new Array();
@@ -533,6 +576,27 @@ function room(I) { //room object
 		return false;
 	};
 	
+	I.hasVisibleDoor=function(dir)
+	{
+		for(var i=0;i<I.exits.length;i++)
+		{
+			if((I.exits[i]) && (I.exits[i].orientation==dir) &&(I.exits[i].type!=doorType.Bombable))
+			{
+				if(I.exits[i].type==doorType.Curtains)
+				{
+					if(!I.exits[i].on)
+					{
+						return true;
+					}
+				}else
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	};
+	
 	I.getSpecificDoor=function(x,y,dir)
 	{
 		if(!I.hasDoor(dir))		{return null;}
@@ -657,21 +721,44 @@ function room(I) { //room object
 		return false;
 	}
 	I.jumpable=function(x,y,aPlayer){
-		if(I,tiles[x][y].data==DungeonTileType.Ocean)
+		if(I.tiles[x][y].data==DungeonTileType.Ocean)
 		{
 			return true;
 		}
-		if(I,tiles[x][y].data==DungeonTileType.Lava)
+		if(I.tiles[x][y].data==DungeonTileType.Lava)
 		{
 			return true;
 		}
-		if(I,tiles[x][y].data==DungeonTileType.Hole)
+		if(I.tiles[x][y].data==DungeonTileType.Hole)
 		{
 			return true;
 		}
 		return I.walkable(x,y,false,aPlayer);
 		//basically if hole or water or lava return true? 
 	}
+	
+	I.objectWillBlock=function(obj)
+	{
+		//Serously wtf was I thinking with this. This is insane. 
+	/*	if(((I.tiles[x][y].data==DungeonTileType.FloorEighteen) ||I.tiles[x][y].data==DungeonTileType.FloorFifteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSixteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSeventeen)||(I.tiles[x][y].data==DungeonTileType.FloorTwelve) ||(I.tiles[x][y].data==DungeonTileType.FloorThirteen) ||(I.tiles[x][y].data==DungeonTileType.FloorFourteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSeven) ||(I.tiles[x][y].data==DungeonTileType.FloorEight) ||(I.tiles[x][y].data==DungeonTileType.FloorNine) ||(I.tiles[x][y].data==DungeonTileType.FloorTen) ||(I.tiles[x][y].data==DungeonTileType.FloorEleven)|| (I.tiles[x][y].data==DungeonTileType.FloorFour) ||(I.tiles[x][y].data==DungeonTileType.FloorFive) ||(I.tiles[x][y].data==DungeonTileType.FloorSix) ||(I.tiles[x][y].data==DungeonTileType.FloorThree) ||(I.tiles[x][y].data==DungeonTileType.FloorTwo) ||(I.tiles[x][y].data==DungeonTileType.FloorOne) ||(I.tiles[x][y].data==DungeonTileType.GreenFloor) ||(I.tiles[x][y].data==DungeonTileType.UpStair)||(I.tiles[x][y].data==DungeonTileType.DownStair) ||(I.tiles[x][y].data==DungeonTileType.Unstable) ||(I.tiles[x][y].data==DungeonTileType.ReallyUnstable) ||(I.tiles[x][y].data==DungeonTileType.DeathHole) ||(I.tiles[x][y].data==DungeonTileType.GrassHole)||((I.tiles[x][y].data==DungeonTileType.Hole)) ||(I.tiles[x][y].data==DungeonTileType.Grass)||(I.tiles[x][y].data==DungeonTileType.Sand) ||(I.tiles[x][y].data==DungeonTileType.Ice))
+		{*/
+			for(var i=0;i<obj.room.objects.length;i++)
+			{
+				//if((I.objects[i].x==x) && (I.objects[i].y==y))
+				//if((x>I.objects[i].x-1) && (x<I.objects[i].x+I.objects[i].width/32) && (y>I.objects[i].y-1) && (y<I.objects[i].y+I.objects[i].height/32))
+				if((obj.room.objects[i].x==obj.x) && (obj.room.objects[i].y==obj.y) && (obj.room.objects[i].ID!=obj.ID))
+				{
+					if(!obj.room.objects[i].walkable())
+					{
+						return true;
+					}
+				}
+			}
+			return false;//true;
+		/*}
+		return false;*/
+	}
+	
 	I.walkable=function(x,y,avoidHoles,aPlayer){
 		/*if((aplayer) && (aplayer.has[hasID.Feather]))
 		{
@@ -711,7 +798,7 @@ function room(I) { //room object
 			return true;
 		}
 			//Serously wtf was I thinking with this. This is insane. 
-			if(((I.tiles[x][y].data==DungeonTileType.FloorEighteen) ||I.tiles[x][y].data==DungeonTileType.FloorFifteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSixteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSeventeen)||(I.tiles[x][y].data==DungeonTileType.FloorTwelve) ||(I.tiles[x][y].data==DungeonTileType.FloorThirteen) ||(I.tiles[x][y].data==DungeonTileType.FloorFourteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSeven) ||(I.tiles[x][y].data==DungeonTileType.FloorEight) ||(I.tiles[x][y].data==DungeonTileType.FloorNine) ||(I.tiles[x][y].data==DungeonTileType.FloorTen) ||(I.tiles[x][y].data==DungeonTileType.FloorEleven)|| (I.tiles[x][y].data==DungeonTileType.FloorFour) ||(I.tiles[x][y].data==DungeonTileType.FloorFive) ||(I.tiles[x][y].data==DungeonTileType.FloorSix) ||(I.tiles[x][y].data==DungeonTileType.FloorThree) ||(I.tiles[x][y].data==DungeonTileType.FloorTwo) ||(I.tiles[x][y].data==DungeonTileType.FloorOne) ||(I.tiles[x][y].data==DungeonTileType.GreenFloor) ||(I.tiles[x][y].data==DungeonTileType.UpStair)||(I.tiles[x][y].data==DungeonTileType.DownStair) ||(I.tiles[x][y].data==DungeonTileType.Unstable) ||(I.tiles[x][y].data==DungeonTileType.ReallyUnstable)||((I.tiles[x][y].data==DungeonTileType.Hole) && (!avoidHoles)) ||(I.tiles[x][y].data==DungeonTileType.Grass)||(I.tiles[x][y].data==DungeonTileType.Sand) ||(I.tiles[x][y].data==DungeonTileType.Ice))
+			if(((I.tiles[x][y].data==DungeonTileType.FloorEighteen) ||I.tiles[x][y].data==DungeonTileType.FloorFifteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSixteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSeventeen)||(I.tiles[x][y].data==DungeonTileType.FloorTwelve) ||(I.tiles[x][y].data==DungeonTileType.FloorThirteen) ||(I.tiles[x][y].data==DungeonTileType.FloorFourteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSeven) ||(I.tiles[x][y].data==DungeonTileType.FloorEight) ||(I.tiles[x][y].data==DungeonTileType.FloorNine) ||(I.tiles[x][y].data==DungeonTileType.FloorTen) ||(I.tiles[x][y].data==DungeonTileType.FloorEleven)|| (I.tiles[x][y].data==DungeonTileType.FloorFour) ||(I.tiles[x][y].data==DungeonTileType.FloorFive) ||(I.tiles[x][y].data==DungeonTileType.FloorSix) ||(I.tiles[x][y].data==DungeonTileType.FloorThree) ||(I.tiles[x][y].data==DungeonTileType.FloorTwo) ||(I.tiles[x][y].data==DungeonTileType.FloorOne) ||(I.tiles[x][y].data==DungeonTileType.GreenFloor) ||(I.tiles[x][y].data==DungeonTileType.UpStair)||(I.tiles[x][y].data==DungeonTileType.DownStair) ||(I.tiles[x][y].data==DungeonTileType.Unstable) ||(I.tiles[x][y].data==DungeonTileType.ReallyUnstable) ||(I.tiles[x][y].data==DungeonTileType.DeathHole) ||(I.tiles[x][y].data==DungeonTileType.GrassHole)||((I.tiles[x][y].data==DungeonTileType.Hole) && (!avoidHoles)) ||(I.tiles[x][y].data==DungeonTileType.Grass)||(I.tiles[x][y].data==DungeonTileType.Sand) ||(I.tiles[x][y].data==DungeonTileType.Ice))
 			{
 				for(var i=0;i<I.objects.length;i++)
 				{
@@ -736,7 +823,10 @@ function room(I) { //room object
 		{
 			var meg=player.getFacingObject();
 			if(!meg){return true};
-			if((meg.type==ObjectID.Bush) && (!meg.on))
+			if((meg) && (meg.buried))
+			{
+				return true;
+			}else if((meg) && (meg.type==ObjectID.Bush) && (!meg.on))
 			{
 				meg.exists=false;//shouldn't do this here.
 				return true;
@@ -951,6 +1041,8 @@ function room(I) { //room object
 			var higgins=new object(I);
 			higgins.x=Math.floor(tempstring[i]);
 			higgins.y=Math.floor(tempstring[i+1]);
+			higgins.homeX=higgins.x;
+			higgins.homeY=higgins.y;
 			higgins.type=Math.floor(tempstring[i+2]);
 			higgins.hidden=stringTrue(tempstring[i+3]);
 			higgins.buried=stringTrue(tempstring[i+4]);
@@ -1149,7 +1241,45 @@ function room(I) { //room object
 		can.fillStyle=snarp;
     };
     
-
+	I.isHole=function(x,y)
+	{
+		if((I.tiles[x][y].data==DungeonTileType.Hole) || (I.tiles[x][y].data==DungeonTileType.DeathHole)|| (I.tiles[x][y].data==DungeonTileType.GrassHole))
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	I.drawHoleEdges=function(can,cam)
+	{
+		for (i=0;i<ROOM_WIDTH; i++)
+		{
+            for (j=0;j<ROOM_HEIGHT; j++)
+			{
+				if((I.isHole(i,j)) &&(I.tiles[i][j].data!=DungeonTileType.GrassHole))
+				{
+					if(!I.isHole(i,j-1))
+					{
+						holeEdgeSprites[0].draw(can, (i-cam.tileX)*32/Math.pow(2,I.zoom-1)+xOffset, (j-cam.tileY)*32/Math.pow(2,I.zoom-1)+yOffset);
+					}
+					if(!I.isHole(i+1,j))
+					{
+						holeEdgeSprites[1].draw(can, (i-cam.tileX)*32/Math.pow(2,I.zoom-1)+xOffset, (j-cam.tileY)*32/Math.pow(2,I.zoom-1)+yOffset);
+					}
+					if(!I.isHole(i,j+1))
+					{
+						holeEdgeSprites[2].draw(can, (i-cam.tileX)*32/Math.pow(2,I.zoom-1)+xOffset, (j-cam.tileY)*32/Math.pow(2,I.zoom-1)+yOffset);
+					}
+					if(!I.isHole(i-1,j))
+					{
+						holeEdgeSprites[3].draw(can, (i-cam.tileX)*32/Math.pow(2,I.zoom-1)+xOffset, (j-cam.tileY)*32/Math.pow(2,I.zoom-1)+yOffset);
+					}
+				}
+			}
+		}
+	}
+	
+	
     I.draw = function(can,cam) {
 		if(!this.active){return;}
 		//if(!mapDirty) {return;}
@@ -1244,6 +1374,8 @@ function room(I) { //room object
 				}
 			}
 		}
+		
+		I.drawHoleEdges(can,cam);
 		
 		for(var p=0;p<this.exits.length;p++)
 		{
@@ -1767,171 +1899,3 @@ function room(I) { //room object
     return I;
 }
 
-function editCursor()
-{
-	this.x=9;
-	this.y=7; 
-	this.sprite=Sprite("cursor");
-	this.brush=0;
-	this.brushType=0;
-	this.doorType=0;
-	this.lootType=0;
-	this.penDown=false;
-	this.penDownMode=false;
-	this.confirming=false;
-	this.confirmed=false;
-	this.confirmingWhat=null;
-	this.mode=1;
-	this.numModes=5;
-	this.numObjectTypes=49;
-	this.numBrushTypes=61;
-	this.objectType=0;
-	this.numDoorTypes=5;
-	this.clipBoard=new room();
-	this.clipBoard.active=false;
-	this.linkingTo=null;
-	this.linkingFrom=null;
-	this.grabbed=null; 
-	this.warpOpen=null;
-}
-
-editCursor.prototype.cycleLoot=function(up)
-{
-	if(up)
-	{
-		this.lootType++;
-		if(this.lootType>507)
-		{
-			this.lootType=0;
-		}else if((this.lootType>407) && (this.lootType<500))
-		{
-			this.lootType=500;
-		}else if((this.lootType>300) && (this.lootType<400))
-		{
-			this.lootType=400;
-		}else if((this.lootType>20) && (this.lootType<100))
-		{
-			this.lootType=300;
-		}
-	}else
-	{
-		this.lootType--;
-		if(this.lootType<0)
-		{
-			this.lootType=507;
-		}else if(this.lootType==499)
-		{
-			this.lootType=407;
-		}else if(this.lootType==399)
-		{
-			this.lootType=300;
-		}else if(this.lootType==299)
-		{
-			this.lootType=20;
-		}
-	}
-}
-
-editCursor.prototype.cycleObjects=function(up)
-{
-	if(up)
-	{
-		this.objectType++;
-		if(this.objectType>507)
-		{
-			this.objectType=0;
-		}else if((this.objectType>408) && (this.objectType<500))
-		{
-			this.objectType=500;
-		}else if((this.objectType>301) && (this.objectType<400))
-		{
-			this.objectType=400;
-		}else if((this.objectType>213) && (this.objectType<300))
-		{
-			this.objectType=300;
-		}else if((this.objectType>117) && (this.objectType<200))
-		{
-			this.objectType=200;
-		}else if((this.objectType>22) && (this.objectType<100))
-		{
-			this.objectType=100;
-		}
-	}else
-	{
-		this.objectType--;
-		if(this.objectType<0)
-		{
-			this.objectType=507;
-		}else if(this.objectType==499)
-		{
-			this.objectType=408;
-		}else if(this.objectType==399)
-		{
-			this.objectType=301;
-		}else if(this.objectType==299)
-		{
-			this.objectType=213;
-		}else if(this.objectType==199)
-		{
-			this.objectType=117;
-		}else if(this.objectType==99)
-		{
-			this.objectType=22;
-		}
-		
-	}
-}
-
-editCursor.prototype.clearConfirm=function()
-{
-	if(this.confirming)
-	{
-		bConsoleBox.log("Nevermind","Yellow");
-	}
-	this.grabbed=null;
-	this.penDown=false;
-	this.confirming=false;
-	this.confirmingWhat=null;
-	this.confirmed=false;
-	
-}
-
-editCursor.prototype.draw=function(can)
-{
-	this.sprite.draw(can,this.x*32+xOffset,this.y*32+yOffset);
-}
-
-editCursor.prototype.getTile=function(cRoom)
-{
-	return cRoom.tiles[this.x][this.y];
-}
-
-editCursor.prototype.move=function(dir)
-{
-	if(dir==0) //up 
-	{
-		if(this.y>2)
-		{
-			this.y--;
-		}
-	}else if(dir==2) //down
-	{
-		if(this.y<12)
-		{
-			this.y++;
-		}
-	}else if(dir==3) //right
-	{
-		if(this.x>2)
-		{
-			this.x--;
-		}
-	}else if(dir==1) //left
-	{
-		if(this.x<17)
-		{
-			this.x++;
-		}
-	}
-	
-};

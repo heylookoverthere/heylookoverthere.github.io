@@ -91,7 +91,11 @@ function virtualGamePad()
 	this.buttons=[];
 	this.dpad=[];
 	this.keyboard=false;
-		
+	this.padflags=new Array();
+	this.padflags.push(false);
+	this.padflags.push(false);
+	this.padflags.push(false);
+	this.padflags.push(false);
 		this.pad = navigator.getGamepads && navigator.getGamepads()[0];
 		if(navigator.getGamepads()[0]){
 		//if(this.pad){
@@ -246,6 +250,62 @@ virtualGamePad.prototype.checkRight=function()
 			return false;
 		}
 	}
+};
+
+virtualGamePad.prototype.oneCheckLeft=function()
+{
+	if((this.pad.axes[0]===-1) && (!this.padflags[3]))
+	{
+		this.padflags[3]=true;
+		return false;
+	}else if((this.padflags[3]) &&(this.pad.axes[0]!=-1))
+	{
+		this.padflags[3]=false;
+		return true;
+	}
+
+};
+
+virtualGamePad.prototype.oneCheckRight=function()
+{
+	if((this.pad.axes[0]===1) && (!this.padflags[1]))
+	{
+		this.padflags[1]=true;
+		return false;
+	}else if((this.padflags[1]) &&(this.pad.axes[0]!=1))
+	{
+		this.padflags[1]=false;
+		return true;
+	}
+
+};
+
+virtualGamePad.prototype.oneCheckUp=function()
+{
+	if((this.pad.axes[1]===-1) && (!this.padflags[0]))
+	{
+		this.padflags[0]=true;
+		return false;
+	}else if((this.padflags[0]) &&(this.pad.axes[1]!=-1))
+	{
+		this.padflags[0]=false;
+		return true;
+	}
+
+};
+
+virtualGamePad.prototype.oneCheckDown=function()
+{
+	if((this.pad.axes[1]===1) && (!this.padflags[2]))
+	{
+		this.padflags[2]=true;
+		return false;
+	}else if((this.padflags[2]) &&(this.pad.axes[1]!=1))
+	{
+		this.padflags[2]=false;
+		return true;
+	}
+
 };
 
 virtualGamePad.prototype.checkUp=function()
