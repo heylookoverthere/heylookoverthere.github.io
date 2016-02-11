@@ -55,18 +55,6 @@ function handleConTouchStart(evt) {
 			
 		if(now-downLast<OPTIONS.DoubleTapThreshold)
 		{
-			//bConsoleBox.log("Double Tap","yellow");
-			/*if(bullshitHack)
-			{
-				bullshitHack=false;
-				for(var i=0;i<curDungeon.floors;i++)
-				{
-					curDungeon.linkDoors(i);
-					curDungeon.linkSwitches(i);
-				}
-				bConsoleBox.log("Doors and switches linked!","yellow");
-				return;
-			}*/
 			if(mode==0)
 			{
 	
@@ -1142,6 +1130,17 @@ function resetMiles()
 	miles.alive=true;
 	miles.equippedTrack=0;
 	miles.equippedTrack2=0;
+	miles.dashing=false;
+	miles.reallyDashing=false;
+	miles.poking=false;
+	miles.grabbed=null;
+	miles.fallingY=0;
+	miles.xSmall=0;
+	miles.ySmall=0;
+	miles.xv=0;
+	miles.xa=0;
+	miles.yv=0;
+	miles.ya=0;
 	miles.inventory=new Array();
 	miles.inventoryAmounts=new Array();
 	var meeee=new Object;
@@ -3287,8 +3286,27 @@ function mainUpdate()
 				{
 					bConsoleBox.log(curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY].name +" will be deleted. Confirm? (Y/N)","yellow");
 					editor.confirming=true;
-					editor.confirmingWhat=function(){curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY]=new room();
-					curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY].active=false;}
+					editor.confirmingWhat=function()
+					{
+						curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY]=new room();
+						curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY].active=false;
+						var bactive=false;
+						for(var i=0;i<15;i++)
+						{
+							for (var j=0;j<8;j++)
+							{
+								if(curDungeon.rooms[curDungeon.roomZ][i][j].active)
+								{
+									bactive=true;
+								}
+							}
+						}
+						if((curDungeon.roomZ==curDungeon.floors-1) && (!bactive))
+						{
+							curDungeon.floors--;
+							console.log("agent carter");
+						}
+					}
 					if(OPTIONS.confirmationPopUps)
 					{
 						popQuestion(curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY].name +" will be deleted. Confirm? (Y/N)");
@@ -3578,14 +3596,22 @@ function mainUpdate()
 				//contextual. if NPC in talk range, talk. 
 				//if object in front, activate
 				var pled=miles.getFacingEntity();
-				if(pled)
+				if((pled) && (pled.team==miles.team))
 				{
-					pled.say();
-					if((!pled.partyMember) && (pled.autoJoin))
+					if(pled.alive) 
 					{
-						theParty.add(pled);
+						pled.say();
+						if((!pled.partyMember) && (pled.autoJoin))
+						{
+							theParty.add(pled);
+						}
+						return;
+					}else if(miles.hasItem(ObjectID.GreenPotion))
+					{
+						pled.revive();
+						miles.removeItem(ObjectID.GreenPotion,1); 
 					}
-					return;
+					
 				}else if(miles.grabbed!=null)
 				{
 					miles.grabbed.toss(miles.dir,10);
@@ -4255,9 +4281,10 @@ function mainUpdate()
 			i--;
 		}
 	}
+	
 	for(var i=0;i<curDungeon.curRoom().bombs.length;i++)
 	{
-		curDungeon.curRoom().bombs[i].update();
+		//curDungeon.curRoom().bombs[i].update();
 		if(!curDungeon.curRoom().bombs[i].exists)
 		{
 			curDungeon.curRoom().bombs.splice(i,1);

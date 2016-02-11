@@ -83,9 +83,17 @@ function bomb(croom,isSuper)
 		this.exists=false;
 		if(this.isSuper)
 		{
-			for (var n=this.x-3;n<this.x+3;n++)
+			var nt=this.x-3;
+			if(nt<0) {nt=0;}
+			var mt=this.y-3;
+			if(mt<0) {mt=0};
+			var ft=this.x+3;
+			if(ft>19) {ft=19;}
+			var pt=this.y+3;
+			if(pt>14) {pt=14;}
+			for (var n=nt;n<ft;n++)
 			{
-				for (var m=this.y-3;m<this.y+3;m++)
+				for (var m=mt;m<pt;m++)
 				{
 					//particles, sprites, trigger switches, destroy walls and cracked floors
 					if((n<this.x+2) && (m<this.y+2))
@@ -736,6 +744,9 @@ function entity(croom)
 	this.swingrate=2;
 	this.swingtrack=0;
 	this.swingcount=0;
+	this.ignoreHole=0;
+	this.ignoreHoleX=0;
+	this.ignoreHoleY=0;
 	this.pokeSprites=new Array()
 	this.pokeSprites.push(Sprite("poke0"));
 	this.pokeSprites.push(Sprite("poke1"));
@@ -1327,11 +1338,18 @@ function entity(croom)
 	
 	this.dash=function()
 	{
-		if(this.dashing) {return false;}
+		if((this.dashing) || (!this.alive)){return false;}
 		this.dashing=true;
 		this.stepping=true;
 		this.dashStart=new Date().getTime();
 		
+	}
+	this.stopDashing=function()
+	{
+		this.dashing=false;
+		this.reallyDashing=false;
+		this.stepping=false;
+		this.ignoreHole=0;
 	}
 	
 	this.dig=function() //fuck you, it's dig now. It shoulda been dig to begin with! the verb of shovel is dig!
@@ -1421,7 +1439,13 @@ function entity(croom)
 		var pled=miles.getFacingEntity();
 		if((pled) && (pled.team==this.team))
 		{
-			return "talk to "+pled.name;
+			if(pled.alive)
+			{
+				return "talk to "+pled.name;	
+			}else if(this.hasItem(ObjectID.GreenPotion))
+			{
+				return "revive "+pled.name;
+			}
 		}
 		if(this.grabbed!=null)
 		{
@@ -1568,8 +1592,7 @@ function entity(croom)
 		{
 			if(this.dashing)
 			{
-				this.dashing=false;
-				this.stepping=false;
+				this.stopDashing();
 			}else
 			{
 				this.dash();
@@ -2402,9 +2425,7 @@ function entity(croom)
 		}
 		if((this.swimming) || (this.holding))
 		{
-			this.dashing=false;
-			this.reallyDashing=false;
-			this.stepping=false;
+			this.stopDashing();
 			if((this.swimming) && (!this.has[hasID.Flippers]))
 			{
 				this.hurt(20);
@@ -2435,9 +2456,7 @@ function entity(croom)
 					poto.gravity=false;
 				}else
 				{
-					this.dashing=false;
-					this.reallyDashing=false;
-					this.stepping=false;
+					this.stopDashing();
 					//bounce back? 
 					playSound("rebound");
 					this.shake();
@@ -2777,7 +2796,14 @@ function entity(croom)
 				{
 					playSound("landing");
 					playSound("cavein");
-					this.room.tiles[this.x][this.y].data=DungeonTileType.Hole;
+					if((this.room.z<1) || (!curDungeon.rooms[curDungeon.roomZ-1][curDungeon.roomX][curDungeon.roomY].active))
+					{
+						this.room.tiles[this.x][this.y].data=DungeonTileType.DeathHole;
+					}else
+					{
+						this.room.tiles[this.x][this.y].data=DungeonTileType.Hole;
+					}
+					
 				}
 				this.falling=false;
 				this.fallingY=0;
@@ -2860,6 +2886,7 @@ function entity(croom)
 				}
 			}
 		}
+		
 		if(this.fallingY<1)
 		{
 			this.jumping=false;
@@ -2877,92 +2904,120 @@ function entity(croom)
 			{
 				if((this.x!=this.lastX) || (this.y!=this.lastY))
 				{
-					this.room.tiles[this.x][this.y].data=DungeonTileType.Hole;
+					if((this.room.z<1) || (!curDungeon.rooms[curDungeon.roomZ-1][curDungeon.roomX][curDungeon.roomY].active))
+					{
+						this.room.tiles[this.x][this.y].data=DungeonTileType.DeathHole;
+					}else
+					{
+						this.room.tiles[this.x][this.y].data=DungeonTileType.Hole;
+					}
 					playSound("cavein");
 					//this.lastX=this.x;
 					//this.lastY=this.y;
+					if((this.reallyDashing)) //&& (this.ignoreHole==0))
+					{
+						this.ignoreHole=1;
+						this.ignoreHoleX=this.x;
+						this.ignoreHoleY=this.y;
+					}
 				}
 			}else if((this.room.isHole(this.x,this.y)) &&(!this.falling) &&(!this.jumping))
 			{
-				if(this.room.tiles[this.x][this.y].data==DungeonTileType.DeathHole)
+				var dontFall=false;
+				if((this.reallyDashing) && (this.ignoreHole>0))
 				{
-					//this.fallingY=0;
-					this.hurt(20);
-					//this.falling=false;
-					this.x=this.enteredX;
-					this.y=this.enteredY;
-					this.lastX=this.x;
-					this.lastY=this.y;
-					return;
-					//damage and find nearest standable point. 
-				}
-				if(this.isPlayer)
-				{	
-					playSound("fall");
-				}else
-				{
-					//playSound("enemyfall");
-				}
-				//console.log("you fell down a floor!")
-				//Do better drawing?
-				this.falling=true;
-				this.fallingY=150;
-				this.dashing=false;
-				this.reallyDashing=false;
-				this.stepping=false;
-				this.xSmall=0;
-				this.ySmall=0;
-				if(this.isPlayer)
-				{
-					if(this.room.z==0)
+					if((this.x==this.ignoreHoleX) && (this.y==this.ignoreHoleY))
 					{
-						this.fallingY=0;
-						bConsoleBox.log("can't fall any lower");
-						this.hurt(20);
-						this.x=this.enteredX;
-						this.y=this.enteredY;
-						this.lastX=this.x;
-						this.lastY=this.y;
-						//damage and find nearest standable point. 
-					}else if(!curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active)
+						//skip the next part
+						dontFall=true;
+					}else
 					{
-						this.fallingY=0;
-						bConsoleBox.log("no room below");
-						//console.log(this.enteredX,this.enteredY);
-						this.hurt(20);
-						this.x=this.enteredX;
-						this.y=this.enteredY;
-						this.lastX=this.x;
-						this.lastY=this.y;
-					}else 
-					{
-						if(this.isPlayer)
-						{
-								curDungeon.roomZ--;
-								this.room=curDungeon.curRoom();
-								this.room.explored=true;
-								this.room.hidden=false;
-						}else
-						{
-							this.room=curDungeon.rooms[curDungeon.roomZ-1][this.room.x][this.room.y];
-						}
-						
-					
-						this.enteredX=this.x;
-						this.enteredY=this.y;
+						this.ignoreHole--;
 					}
-				}else if (this.room.z>0)
-				{
-					this.room=curDungeon.rooms[this.room.z-1][this.room.x][this.room.y];
-
-				}else
-				{
-					bConsoleBox.log("npc can't fall any lower");
-					this.hurt(20);
-					this.x=this.enteredX;
-					this.y=this.enteredY;
 				}
-				//this.room=curDungeon.rooms[curDungeon.roomZ-1][curDungeon.roomX][curDungeon.roomY];
+				if(!dontFall)
+				{
+					if(this.room.tiles[this.x][this.y].data==DungeonTileType.DeathHole)
+					{
+						//this.fallingY=0;
+						this.hurt(20);
+						//this.falling=false;
+						this.x=this.enteredX;
+						this.y=this.enteredY;
+						this.xSmall=0;
+						this.ySmall=0;
+						this.stopDashing();
+						this.lastX=this.x;
+						this.lastY=this.y;
+						return;
+						//damage and find nearest standable point. 
+					}
+					if(this.isPlayer)
+					{	
+						playSound("fall");
+					}else
+					{
+						//playSound("enemyfall");
+					}
+					//console.log("you fell down a floor!")
+					//Do better drawing?
+					this.falling=true;
+					this.fallingY=150;
+					this.stopDashing();
+					this.xSmall=0;
+					this.ySmall=0;
+					if(this.isPlayer)
+					{
+						if(this.room.z==0)
+						{
+							this.fallingY=0;
+							bConsoleBox.log("can't fall any lower");
+							this.hurt(20);
+							this.x=this.enteredX;
+							this.y=this.enteredY;
+							this.lastX=this.x;
+							this.lastY=this.y;
+							//damage and find nearest standable point. 
+						}else if(!curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active)
+						{
+							this.fallingY=0;
+							bConsoleBox.log("no room below");
+							//console.log(this.enteredX,this.enteredY);
+							this.hurt(20);
+							this.x=this.enteredX;
+							this.y=this.enteredY;
+							this.lastX=this.x;
+							this.lastY=this.y;
+						}else 
+						{
+							if(this.isPlayer)
+							{
+									curDungeon.roomZ--;
+									this.room=curDungeon.curRoom();
+									this.room.explored=true;
+									this.room.hidden=false;
+							}else
+							{
+								this.room=curDungeon.rooms[curDungeon.roomZ-1][this.room.x][this.room.y];
+							}
+							
+						
+							this.enteredX=this.x;
+							this.enteredY=this.y;
+						}
+					}else if (this.room.z>0)
+					{
+						this.room=curDungeon.rooms[this.room.z-1][this.room.x][this.room.y];
+
+					}else
+					{
+						bConsoleBox.log("npc can't fall any lower");
+						this.hurt(20);
+						this.x=this.enteredX;
+						this.y=this.enteredY;
+					}
+					//this.room=curDungeon.rooms[curDungeon.roomZ-1][curDungeon.roomX][curDungeon.roomY];
+				}
 			}else if((this.room.tiles[this.x][this.y].data>19) && (this.room.tiles[this.x][this.y].data<25))
 			{
 				if(!this.jumping)
@@ -3019,6 +3074,8 @@ function entity(croom)
 					this.onArrival=function()
 					{
 						this.room=curDungeon.rooms[this.room.z-1][this.room.x][this.room.y]
+						this.enteredX=this.x;
+						this.enteredY=this.y;
 					}
 					var nex=this.room.getStairs(false);
 					this.go(nex.x,nex.y);
@@ -3035,6 +3092,8 @@ function entity(croom)
 								this.onArrival=function()
 								{
 									//this.room=curDungeon.rooms[this.room.z-1][this.room.x][this.room.y]
+									this.enteredX=this.x;
+									this.enteredY=this.y;
 								}
 								var nex=this.room.getStairs(false);
 								this.goHole(i,j);
@@ -3052,6 +3111,8 @@ function entity(croom)
 					this.onArrival=function()
 					{
 						this.room=curDungeon.rooms[this.room.z+1][this.room.x][this.room.y]
+						this.enteredX=this.x;
+						this.enteredY=this.y;
 					}
 					var nex=this.room.getStairs(true)
 					this.go(nex.x,nex.y);
@@ -3111,6 +3172,8 @@ function entity(croom)
 									this.room=curDungeon.rooms[this.room.z][this.room.x][this.room.y-1]
 									this.y=12;
 									this.x=peg.x;
+									this.enteredX=this.x;
+									this.enteredY=this.y;
 								}
 							}
 							this.go(peg.x,peg.y+1);
@@ -3123,6 +3186,8 @@ function entity(croom)
 									this.room=curDungeon.rooms[this.room.z][this.room.x+1][this.room.y]
 									this.x=2;
 									this.y=peg.y;
+									this.enteredX=this.x;
+									this.enteredY=this.y;
 								}
 							}
 							
@@ -3135,6 +3200,8 @@ function entity(croom)
 									this.room=curDungeon.rooms[this.room.z][this.room.x][this.room.y+1]
 									this.y=2;
 									this.x=peg.x;
+									this.enteredX=this.x;
+									this.enteredY=this.y;
 								}
 							}
 							this.go(peg.x,peg.y-1);
@@ -3146,6 +3213,8 @@ function entity(croom)
 									this.room=curDungeon.rooms[this.room.z][this.room.x-1][this.room.y]
 									this.x=17;
 									this.y=peg.y;
+									this.enteredX=this.x;
+									this.enteredY=this.y;
 								}
 							}
 							this.go(peg.x+1,peg.y);
