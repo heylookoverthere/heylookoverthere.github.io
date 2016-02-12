@@ -848,7 +848,7 @@ mouseXY= function(e) {
 				{
 					curDungeon.curRoom().tiles[tx][ty].data=DungeonTileType.DeathHole;
 					bConsoleBox.log("falling into this hole will be fatal, as there is no floor below."); 
-				}else if (!curDungeon.rooms[curDungeon.roomZ-1][curDungeon.roomX][curDungeon.roomY].active)
+				}else if((curDungeon.roomZ>0) && (!curDungeon.rooms[curDungeon.roomZ-1][curDungeon.roomX][curDungeon.roomY].active))
 				{
 					curDungeon.curRoom().tiles[tx][ty].data=DungeonTileType.DeathHole;
 					bConsoleBox.log("falling into this hole will be fatal, as there is no active room below."); 

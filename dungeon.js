@@ -61,12 +61,12 @@ function dungeon(path)
 		this.roomY=y; 
 	}
 	
-	this.changeRoom=function(dir,limited) //used for arrowing through rooms rather than player movement limited determines if you can go through walls/closed doors/ into inactive rooms
+	this.changeRoom=function(dir,limited) 
 	{
 		this.busyrang=false;
 		for(var i=0;i<miles.projectiles.length;i++)
 		{
-			if(miles.projectiles[i].type==1)
+			if((miles.projectiles[i].type==1) || (miles.projectiles[i].type==2))
 			{
 				miles.projectiles[i].kill();
 				miles.projectiles.splice(i,1);
@@ -100,7 +100,7 @@ function dungeon(path)
 				{
 					
 					
-					if(limited)
+					/*if((limited) && (OPTIONS.MouseControls))
 					{
 						var nard=this.curRoom().getPath(miles.x,miles.y,purd.x,3,miles,true);
 						
@@ -111,7 +111,7 @@ function dungeon(path)
 					}
 					
 					if((purd) &&(nard)&&(nard.length>0) || (!limited))
-					{
+					{*/
 						//console.log(purd);
 						if(limited)
 						{
@@ -127,12 +127,16 @@ function dungeon(path)
 							this.curRoom().explored=true;
 							this.curRoom().hidden=false;
 							miles.room=curDungeon.curRoom();
+							if(miles.grabbed)
+							{
+								miles.grabbed.changeRoom(curDungeon.roomZ,curDungeon.roomX,curDungeon.roomY);
+							}
 						}
-					}else
+					/*}else
 					{
 						bConsoleBox.log("No path to door!");
 						playSound("error");
-					}
+					}*/
 				}else
 				{
 					//bConsoleBox.log("No open door!");
@@ -168,7 +172,7 @@ function dungeon(path)
 				if((purd) &&(purd.passable(miles)) || (!limited))
 				{
 					
-					if(limited)
+					/*if(limited)
 					{
 						var nard=this.curRoom().getPath(miles.x,miles.y,purd.x,12,miles,true);
 						
@@ -179,7 +183,7 @@ function dungeon(path)
 					}
 					
 					if((purd) &&(nard)&&(nard.length>0)|| (!limited))
-					{
+					{*/
 						if(limited)
 						{
 							//miles.x=purd.x+1;
@@ -194,12 +198,16 @@ function dungeon(path)
 							this.curRoom().explored=true;
 							this.curRoom().hidden=false;
 							miles.room=curDungeon.curRoom();
+							if(miles.grabbed)
+							{
+								miles.grabbed.changeRoom(curDungeon.roomZ,curDungeon.roomX,curDungeon.roomY);
+							}
 						}
-					}else
+					/*}else
 					{
 						bConsoleBox.log("No path to door!");
 						playSound("error");
-					}
+					}*/
 				}else
 				{
 					//bConsoleBox.log("No open door!");
@@ -234,7 +242,7 @@ function dungeon(path)
 				if((purd) && (purd.passable(miles)) || (!limited))
 				{
 					
-					if(limited)
+					/*if(limited)
 					{
 						var nard=this.curRoom().getPath(miles.x,miles.y,17,purd.y,miles,true);
 						
@@ -245,7 +253,7 @@ function dungeon(path)
 					}
 					
 					if((purd) &&(nard)&&(nard.length>0) || (!limited))
-					{
+					{*/
 						//console.log(purd);
 						if(limited)
 						{
@@ -261,13 +269,17 @@ function dungeon(path)
 							this.curRoom().explored=true;
 							this.curRoom().hidden=false;
 							miles.room=curDungeon.curRoom();
+							if(miles.grabbed)
+							{
+								miles.grabbed.changeRoom(curDungeon.roomZ,curDungeon.roomX,curDungeon.roomY);
+							}
 	
 						}
-					}else
+					/*}else
 					{
 						bConsoleBox.log("No path to door!");
 						playSound("error");
-					}
+					}*/
 				}else
 				{
 					//bConsoleBox.log("No open door!");
@@ -304,7 +316,7 @@ function dungeon(path)
 				{
 					
 					
-					if(limited)
+					/*if(limited)
 					{
 						var nard=this.curRoom().getPath(miles.x,miles.y,3,purd.y,miles,true);					
 						if((miles.y==purd.y) && (miles.x==3))
@@ -316,7 +328,7 @@ function dungeon(path)
 					if((purd) &&(nard)&&(nard.length>0) || (!limited))
 					{
 						//console.log(purd);
-							
+							*/
 						if(limited)
 						{
 							miles.x=17;
@@ -331,13 +343,17 @@ function dungeon(path)
 							this.curRoom().explored=true;
 							this.curRoom().hidden=false;
 							miles.room=curDungeon.curRoom();
+							if(miles.grabbed)
+							{
+								miles.grabbed.changeRoom(curDungeon.roomZ,curDungeon.roomX,curDungeon.roomY);
+							}
 	
 						}
-					}else
+					/*}else
 					{
 						bConsoleBox.log("No path to door!");
 						playSound("error");
-					}
+					}*/
 				}else
 				{
 					//bConsoleBox.log("No open door!");
@@ -924,6 +940,10 @@ function dungeon(path)
 				{
 					playSound("stairsup");
 					miles.room=curDungeon.curRoom();
+					if(miles.grabbed)
+					{
+						miles.grabbed.changeRoom(curDungeon.roomZ,curDungeon.roomX,curDungeon.roomY);
+					}
 				}
 				this.rooms[this.roomZ][this.roomX][this.roomY].explored=true;
 				this.rooms[this.roomZ][this.roomX][this.roomY].hidden=false;
@@ -967,6 +987,10 @@ function dungeon(path)
 				{
 					playSound("stairsdown");
 					miles.room=curDungeon.curRoom();
+					if(miles.grabbed)
+					{
+						miles.grabbed.changeRoom(curDungeon.roomZ,curDungeon.roomX,curDungeon.roomY);
+					}
 				}
 				if(limited)
 				{
@@ -1108,6 +1132,7 @@ function dungeon(path)
 		if(!MobileMode)
 		{
 		var tyOffset=-331; //top
+	
 		if((this.roomY>0) && (this.rooms[this.roomZ][this.roomX][this.roomY-1].active) && (!this.rooms[this.roomZ][this.roomX][this.roomY-1].hidden))
 		{
 			for (i=0;i<ROOM_WIDTH; i++)
@@ -1168,6 +1193,26 @@ function dungeon(path)
 					
 				}
 			}
+			
+			for(var g=0;g<explosions.length;g++)
+			{
+				var expo=explosions[g];
+				if((expo.room.z==this.roomZ) && (expo.room.x==this.roomX)&& (expo.room.y==this.roomY-1) && (true))//(expo.y>10))
+				{
+					expo.draw(can,xOffset,tyOffset);
+				}
+			
+			}
+			for(var g=0;g<this.rooms[this.roomZ][this.roomX][this.roomY-1].bombs.length;g++)
+			{
+				var simplicity=this.rooms[this.roomZ][this.roomX][this.roomY-1].bombs[g];
+				
+				if(simplicity.y>10)
+				{
+					simplicity.draw(can,xOffset,tyOffset);
+				}
+			}
+			
 			for(var g=0;g<this.rooms[this.roomZ][this.roomX][this.roomY-1].objects.length;g++)
 			{
 				var simplicity=this.rooms[this.roomZ][this.roomX][this.roomY-1].objects[g];
@@ -1191,13 +1236,14 @@ function dungeon(path)
 					}
 				}
 			}
+			
 			for(var g=0;g<entities.length;g++)
 			{
 				if((entities[g].room.z==curDungeon.roomZ) && (entities[g].room.name==curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY-1].name))
 				{
 					if(entities[g].y>10)
 					{
-						entities[g].sprites[entities[g].dir].draw(can,(entities[g].x)*32+xOffset, (entities[g].y)*32+tyOffset)
+						entities[g].sprites[entities[g].dir].draw(can,(entities[g].x)*32+xOffset, (entities[g].y)*32+tyOffset);
 					}
 				}
 			}
@@ -1306,6 +1352,24 @@ function dungeon(path)
 				}
 			}
 		
+			for(var g=0;g<explosions.length;g++)
+			{
+				var expo=explosions[g];
+				if((expo.room.z==this.roomZ) && (expo.room.x==this.roomX)&& (expo.room.y==this.roomY+1) && (true))//(expo.y>10))
+				{
+					expo.draw(can,xOffset,tyOffset);
+				}
+			
+			}
+			for(var g=0;g<this.rooms[this.roomZ][this.roomX][this.roomY+1].bombs.length;g++)
+			{
+				var simplicity=this.rooms[this.roomZ][this.roomX][this.roomY+1].bombs[g];
+				
+				if(simplicity.y<4)
+				{
+					simplicity.draw(can,xOffset,tyOffset);
+				}
+			}
 				curDungeon.rooms[curDungeon.roomZ][curDungeon.roomX][curDungeon.roomY+1].darkenAdj(can,xOffset,tyOffset);
 		
 		}
@@ -1403,6 +1467,24 @@ function dungeon(path)
 					{
 						entities[g].sprites[entities[g].dir].draw(can,(entities[g].x)*32+txOffset, (entities[g].y)*32+yOffset)
 					}
+				}
+			}
+			for(var g=0;g<explosions.length;g++)
+			{
+				var expo=explosions[g];
+				if((expo.room.z==this.roomZ) && (expo.room.x==this.roomX-1)&& (expo.room.y==this.roomY) && (true))//(expo.y>10))
+				{
+					expo.draw(can,txOffset,yOffset);
+				}
+			
+			}
+			for(var g=0;g<this.rooms[this.roomZ][this.roomX-1][this.roomY].bombs.length;g++)
+			{
+				var simplicity=this.rooms[this.roomZ][this.roomX-1][this.roomY].bombs[g];
+				
+				if(simplicity.x>13)
+				{
+					simplicity.draw(can,txOffset,yOffset);
 				}
 			}
 			can.fillStyle="black"
@@ -1504,6 +1586,24 @@ function dungeon(path)
 					{
 						entities[g].sprites[entities[g].dir].draw(can,(entities[g].x)*32+txOffset, (entities[g].y)*32+yOffset)
 					}
+				}
+			}
+			for(var g=0;g<explosions.length;g++)
+			{
+				var expo=explosions[g];
+				if((expo.room.z==this.roomZ) && (expo.room.x==this.roomX+1)&& (expo.room.y==this.roomY) && (true))//(expo.y>10))
+				{
+					expo.draw(can,txOffset,yOffset);
+				}
+			
+			}
+			for(var g=0;g<this.rooms[this.roomZ][this.roomX+1][this.roomY].bombs.length;g++)
+			{
+				var simplicity=this.rooms[this.roomZ][this.roomX+1][this.roomY].bombs[g];
+				
+				if(simplicity.x<4)
+				{
+					simplicity.draw(can,txOffset,yOffset);
 				}
 			}
 			if(curDungeon.roomY>0)

@@ -254,6 +254,7 @@ virtualGamePad.prototype.checkRight=function()
 
 virtualGamePad.prototype.oneCheckLeft=function()
 {
+	if(this.keyboard) {return false;}
 	if((this.pad.axes[0]===-1) && (!this.padflags[3]))
 	{
 		this.padflags[3]=true;
@@ -268,6 +269,7 @@ virtualGamePad.prototype.oneCheckLeft=function()
 
 virtualGamePad.prototype.oneCheckRight=function()
 {
+	if(this.keyboard) {return false;}
 	if((this.pad.axes[0]===1) && (!this.padflags[1]))
 	{
 		this.padflags[1]=true;
@@ -282,6 +284,7 @@ virtualGamePad.prototype.oneCheckRight=function()
 
 virtualGamePad.prototype.oneCheckUp=function()
 {
+	if(this.keyboard) {return false;}
 	if((this.pad.axes[1]===-1) && (!this.padflags[0]))
 	{
 		this.padflags[0]=true;
@@ -296,6 +299,7 @@ virtualGamePad.prototype.oneCheckUp=function()
 
 virtualGamePad.prototype.oneCheckDown=function()
 {
+	if(this.keyboard) {return false;}
 	if((this.pad.axes[1]===1) && (!this.padflags[2]))
 	{
 		this.padflags[2]=true;

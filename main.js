@@ -1907,10 +1907,10 @@ function inventoryDraw() {
 	var yFset=35;
 	canvas.fillStyle="white";
 	canvas.fillRect(xFset-8,yFset-28,558,754);
-	canvas.fillRect(xFset+556,yFset+128,128,550);
+	canvas.fillRect(xFset+556,yFset+200,128,250);
 	canvas.fillStyle="blue";
 	canvas.fillRect(xFset-4,yFset-24,548,744);
-	canvas.fillRect(xFset+560,yFset+132,118,540);
+	canvas.fillRect(xFset+560,yFset+204,120,240);
 	canvas.font = "20pt Calibri";
 	canvas.fillStyle="white";
 	canvas.fillText("Inventory ",xFset+200,yFset+20-6);
@@ -1937,6 +1937,36 @@ function inventoryDraw() {
 	{
 		var shinex=new object();
 		shinex.type=ObjectID.Feather;
+		shinex.setup();
+		thelist.push(shinex);
+	}if(miles.hasItem(ObjectID.Mirror))
+	{
+		var shinex=new object();
+		shinex.type=ObjectID.Mirror;
+		shinex.setup();
+		thelist.push(shinex);
+	}if(miles.has[hasID.MagicBoomarang])
+	{
+		var shinex=new object();
+		shinex.type=ObjectID.MagicBoomarang;
+		shinex.setup();
+		thelist.push(shinex);
+	}else if(miles.has[hasID.Boomarang])
+	{
+		var shinex=new object();
+		shinex.type=ObjectID.Boomarang;
+		shinex.setup();
+		thelist.push(shinex);
+	}if(miles.has[hasID.Hookshot])
+	{
+		var shinex=new object();
+		shinex.type=ObjectID.Hookshot;
+		shinex.setup();
+		thelist.push(shinex);
+	}if(miles.hasItem(ObjectID.Shovel))
+	{
+		var shinex=new object();
+		shinex.type=ObjectID.Shovel;
 		shinex.setup();
 		thelist.push(shinex);
 	}if(miles.has[hasID.Lantern])
@@ -1975,14 +2005,10 @@ function inventoryDraw() {
 		shinex.type=ObjectID.Glove;
 		shinex.setup();
 		thelist.push(shinex);
-	}if(miles.has[hasID.Sword])
+	}if(miles.hasItem(ObjectID.Poo))
 	{
 		var shinex=new object();
-		shinex.type=ObjectID.Sword;
-		if(miles.has[hasID.MasterSword])
-		{
-			shinex.type=ObjectID.MasterSword;
-		}
+		shinex.type=ObjectID.Poo;
 		shinex.setup();
 		thelist.push(shinex);
 	}if(miles.has[hasID.Map])
@@ -2004,34 +2030,34 @@ function inventoryDraw() {
 	{
 		if(i%2==0)
 		{
-			objectSprites[thelist[i].type].draw(canvas,xFset+70,yFset+75*((i+1)/2)-6+50);
-			canvas.fillText(thelist[i].name,xFset+50,yFset+75*((i+1)/2)-6+104);
+			objectSprites[thelist[i].type].draw(canvas,xFset+100,yFset+75*((i+1)/2)-6+25);
+			canvas.fillText(thelist[i].name,xFset+50,yFset+75*((i+1)/2)-6+79);
 			if((thelist[i].type==ObjectID.Bomb) ||(thelist[i].type==ObjectID.SuperBomb))
 			{
 				canvas.font = "12pt Calibri";
-				canvas.fillText(miles.bombs+"/"+miles.maxBombs,xFset+102,yFset+75*((i+1)/2)-6+84);
+				canvas.fillText(miles.bombs+"/"+miles.maxBombs,xFset+110,yFset+75*((i+1)/2)-6+60);
 				canvas.font = "20pt Calibri";
 			}
 			if(thelist[i].type==ObjectID.Bow)
 			{
 				canvas.font = "12pt Calibri";
-				canvas.fillText(miles.arrows+"/"+miles.maxArrows,xFset+102,yFset+75*((i)/2)-6+84);
+				canvas.fillText(miles.arrows+"/"+miles.maxArrows,xFset+110,yFset+75*((i)/2)-6+60);
 				canvas.font = "20pt Calibri";
 			}
 		}else
 		{
-			objectSprites[thelist[i].type].draw(canvas,xFset+320,yFset+75*((i)/2)-6+50);
-			canvas.fillText(thelist[i].name,xFset+300,yFset+75*((i)/2)-6+104);
+			objectSprites[thelist[i].type].draw(canvas,xFset+350,yFset+75*((i)/2)-6+25);
+			canvas.fillText(thelist[i].name,xFset+300,yFset+75*((i)/2)-6+79);
 			if((thelist[i].type==ObjectID.Bomb) ||(thelist[i].type==ObjectID.SuperBomb))
 			{
 				canvas.font = "12pt Calibri";
-				canvas.fillText(miles.bombs+"/"+miles.maxBombs,xFset+352,yFset+75*((i+1)/2)-6+84);
+				canvas.fillText(miles.bombs+"/"+miles.maxBombs,xFset+360,yFset+75*((i+1)/2)-6+60);
 				canvas.font = "20pt Calibri";
 			}
 			if(thelist[i].type==ObjectID.Bow)
 			{
 				canvas.font = "12pt Calibri";
-				canvas.fillText(miles.arrows+"/"+miles.maxArrows,xFset+352,yFset+75*((i)/2)-6+84);
+				canvas.fillText(miles.arrows+"/"+miles.maxArrows,xFset+360,yFset+75*((i)/2)-6+60);
 				canvas.font = "20pt Calibri";
 			}
 		}
@@ -2050,6 +2076,42 @@ function inventoryDraw() {
 		canvas.font = "20pt Calibri";
 	}
 
+
+		objectSprites[ObjectID.BluePotion].draw(canvas,xFset+600,yFset+225);
+		canvas.font = "12pt Calibri";
+		canvas.fillText("x"+miles.getItemAmt(ObjectID.BluePotion),xFset+632,yFset+250);
+		canvas.font = "20pt Calibri";
+
+		objectSprites[ObjectID.RedPotion].draw(canvas,xFset+600,yFset+275);
+		canvas.font = "12pt Calibri";
+		canvas.fillText("x"+miles.getItemAmt(ObjectID.RedPotion),xFset+632,yFset+300);
+		canvas.font = "20pt Calibri";
+	
+
+		objectSprites[ObjectID.GreenPotion].draw(canvas,xFset+600,yFset+325);
+		canvas.font = "12pt Calibri";
+		canvas.fillText("x"+miles.getItemAmt(ObjectID.GreenPotion),xFset+632,yFset+350);
+		canvas.font = "20pt Calibri";
+	
+		if(miles.has[hasID.BestShield])
+		{
+			objectSprites[ObjectID.BestShield].draw(canvas,xFset+590,yFset+380);
+		}else if(miles.has[hasID.BetterShield])
+		{
+			objectSprites[ObjectID.BetterShield].draw(canvas,xFset+590,yFset+380);
+		}else if(miles.has[hasID.Shield])
+		{
+			objectSprites[ObjectID.Shield].draw(canvas,xFset+590,yFset+380);
+		}
+		
+		if(miles.has[hasID.MasterSword])
+		{
+			objectSprites[ObjectID.MasterSword].draw(canvas,xFset+632,yFset+380);
+		}else if(miles.has[hasID.Sword])
+		{
+			objectSprites[ObjectID.Sword].draw(canvas,xFset+632,yFset+380);
+		}
+	
 	//canvas.fillText("14) Bombs set off other bombs: "+OPTIONS.ChainingExplosions,xFset+15,yFset+400-6);
 
 
@@ -2850,6 +2912,7 @@ function mainDraw() {
 		}
 	}
 	explosions.forEach(function(expo) {
+		if((expo.room.z==curDungeon.roomZ)&&(expo.room.x==curDungeon.roomX)&&(expo.room.y==curDungeon.roomY))
             expo.draw(canvas,xOffset,yOffset);
 	});
 	for(var i=0;i<curDungeon.curRoom().fires.length;i++)
@@ -3595,24 +3658,7 @@ function mainUpdate()
 			{
 				//contextual. if NPC in talk range, talk. 
 				//if object in front, activate
-				var pled=miles.getFacingEntity();
-				if((pled) && (pled.team==miles.team))
-				{
-					if(pled.alive) 
-					{
-						pled.say();
-						if((!pled.partyMember) && (pled.autoJoin))
-						{
-							theParty.add(pled);
-						}
-						return;
-					}else if(miles.hasItem(ObjectID.GreenPotion))
-					{
-						pled.revive();
-						miles.removeItem(ObjectID.GreenPotion,1); 
-					}
-					
-				}else if(miles.grabbed!=null)
+				if(miles.grabbed!=null)
 				{
 					miles.grabbed.toss(miles.dir,10);
 					miles.grabbed=null;
@@ -3629,16 +3675,40 @@ function mainUpdate()
 						miles.grab(gled);
 					}else if((gled) && (gled.playerUsable))
 					{
-						if(gled.frontOnly)
+						//console.log(miles.grabbed.ID,gled.ID);
+						if((miles.grabbed) && (miles.grabbed.ID==gled.ID))
 						{
-							if(gled.y<miles.y)
-							{
-							
-								gled.playerActivate();
-							}
 						}else
 						{
-							gled.playerActivate();
+							if(gled.frontOnly)
+							{
+								if(gled.y<miles.y)
+								{
+									gled.playerActivate();
+								}
+							}else
+							{
+								gled.playerActivate();
+							}
+						}
+					}else 
+					{
+						var pled=miles.getFacingEntity();
+						if((pled) && (pled.team==miles.team))
+						{
+							if(pled.alive) 
+							{
+								pled.say();
+								if((!pled.partyMember) && (pled.autoJoin))
+								{
+									theParty.add(pled);
+								}
+								return;
+							}else if(miles.hasItem(ObjectID.GreenPotion))
+							{
+								pled.revive();
+								miles.removeItem(ObjectID.GreenPotion,1); 
+							}
 						}
 					}
 				}
@@ -3857,7 +3927,7 @@ function mainUpdate()
 				//console.log("L trigger")
 				miles.cycleEquipped(true,false);
 			}
-			if((!miles.holding) && (!miles.dashing))
+			if((!miles.holding) && (!miles.dashing) && (!((miles.swimming) && (!miles.canSwim))))
 			{
 				if(controller.checkUp())
 				{
@@ -3867,6 +3937,10 @@ function mainUpdate()
 					if(!(((Xbox) && (controller.pad) && (controller.pad.buttons[4].pressed)) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.L].checkDown()))))
 					{
 						miles.incMove();
+						if(miles.swimming)
+						{
+							playSound("swim");
+						}
 					}
 				}else if(controller.checkDown())
 				{
@@ -3876,6 +3950,10 @@ function mainUpdate()
 					if(!(((Xbox) && (controller.pad) && (controller.pad.buttons[4].pressed)) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.L].checkDown()))))
 					{
 						miles.incMove();
+						if(miles.swimming)
+						{
+							playSound("swim");
+						}
 					}
 				}else if(controller.checkLeft())
 				{
@@ -3885,6 +3963,10 @@ function mainUpdate()
 					if(!(((Xbox) && (controller.pad) && (controller.pad.buttons[4].pressed)) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.L].checkDown()))))
 					{
 						miles.incMove();
+						if(miles.swimming)
+						{
+							playSound("swim");
+						}
 					}
 				}else if(controller.checkRight())
 				{
@@ -3894,6 +3976,10 @@ function mainUpdate()
 					if(!(((Xbox) && (controller.pad) && (controller.pad.buttons[4].pressed)) || ((!Xbox) && (controller.pad)&&(controller.buttons[SNESKey.L].checkDown()))))
 					{
 						miles.incMove();
+						if(miles.swimming)
+						{
+							playSound("swim");
+						}
 					}
 				}else
 				{
@@ -4012,24 +4098,40 @@ function mainUpdate()
 					miles.stepping=true;
 					miles.walkAnimate();
 					miles.incMove();
+					if(miles.swimming)
+					{
+						playSound("swim");
+					}
 				}else if(SNESDownKey.checkDown())
 				{
 					miles.dir=2;
 					miles.stepping=true;
 					miles.walkAnimate();
 					miles.incMove();
+					if(miles.swimming)
+					{
+						playSound("swim");
+					}
 				}else if(SNESLeftKey.checkDown())
 				{
 					miles.dir=3;
 					miles.stepping=true;
 					miles.walkAnimate();
 					miles.incMove();
+					if(miles.swimming)
+					{
+						playSound("swim");
+					}
 				}else if(SNESRightKey.checkDown())
 				{
 					miles.stepping=true;
 					miles.dir=1;
 					miles.walkAnimate();
 					miles.incMove();
+					if(miles.swimming)
+					{
+						playSound("swim");
+					}
 				}else
 				{
 					miles.stepping=false;
@@ -4223,17 +4325,27 @@ function mainUpdate()
 		{
 			for(var i=0;i<curDungeon.rooms[curDungeon.roomZ][a][b].objects.length;i++) //should do adjacent rooms too, no?
 			{
+				//TODO: getting errors here. dunno why but will hack around. 
 				curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].update();
-				if(!curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].exists)
+				if(curDungeon.rooms[curDungeon.roomZ][a][b].objects[i]) //why needed?
 				{
-					if(curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].flame)
+					
+					
+					if(!curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].exists)
 					{
-						curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].flame.flare=null;//.alive=false;
-						curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].flame=null;alive=false;
+						if(curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].flame)
+						{
+							curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].flame.flare=null;//.alive=false;
+							curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].flame=null;alive=false;
+						}
+					
+						curDungeon.rooms[curDungeon.roomZ][a][b].objects.splice(i,1);
+						i--;
 					}
-				
-					curDungeon.rooms[curDungeon.roomZ][a][b].objects.splice(i,1);
-					i--;
+				}else if(!curDungeon.rooms[curDungeon.roomZ][a][b].objects[i])
+				{
+					
+					continue;
 				}
 			}
 		}

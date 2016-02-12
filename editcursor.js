@@ -40,7 +40,7 @@ editCursor.prototype.cycleLoot=function(up)
 		}else if((this.lootType>300) && (this.lootType<400))
 		{
 			this.lootType=400;
-		}else if((this.lootType>20) && (this.lootType<100))
+		}else if((this.lootType>23) && (this.lootType<100))
 		{
 			this.lootType=300;
 		}
@@ -58,7 +58,7 @@ editCursor.prototype.cycleLoot=function(up)
 			this.lootType=300;
 		}else if(this.lootType==299)
 		{
-			this.lootType=20;
+			this.lootType=23;
 		}
 	}
 }
@@ -268,7 +268,7 @@ editCursor.prototype.click=function(m,mx,my)
 				}
 			
 				
-			}}else if(this.mode==editModes.Pen)
+			}else if(this.mode==editModes.Pen)
 			{
 				this.penDown=!this.penDown;
 			}if(this.mode==editModes.Door)
@@ -312,10 +312,8 @@ editCursor.prototype.click=function(m,mx,my)
 					bConsoleBox.log("Not the best spot for a door.");
 					return;
 				}
+			}
 		}	
-	}else // non-edit mode mouse stuff.
-	{
-		
 	}
 	
 	return;
@@ -335,7 +333,7 @@ editCursor.prototype.cycleTiles=function(up)
 		}else if(this.brushType==25)
 		{
 			this.brushType=44;
-		}else if(this.brushType==62)//skip water animation tiles
+		}else if(this.brushType==63)//skip water animation tiles
 		{
 			this.brushType=70;
 		}else if(this.brushType==73)//skip lava animation tiles.
@@ -357,7 +355,7 @@ editCursor.prototype.cycleTiles=function(up)
 			this.brushType=25;
 		}else if(this.brushType==69)//skip water animation tiles
 		{
-			this.brushType=61;
+			this.brushType=62;
 		}else if(this.brushType==-1)//skip lava animation tiles.
 		{
 			this.brushType=72;

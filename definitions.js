@@ -277,6 +277,7 @@ objectSprites[19]=Sprite("shield");
 objectSprites[20]=Sprite("bettershield");
 objectSprites[21]=Sprite("bestshield");
 objectSprites[22]=Sprite("magicboomarang");
+objectSprites[23]=Sprite("rumham");
 
 //furniture
 objectSprites[100]=Sprite("lamp");
@@ -815,6 +816,7 @@ DungeonTileType.FloorFifteen=58;
 DungeonTileType.FloorSixteen=59;
 DungeonTileType.FloorSeventeen=60;
 DungeonTileType.FloorEighteen=61;
+DungeonTileType.CutGrass=62;
 DungeonTileType.Ice=2;
 DungeonTileType.Water=20;
 DungeonTileType.Lava=24; 
@@ -1018,7 +1020,8 @@ tileSprite[TileType.Road] = Sprite("road");
 tileSprite[TileType.Sand] = Sprite("sand");
 
 var dungeonTileSprite=new Array(69);
-dungeonTileSprite[DungeonTileType.Grass] = Sprite("dungeontiles/grass");
+dungeonTileSprite[DungeonTileType.Grass] = Sprite("dungeontiles/tallgrass");
+dungeonTileSprite[DungeonTileType.CutGrass] = Sprite("dungeontiles/cutgrass");
 dungeonTileSprite[DungeonTileType.GreenBrick] = Sprite("dungeontiles/brick2"); 
 //dungeonTileSprite[DungeonTileType.Snow] = Sprite("snow"); 
 dungeonTileSprite[DungeonTileType.OrangeBrick] = Sprite("dungeontiles/wall"); 
@@ -1168,8 +1171,8 @@ function explosionEffect(croom)
 	this.draw=function(can,xOffh,yOffh)
 	{
 		var bur=can.globalAlpha;
-		if((this.room.z==curDungeon.roomZ) &&(this.room.x==curDungeon.roomX) &&(this.room.y==curDungeon.roomY))
-		{
+		//if((this.room.z==curDungeon.roomZ) &&(this.room.x==curDungeon.roomX) &&(this.room.y==curDungeon.roomY))
+		//{
 			if(this.type==0)
 			{
 				can.globalAlpha=0.5;
@@ -1179,7 +1182,7 @@ function explosionEffect(croom)
 				leafssprite[this.aniTrack].draw(can,(this.x+1)*32+xOffh,this.y*32+yOffh);
 			}
 			
-		}
+		//}
 		can.globalAlpha=bur;
 	}
 }
