@@ -31,16 +31,16 @@ editCursor.prototype.cycleLoot=function(up)
 	if(up)
 	{
 		this.lootType++;
-		if(this.lootType>507)
+		if(this.lootType>509)
 		{
 			this.lootType=0;
 		}else if((this.lootType>407) && (this.lootType<500))
 		{
 			this.lootType=500;
-		}else if((this.lootType>300) && (this.lootType<400))
+		}else if((this.lootType>300) && (this.lootType<411))
 		{
 			this.lootType=400;
-		}else if((this.lootType>23) && (this.lootType<100))
+		}else if((this.lootType>28) && (this.lootType<100))
 		{
 			this.lootType=300;
 		}
@@ -49,16 +49,16 @@ editCursor.prototype.cycleLoot=function(up)
 		this.lootType--;
 		if(this.lootType<0)
 		{
-			this.lootType=507;
+			this.lootType=509;
 		}else if(this.lootType==499)
 		{
-			this.lootType=407;
+			this.lootType=411;
 		}else if(this.lootType==399)
 		{
 			this.lootType=300;
 		}else if(this.lootType==299)
 		{
-			this.lootType=23;
+			this.lootType=28;
 		}
 	}
 }
@@ -368,22 +368,22 @@ editCursor.prototype.cycleObjects=function(up)
 	if(up)
 	{
 		this.objectType++;
-		if(this.objectType>507)
+		if(this.objectType>509)
 		{
 			this.objectType=0;
-		}else if((this.objectType>408) && (this.objectType<500))
+		}else if((this.objectType>411) && (this.objectType<500))
 		{
 			this.objectType=500;
 		}else if((this.objectType>301) && (this.objectType<400))
 		{
 			this.objectType=400;
-		}else if((this.objectType>213) && (this.objectType<300))
+		}else if((this.objectType>215) && (this.objectType<300))
 		{
 			this.objectType=300;
-		}else if((this.objectType>117) && (this.objectType<200))
+		}else if((this.objectType>118) && (this.objectType<200))
 		{
 			this.objectType=200;
-		}else if((this.objectType>22) && (this.objectType<100))
+		}else if((this.objectType>28) && (this.objectType<100))
 		{
 			this.objectType=100;
 		}
@@ -392,22 +392,22 @@ editCursor.prototype.cycleObjects=function(up)
 		this.objectType--;
 		if(this.objectType<0)
 		{
-			this.objectType=507;
+			this.objectType=509;
 		}else if(this.objectType==499)
 		{
-			this.objectType=408;
+			this.objectType=411;
 		}else if(this.objectType==399)
 		{
 			this.objectType=301;
 		}else if(this.objectType==299)
 		{
-			this.objectType=213;
+			this.objectType=215;
 		}else if(this.objectType==199)
 		{
-			this.objectType=117;
+			this.objectType=118;
 		}else if(this.objectType==99)
 		{
-			this.objectType=22;
+			this.objectType=28;
 		}
 		
 	}

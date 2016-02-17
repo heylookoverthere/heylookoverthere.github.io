@@ -762,7 +762,7 @@ function dungeon(path)
 			{
 				for(var v=0;v<this.rooms[fl][i][j].objects.length;v++)
 				{
-					if((this.rooms[fl][i][j].objects[v].type==ObjectID.ToggleSwitch) || (this.rooms[fl][i][j].objects[v].type==ObjectID.EyeSwitch)) //top
+					if((this.rooms[fl][i][j].objects[v].type==ObjectID.ToggleSwitch) || (this.rooms[fl][i][j].objects[v].type==ObjectID.EyeSwitch)|| (this.rooms[fl][i][j].objects[v].type==ObjectID.HoldSwitch)) //top
 					{
 						for(var f=0;f<this.rooms[fl][i][j].objects[v].linkDescriptions.length;f++)
 						{

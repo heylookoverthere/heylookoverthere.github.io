@@ -147,7 +147,7 @@ hasID.Boots=8;
 hasID.Compass=9;
 hasID.MasterKey=10;
 hasID.Poo=11;
-hasID.Boomarang=12;
+hasID.Boomerang=12;
 hasID.Hookshot=13;
 hasID.Flippers=14;
 hasID.Lens=15;
@@ -162,7 +162,7 @@ hasID.Mushroom=23;
 hasID.Shield=24;
 hasID.BetterShield=25;
 hasID.BestShield=26;
-hasID.MagicBoomarang=27;
+hasID.MagicBoomerang=27;
 
 var LightLevels=new Array();
 LightLevels.push(0.90); //midnight
@@ -261,10 +261,10 @@ objectSprites[3]=Sprite("lantern");
 objectSprites[4]=Sprite("hammer");
 objectSprites[5]=Sprite("redpotion");
 objectSprites[6]=Sprite("bluepotion");
-objectSprites[7]=Sprite("greenpotion");
+objectSprites[7]=Sprite("purplepotion");
 objectSprites[8]=Sprite("shovel");
 objectSprites[9]=Sprite("mirror");
-objectSprites[10]=Sprite("boomarang");
+objectSprites[10]=Sprite("boomerang");
 objectSprites[11]=Sprite("hookshot");
 objectSprites[12]=Sprite("flippers");
 objectSprites[13]=Sprite("lens");
@@ -276,8 +276,13 @@ objectSprites[18]=Sprite("mushroom");
 objectSprites[19]=Sprite("shield");
 objectSprites[20]=Sprite("bettershield");
 objectSprites[21]=Sprite("bestshield");
-objectSprites[22]=Sprite("magicboomarang");
-objectSprites[23]=Sprite("rumham");
+objectSprites[22]=Sprite("magicboomerang");
+objectSprites[23]=Sprite("somaria");
+objectSprites[24]=Sprite("cape");
+objectSprites[25]=Sprite("firerod");
+objectSprites[26]=Sprite("icerod");
+objectSprites[27]=Sprite("greenpotion");
+objectSprites[28]=Sprite("rumham");
 
 //furniture
 objectSprites[100]=Sprite("lamp");
@@ -298,6 +303,7 @@ objectSprites[114]=Sprite("bookcasesmall");
 objectSprites[115]=Sprite("bones");
 objectSprites[116]=Sprite("spikey");
 objectSprites[117]=Sprite("eyeswitch0");
+objectSprites[118]=Sprite("switch");
 
 //obstacle
 objectSprites[200]=Sprite("bush");
@@ -314,6 +320,8 @@ objectSprites[210]=Sprite("crystal");
 objectSprites[211]=Sprite("crystal2");
 objectSprites[212]=Sprite("rock2");
 objectSprites[213]=Sprite("rock2cracked");
+objectSprites[214]=Sprite("skull");
+objectSprites[215]=Sprite("plugbrick");
 //pickups
 objectSprites[300]=Sprite("key");
 objectSprites[301]=Sprite("triforce");
@@ -329,6 +337,9 @@ objectSprites[405]=Sprite("compass");
 objectSprites[406]=Sprite("mastersword");
 objectSprites[407]=Sprite("silverarrow");
 objectSprites[408]=Sprite("wallet");
+objectSprites[409]=Sprite("pendantred");
+objectSprites[410]=Sprite("pendantgreen");
+objectSprites[411]=Sprite("pendantblue");
 
 //drops
 objectSprites[500]=Sprite("rupee");
@@ -336,9 +347,11 @@ objectSprites[501]=Sprite("tenrupee");
 objectSprites[502]=Sprite("arrow");
 objectSprites[503]=Sprite("heartpickup");
 objectSprites[504]=Sprite("bomb1");
-objectSprites[505]=Sprite("shell");
-objectSprites[506]=Sprite("apple");
+objectSprites[505]=Sprite("magicjar");
+objectSprites[506]=Sprite("magicjarsmall");
 objectSprites[507]=Sprite("fiftyrupee");
+objectSprites[508]=Sprite("shell");
+objectSprites[509]=Sprite("apple");
 
 var nullSprite=new Sprite("blank");
 
@@ -794,6 +807,8 @@ TileType.Road=8;
 TileType.Bridge=18;
 TileType.Sand=9;
 
+var frozen_dur=5000;
+
 var numDoorTypes=6;
 
 var DungeonTileType={};
@@ -1123,6 +1138,11 @@ explosionsprite[1] =Sprite("explosion1");
 explosionsprite[2] =Sprite("explosion2");
 explosionsprite[3] =Sprite("explosion3");
 
+var splashsprite=new Array(4);
+splashsprite[0] =Sprite("splash");
+splashsprite[1] =Sprite("splash");
+splashsprite[2] =Sprite("splash");
+
 var leafssprite=new Array(8);
 leafssprite[0] =Sprite("leaves0");
 leafssprite[1] =Sprite("leaves1");
@@ -1144,11 +1164,22 @@ function explosionEffect(croom)
 	this.aniCount=0;
 	this.exists=false;
 	this.aniRate=6;
+	this.object=null;
 	this.numFrames=3;
-	this.setup=function(x,y,croom)
+	this.setup=function(x,y,croom,obj,type)
 	{
+		if(type==null){type=0;}
+		if(obj){
+			this.object=obj;
+		}
+		this.type=type;
+		if(this.type==2)
+		{
+			this.numFrames=2;
+		}
 		this.x=x;
 		this.y=y;
+
 		this.room=croom;
 		this.exists=true;
 		//this.timeStart=new Data().getTime();
@@ -1176,10 +1207,31 @@ function explosionEffect(croom)
 			if(this.type==0)
 			{
 				can.globalAlpha=0.5;
-				explosionsprite[this.aniTrack].draw(can,this.x*32+xOffh+16,this.y*32+yOffh+16);
+				if(this.object)
+				{
+					explosionsprite[this.aniTrack].draw(can,this.x*32+this.object.xSmall+xOffh+16,this.y*32+this.object.xSmall+yOffh+16);
+				}else
+				{
+					explosionsprite[this.aniTrack].draw(can,this.x*32+xOffh+16,this.y*32+yOffh+16);
+				}
 			}else if(this.type==1)
 			{
-				leafssprite[this.aniTrack].draw(can,(this.x+1)*32+xOffh,this.y*32+yOffh);
+				if(this.object)
+				{
+					leafssprite[this.aniTrack].draw(can,(this.x)*32+xOffh+this.object.xSmall,this.y*32+yOffh+this.object.ySmall);
+				}else
+				{
+					leafssprite[this.aniTrack].draw(can,(this.x)*32+xOffh,this.y*32+yOffh);
+				}
+			}else if(this.type==2)
+			{
+				if(this.object)
+				{
+					splashsprite[this.aniTrack].draw(can,(this.x)*32+xOffh+this.object.xSmall,this.y*32+yOffh+this.object.ySmall);
+				}else
+				{
+					splashsprite[this.aniTrack].draw(can,(this.x)*32+xOffh,this.y*32+yOffh);
+				}
 			}
 			
 		//}

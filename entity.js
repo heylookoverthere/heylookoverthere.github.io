@@ -5,6 +5,8 @@ equippedID.Boomerang=3;
 
 var numEquippable=2;
 
+var dude_count=0;
+
 var bunnyheadsprite=new Array();
 bunnyheadsprite.push(Sprite("bheadup"));
 bunnyheadsprite.push(Sprite("bheadright"));
@@ -12,6 +14,7 @@ bunnyheadsprite.push(Sprite("bheaddown"));
 bunnyheadsprite.push(Sprite("bheadleft"));
 
 var halfgrasssprite=Sprite("dungeontiles/halfgrass");
+var frozenSprite=Sprite("frozen");
 
 var masterSwingSprites=new Array();
 masterSwingSprites.push(new Array());
@@ -40,6 +43,7 @@ function bomb(croom,isSuper)
 	this.isSuper=isSuper;
 	this.x=0;
 	this.y=0;
+	this.bomb=true;
 	this.ID=bombCount;
 	bombCount++;
 	this.exists=false;
@@ -74,22 +78,31 @@ function bomb(croom,isSuper)
 			this.fallingUp-=1;
 		}else if(this.fallingY>0)
 		{
-			this.fallingY-=2;
+			this.fallingY-=4;
 			if((this.fallingY<1) && (this.fallingUp<1)) 
 			{
 				if((this.room.tiles[this.x][this.y].data>19) && (this.room.tiles[this.x][this.y].data<24))
 				{
 					playSound("splash");
 					this.underWater=true;
+					this.xa=0;
+					this.ya=0;
+					this.xv=0;
+					this.yv=0;
+					var bumj= new explosionEffect(this.room);
+					bumj.setup(this.x,this.y,this.room,this,2);
+					explosions.push(bumj);
 				}
 				this.fallingY=0;
 				
 			}
 		}
+
 		this.incMove();
+
 		if(this.room.isHole(this.x,this.y))
 		{
-			playSound("fall");
+			playSound("itemfall");
 			if((this.room.z>0) && (curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active) && (this.room.tiles[this.x][this.y].data!=DungeonTileType.DeathHole))
 			{
 				this.room=curDungeon.rooms[this.room.z-1][this.room.x][this.room.y];
@@ -415,7 +428,7 @@ bomb.prototype.tryMove=function(dir)
 	{
 		if(dir==0)
 		{
-			if(this.y<3)
+			if(this.y<2)
 			{
 				return false;
 			}
@@ -480,7 +493,7 @@ bomb.prototype.canMove=function(dir)
 	{
 		if(dir==0)
 		{
-			if(this.y<3)
+			if(this.y<2)
 			{
 				return false;
 			}
@@ -493,7 +506,7 @@ bomb.prototype.canMove=function(dir)
 			}
 		}else if(dir==2)
 		{
-			if(this.y>11)
+			if(this.y>12)
 			{
 				return false;
 			}
@@ -566,10 +579,10 @@ bomb.prototype.incMove=function()
 		return;
 	}
 	
-	this.xSmall+=this.xv;
-	this.ySmall+=this.yv;
-	this.xv+=this.xa;
-	this.yv+=this.ya;
+	this.xSmall+=this.xv*2;
+	this.ySmall+=this.yv*2;
+	this.xv+=this.xa*2;
+	this.yv+=this.ya*2;
 	if(this.fallingY<1){
 		if(this.xv>0)
 		{
@@ -669,8 +682,14 @@ bomb.prototype.incMove=function()
 	{
 		this.yv=-this.peakYV;
 		this.ya=0;
+		//this.yv=0;
 	}
-	if(this.ySmall>SMALL_BREAK)
+	var temp_break=SMALL_BREAK;
+	if(!this.canMove(2))
+	{
+		temp_break=SMALL_BREAK/2;
+	}
+	if(this.ySmall>temp_break)
 	{
 		if(this.canMove(2))
 		{
@@ -680,11 +699,17 @@ bomb.prototype.incMove=function()
 			//return true;
 		}else
 		{
-			this.ySmall=SMALL_BREAK;
+			this.ySmall=temp_break;//SMALL_BREAK;
 			this.ya=0;
+			this.yv=0;
 			//return false;
 		}
-	}else if(this.ySmall<-SMALL_BREAK)
+	temp_break=SMALL_BREAK;
+	if(!this.canMove(0))
+	{
+		temp_break=SMALL_BREAK/2;
+	}
+	}else if(this.ySmall<-temp_break)
 	{
 		if(this.canMove(0))
 		{
@@ -693,8 +718,9 @@ bomb.prototype.incMove=function()
 			//return true;
 		}else
 		{
-			this.ySmall=SMALL_BREAK;
+			this.ySmall=temp_break;
 			this.ya=0;
+			this.yv=0;
 			//return false;
 		}
 	}
@@ -709,6 +735,7 @@ bomb.prototype.incMove=function()
 		{
 			this.xSmall=SMALL_BREAK;
 			this.xa=0;
+			this.xv=0;
 			//return false;
 		}
 	}else if(this.xSmall<-SMALL_BREAK)
@@ -722,6 +749,7 @@ bomb.prototype.incMove=function()
 		{
 			this.xSmall=SMALL_BREAK;
 			this.xa=0;
+			this.xv=0;
 			//return false;
 		}
 	}
@@ -731,7 +759,7 @@ bomb.prototype.incMove=function()
 	}
 }
 var actionID={};
-actionID.Boomarang=0;
+actionID.Boomerang=0;
 actionID.Bow=1;
 actionID.Hookshot=2;
 actionID.Sword=3; //for holding sword out/ pegasus dash
@@ -745,7 +773,15 @@ function entity(croom)
 	this.AI=0;
 	this.x=4;
 	this.y=3;
+	this.ID=dude_count;
+	dude_count++;
+	this.mp=100;
+	this.maxMp=100
+	this.magicRegen=0;
+	this.invincible=false;
+	this.invisible=false;
 	this.RumHam=false;
+	this.frozen=0;
 	this.shaking=false;
 	this.shakingSince=0;
 	this.shakingDur=150;
@@ -754,6 +790,8 @@ function entity(croom)
 	this.baseSpeed=4;
 	this.speed=4;
 	this.team=0;
+	this.entity=true;
+	this.pushing=false; 
 	this.grabbed=null;
 	this.swordDamage=10;
 	this.enteredX=this.x;
@@ -884,7 +922,8 @@ function entity(croom)
 	this.bombs=0;
 	this.arrows=0;
 	this.wallet=250;
-	this.exists=true; 
+	this.exists=true;
+	this.capon=false; 
 	this.has=new Array();
 	this.destObj=null;
 	this.destX=0;
@@ -904,6 +943,7 @@ function entity(croom)
 	this.deadSprites.push(Sprite("profdeath0"));
 	this.deadSprites.push(Sprite("profdeath1"));
 	this.deadSprites.push(Sprite("profdeath2"));
+	this.deadinswatersprite=Sprite("profdeath2");
 	this.deathAniTrack=0;
 	this.aniCount=0;
 	this.aniTrack=0;
@@ -1005,6 +1045,18 @@ function entity(croom)
 		
 	}
 	
+	this.recharge=function(amt)
+	{
+		if(this.mp>this.maxMp-1) {return;}
+		if(amt==0){ amt=this.maxMp;}
+		//this.healAmount=amt;
+		playSound("magrefill");
+		this.mp+=amt;
+		if(this.mp>this.maxMp)
+		{
+			this.mp=this.maxMp;
+		}
+	}
 	
 	this.heal=function(amt)
 	{
@@ -1027,9 +1079,23 @@ function entity(croom)
 		var edsbomb=new bomb(this.room,this.has[hasID.SuperBomb]);
 		edsbomb.x=this.x;
 		edsbomb.y=this.y;
+		if(this.dir==0)
+		{
+			edsbomb.y=this.y-1;	
+		}else if(this.dir==1)
+		{
+			edsbomb.x=this.x+1;	
+		}else if(this.dir==2)
+		{
+			edsbomb.y=this.y+1;	
+		}else if(this.dir==3)
+		{
+			edsbomb.x=this.x-1;	
+		}
 		edsbomb.exists=true;
 		edsbomb.armed=true;
 		edsbomb.timePlaced=new Date().getTime();
+		playSound("bombdrop");
 		this.activebombs.push(edsbomb);
 		this.room.bombs.push(edsbomb);
 	}
@@ -1218,7 +1284,12 @@ function entity(croom)
 		if(dir==2)
 		{
 			this.ySmall+=this.speed;
-			if(this.ySmall>SMALL_BREAK)
+			var temp_break=SMALL_BREAK;
+			if(!this.canMove(2))
+			{
+				temp_break=SMALL_BREAK/2;
+			}
+			if(this.ySmall>temp_break)
 			{
 				if(this.canMove(dir))
 				{
@@ -1227,7 +1298,7 @@ function entity(croom)
 					return true;
 				}else
 				{
-					this.ySmall=SMALL_BREAK;
+					this.ySmall=temp_break;
 					return false;
 				}
 			}
@@ -1235,7 +1306,12 @@ function entity(croom)
 		}else if(dir==0)
 		{
 			this.ySmall-=this.speed;
-			if(this.ySmall<-SMALL_BREAK)
+			var temp_break=SMALL_BREAK;
+			if(!this.canMove(0))
+			{
+				temp_break=SMALL_BREAK/2;
+			}
+			if(this.ySmall<-temp_break)
 			{
 				if(this.canMove(dir))
 				{
@@ -1244,7 +1320,7 @@ function entity(croom)
 					return true;
 				}else
 				{
-					this.ySmall=-SMALL_BREAK;
+					this.ySmall=-temp_break;
 					return false;
 				}
 			}
@@ -1252,7 +1328,12 @@ function entity(croom)
 		}else if(dir==1)
 		{
 			this.xSmall+=this.speed;
-			if(this.xSmall>SMALL_BREAK)
+			var temp_break=SMALL_BREAK;
+			if(!this.canMove(1))
+			{
+				temp_break=SMALL_BREAK/2;
+			}
+			if(this.xSmall>temp_break)
 			{
 				if(this.canMove(dir))
 				{
@@ -1261,7 +1342,7 @@ function entity(croom)
 					return true;
 				}else
 				{
-					this.xSmall=SMALL_BREAK;
+					this.xSmall=temp_break;
 					return false;
 				}
 			}		
@@ -1269,7 +1350,12 @@ function entity(croom)
 		}else if(dir==3)
 		{
 			this.xSmall-=this.speed;
-			if(this.xSmall<-SMALL_BREAK)
+			var temp_break=SMALL_BREAK;
+			if(!this.canMove(3))
+			{
+				temp_break=SMALL_BREAK/2;
+			}
+			if(this.xSmall<-temp_break)
 			{
 				if(this.canMove(dir))
 				{
@@ -1278,7 +1364,7 @@ function entity(croom)
 					return true;
 				}else
 				{
-					this.xSmall=-SMALL_BREAK;
+					this.xSmall=-temp_break;
 					return false;
 				}
 			}	
@@ -1510,77 +1596,162 @@ function entity(croom)
 		return false;
 	}
 	
-	this.getContext=function()
+	this.doContextual=function()
 	{
-		var pled=miles.getFacingEntity();
-		if((pled) && (pled.team==this.team))
-		{
-			if(pled.alive)
-			{
-				return "talk to "+pled.name;	
-			}else if(this.hasItem(ObjectID.GreenPotion))
-			{
-				return "revive "+pled.name;
-			}
-		}
 		if(this.grabbed!=null)
 		{
-			return "throw "+this.grabbed.name;
+			this.grabbed.toss(this.dir,15);
+			this.grabbed=null;
+		}else
+		{
+			var mled=this.getFacingBomb();
+			if((mled) && (mled.fallingY<1) && (!this.swimming))
+			{
+				this.grab(mled);
+			}
+			var gled=this.getFacingObject();
+			if((gled) &&(this.has[hasID.Glove])&& (gled.fallingY<1) && (gled.grababble) && (!this.swimming))
+			{
+				this.grab(gled);
+			}else if((gled) && (gled.playerUsable) && (!this.swimming))
+			{
+				//console.log(this.grabbed.ID,gled.ID);
+				if((this.grabbed) && (this.grabbed.ID==gled.ID))
+				{
+				}else
+				{
+					if(gled.frontOnly)
+					{
+						if(gled.y<this.y)
+						{
+							gled.playerActivate();
+						}
+					}else
+					{
+						gled.playerActivate();
+					}
+				}
+			}else 
+			{
+				var pled=this.getFacingEntity();
+				if((pled) && (pled.team==this.team))
+				{
+					if(pled.alive) 
+					{
+						pled.say();
+						if((!pled.partyMember) && (pled.autoJoin))
+						{
+							theParty.add(pled);
+						}
+						return;
+					}else if(this.hasItem(ObjectID.PurplePotion))
+					{
+						pled.revive();
+						this.removeItem(ObjectID.PurplePotion,1); 
+					}
+				}
+			}
+		}
+	}
+	
+	this.getContext=function()
+	{
+		
+		if(this.grabbed!=null)
+		{
+			return "Throw "+this.grabbed.name;
 		}
 		var mled=this.getFacingBomb();
-		if(mled)
+		if((mled) && (mled.fallingY<1)&&(!this.swimming))
 		{
-			return "grab bomb";
+			return "Grab bomb";
 		}
 		gled=this.getFacingObject();
-		if(gled)
+		if((gled) && (gled.fallingY<1) &&(!this.swimming))
 		{
 			if((gled.type==ObjectID.Peg) && (this.has[hasID.Hammer]))
 			{
-				return "hammer peg";
+				return "Hammer peg";
 			}
 			if((gled.type==ObjectID.Rock) && (this.has[hasID.Glove]))
 			{
-				return "lift rock";
+				return "Lift rock";
 			}else if((gled.type==ObjectID.Pot) && (this.has[hasID.Glove]))
 			{
-				return "lift pot";
+				return "Lift pot";
+			}else if((gled.type==ObjectID.Skull) && (this.has[hasID.Glove]))
+			{
+				return "Lift skull";
 			}else if((gled.type==ObjectID.Lamp) || (gled.type==ObjectID.TallLamp) && (this.has[hasID.Lantern]))
 			{
 				if(gled.on)
 				{
-					return "extinguish lamp";
+					return "Extinguish lamp";
 				}else
 				{
-					return "light lamp";
+					return "Light lamp";
 				}
 			}else if((gled.type==ObjectID.Candle) && (this.has[hasID.Lantern]))
 			{
 				if(gled.on)
 				{
-					return "extinguish candle";
+					return "Extinguish candle";
 				}else
 				{
-					return "light candle";
+					return "Light candle";
 				}
 			}else if(gled.type==ObjectID.Curtains)
 			{
 				if(gled.on)
 				{
-					return "open curtains";
+					return "Open curtains";
 				}else
 				{
 					//return "close curtains";
 				}
 			}else if((gled.type==ObjectID.Sign) && (gled.y<this.y))
 			{
-				return "read sign";
-			}else if((gled.type==ObjectID.Chest) && (gled.y<this.y))
+				return "Read sign";
+			}else if((gled.type==ObjectID.Chest) && (gled.y<this.y) && (gled.curSprite==0))
 			{
-				return "open chest";
+				return "Open chest";
+			}
+		}
+		var pled=miles.getFacingEntity();
+		if((pled) && (pled.team==this.team))
+		{
+			if(pled.alive)
+			{
+				return "Talk to "+pled.name;	
+			}else if(this.hasItem(ObjectID.PurplePotion))
+			{
+				return "Revive "+pled.name;
 			}
 		}
 		return null;
+	}
+	
+	this.somariaize=function()
+	{
+		this.mp-=15;
+		playSound("cane");
+		//todo //check that this is a good place. poof thing?
+		var gx=this.x;
+		var gy=this.y;
+		if(this.dir==0)
+		{
+			gy--;
+		}else if(this.dir==1)
+		{
+			gx++;
+		}else if(this.dir==2)
+		{
+			gy++;
+		}else if(this.dir==3)
+		{
+			gx--;
+		}
+		makeObject(gx,gy,this.room,ObjectID.Brick);
 	}
 	
 	this.useItem=function(secondary)
@@ -1595,6 +1766,38 @@ function entity(croom)
 		}else if(this.getEquipped(secondary)==ObjectID.Feather)
 		{
 			this.jump();
+
+		}else if(this.getEquipped(secondary)==ObjectID.Cane)
+		{
+			if(this.mp>15)
+			{
+				this.somariaize();
+			}else
+			{
+				playSound("error");
+			}
+			
+		}else if(this.getEquipped(secondary)==ObjectID.Cape)
+		{
+			if(this.capon)
+			{
+				this.capon=false;
+				playSound("capeoff")
+				this.invisible=false;
+				this.invincible=false;
+			}else if(!this.capon)
+			{
+				if(this.mp>2)
+				{
+					this.capon=true;
+					playSound("capeon")
+					this.invisible=true;
+					this.invincible=true;
+				}else
+				{
+					playSound("error");
+				}
+			}
 
 		}else if(this.getEquipped(secondary)==ObjectID.Shovel)
 		{
@@ -1623,6 +1826,56 @@ function entity(croom)
 				this.shootHook(0);
 			}
 			
+		}else if(this.getEquipped(secondary)==ObjectID.FireRod)
+		{
+			if(this.mp>5)
+			{
+				this.mp-=5;
+				//this.removeItem(ObjectID.Bow,1);
+				if(this.dir==0)
+				{
+					this.shootFire(90);
+				}else if(this.dir==1)
+				{
+					this.shootFire(180);
+				}else if(this.dir==2)
+				{
+					this.shootFire(270);
+				}else if(this.dir==3)
+				{
+					this.shootFire(0);
+				}
+			}else
+			{
+				bConsoleBox.log("Not enough magic!","yellow");
+				playSound("error");
+			}
+
+		}else if(this.getEquipped(secondary)==ObjectID.IceRod)
+		{
+			if(this.mp>5)
+			{
+				this.mp-=5;
+
+				if(this.dir==0)
+				{
+					this.shootIce(90);
+				}else if(this.dir==1)
+				{
+					this.shootIce(180);
+				}else if(this.dir==2)
+				{
+					this.shootIce(270);
+				}else if(this.dir==3)
+				{
+					this.shootIce(0);
+				}
+			}else
+			{
+				bConsoleBox.log("Not enough magic!","yellow");
+				playSound("error");
+			}
+
 		}else if(this.getEquipped(secondary)==ObjectID.Bow)
 		{
 			if(this.arrows>0)
@@ -1648,20 +1901,20 @@ function entity(croom)
 				playSound("error");
 			}
 
-		}else if(this.getEquipped(secondary)==ObjectID.Boomarang)
+		}else if(this.getEquipped(secondary)==ObjectID.Boomerang)
 		{
 			if(this.dir==0)
 			{
-				this.tossBoomarang(90);
+				this.tossBoomerang(90);
 			}else if(this.dir==1)
 			{
-				this.tossBoomarang(180);
+				this.tossBoomerang(180);
 			}else if(this.dir==2)
 			{
-				this.tossBoomarang(270);
+				this.tossBoomerang(270);
 			}else if(this.dir==3)
 			{
-				this.tossBoomarang(0);
+				this.tossBoomerang(0);
 			}
 			
 		}else if(this.getEquipped(secondary)==ObjectID.Boots)
@@ -1683,10 +1936,12 @@ function entity(croom)
 			curDungeon.roomY=curDungeon.startY;
 			for(var i=0;i<theParty.members.length;i++)
 			{
-				theParty.members[i].room=curDungeon.curRoom();
-				theParty.members[i].x=9;
-				theParty.members[i].y=12;
-				theParty.members[i].fallingY=0;
+				if(theParty.members[i].alive){
+					theParty.members[i].room=curDungeon.curRoom();
+					theParty.members[i].x=9;
+					theParty.members[i].y=12;
+					theParty.members[i].fallingY=0;
+				}
 			}
 			if(OPTIONS.MirrorBreaks)
 			{
@@ -1724,6 +1979,16 @@ function entity(croom)
 			}
 		}else if(this.getEquipped(secondary)==ObjectID.GreenPotion)
 		{
+			if(this.mp<this.maxMp)
+			{
+				this.recharge(this.maxMp);
+				this.removeItem(ObjectID.GreenPotion,1); 
+			}else
+			{
+				bConsoleBox.log("You are fully charged.","yellow");
+			}
+		}else if(this.getEquipped(secondary)==ObjectID.PurplePotion)
+		{
 			for(var i=0;i<entities.length;i++)
 			{
 				if((entities[i].room.z==curDungeon.roomZ) && (entities[i].room.x==curDungeon.roomX)&& (entities[i].room.y==curDungeon.roomY))
@@ -1731,7 +1996,7 @@ function entity(croom)
 					if((isOverTiled(entities[i],32)) && (!entities[i].isPlayer) && (!entities[i].alive))
 					{
 						entities[i].revive();
-						this.removeItem(ObjectID.GreenPotion,1); 
+						this.removeItem(ObjectID.PurplePotion,1); 
 						return false;
 					}
 				}
@@ -1817,6 +2082,7 @@ function entity(croom)
 	}
 	this.hurt=function(dmg)
 	{
+		if(this.invincible) {return;}
 		if(!this.alive) {return;}
 		if(this.diving) {return;}
 		if(this.gotHurt>0) {return;}
@@ -1849,7 +2115,7 @@ function entity(croom)
 		this.swinging=true;
 		playSound("sword4");
 	}
-	this.tossBoomarang=function(ang)
+	this.tossBoomerang=function(ang)
 	{
 		if((this.swimming) ||(this.holding))
 		{
@@ -1859,7 +2125,7 @@ function entity(croom)
 		{
 			playSound("boomerang");
 			this.acting=true;
-			this.action=actionID.Boomarang;
+			this.action=actionID.Boomerang;
 			this.actfor=100; 
 			this.busyrang=true;
 			this.actStart=new Date().getTime();
@@ -1871,14 +2137,14 @@ function entity(croom)
 			poot.exists=true; 
 			poot.angle=ang;
 			poot.speed=.5;
-			if(this.has[hasID.MagicBoomarang])
+			if(this.has[hasID.MagicBoomerang])
 			{
 				poot.speed=1;
 				poot.peakTime=375;
 			}
 			poot.xv=-Math.cos((Math.PI / 180)*Math.floor(ang));
 			poot.yv=-Math.sin((Math.PI / 180)*Math.floor(ang));
-			if(this.has[hasID.MagicBoomarang])
+			if(this.has[hasID.MagicBoomerang])
 			{
 				poot.setup(2);
 			}else
@@ -1919,10 +2185,15 @@ function entity(croom)
 		if(ang==270) //hack
 		{
 			poot.x+=32;
+			poot.y+=28;
 		}
 		if(ang==0)
 		{
 			poot.y+=28;
+		}
+		if(ang==180)
+		{
+			poot.x+=28;
 		}
 		if(ang==225)
 		{
@@ -1937,6 +2208,92 @@ function entity(croom)
 		poot.yv=-Math.sin((Math.PI / 180)*Math.floor(ang));
 		poot.setup(0);
 		this.projectiles.push(poot);
+	}
+	
+	this.shootFire=function(ang)
+	{
+		playSound("firerod");
+	
+		/*this.acting=true;
+		this.action=actionID.Bow;
+		this.actfor=750;
+		this.actStart=new Date().getTime();*/
+
+		var poot=new projectile(this);
+		poot.type=ProjTypes.Fireball;
+		
+		poot.exists=true; 
+		poot.angle=ang;
+		if(ang==270) //hack
+		{
+			poot.x+=32;
+			poot.y+=28;
+		}
+		if(ang==0)
+		{
+			poot.y+=28;
+		}
+		if(ang==180)
+		{
+			poot.x+=28;
+		}
+		if(ang==225)
+		{
+			poot.x+=32;
+		}
+		if(ang==315)
+		{
+			poot.x+=32;
+			poot.y+=32;
+		}
+		poot.xv=-Math.cos((Math.PI / 180)*Math.floor(ang));
+		poot.yv=-Math.sin((Math.PI / 180)*Math.floor(ang));
+		poot.setup(poot.type);
+		this.projectiles.push(poot);
+		
+	}
+	
+	this.shootIce=function(ang)
+	{
+		playSound("icerod");
+	
+		/*this.acting=true;
+		this.action=actionID.Bow;
+		this.actfor=750;
+		this.actStart=new Date().getTime();*/
+
+		var poot=new projectile(this);
+		poot.type=ProjTypes.Iceball;
+		
+		poot.exists=true; 
+		poot.angle=ang;
+		if(ang==270) //hack
+		{
+			poot.x+=32;
+			poot.y+=28;
+		}
+		if(ang==0)
+		{
+			poot.y+=28;
+		}
+		if(ang==180)
+		{
+			poot.x+=28;
+		}
+		if(ang==225)
+		{
+			poot.x+=32;
+		}
+		if(ang==315)
+		{
+			poot.x+=32;
+			poot.y+=32;
+		}
+		poot.xv=-Math.cos((Math.PI / 180)*Math.floor(ang));
+		poot.yv=-Math.sin((Math.PI / 180)*Math.floor(ang));
+		poot.setup(poot.type);
+		this.projectiles.push(poot);
+		
 	}
 	
 	this.shootHook=function(ang)
@@ -2036,29 +2393,57 @@ function entity(croom)
 	
 	this.draw=function(can)
 	{
-		for(var i=0;i<this.projectiles.length;i++)
+		/*for(var i=0;i<this.projectiles.length;i++)
 		{
 			if((this.projectiles[i].room.x==curDungeon.roomX) && (this.projectiles[i].room.y==curDungeon.roomY)&&(this.projectiles[i].room.z==curDungeon.roomZ))
 			{
 				this.projectiles[i].draw(can,xOffset,yOffset);
 			}
+		}*/
+		
+		if(this.invisible)
+		{
+			shadowSprite[2].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset);
+			if(this.room.tiles[this.x][this.y].data==DungeonTileType.Grass)
+			{
+				can.globalAlpha=0.85;
+				if(this.dir==0)
+				{
+					halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset-6,this.y*32+this.ySmall+yOffset+10-4-this.fallingY*2);
+				}else if(this.dir==1)
+				{
+					halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset-6,this.y*32+this.ySmall+yOffset+10-this.fallingY*2);
+				}else if(this.dir==2)
+				{
+					halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset+4-6,this.y*32+this.ySmall+yOffset+10-4-this.fallingY*2);
+				}else if(this.dir==3)
+				{
+					halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset-4-6,this.y*32+this.ySmall+yOffset+10-this.fallingY*2);
+				}
+				can.globalAlpha=1;
+			}
+			return; 
 		}
+
 		if(!this.alive)
 		{
-			//if((this.deathAniTrack<2) || (this.isPlayer))//hack
-			//{
+			if(!this.swimming)
+			{
 				this.deadSprites[this.deathAniTrack].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2)
-			//}else
-			//{
-			//	this.deadSprites[this.deathAniTrack].draw(can,this.x*32+xOffset-16,this.y*32+yOffset+8-this.fallingY*2)
-			//}
+			}else
+			{
+				this.deadinwatersprite.draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2)
+			}
+			
+			
 			return;
-		}else if((this.isPlayer) && (this.holding))
+		}
+		if((this.isPlayer) && (this.holding))
 		{
 			
 			this.sprites[4].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
 			this.holding.draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-16-this.fallingY*2);
-		}else if((this.isPlayer) && (this.swinging))
+		}else if((this.isPlayer) && (this.swinging) && (this.gotHurt%2==0))
 		{
 			var knuckx=-48;
 			var knucky=-48;
@@ -2082,15 +2467,15 @@ function entity(croom)
 				shX=8;
 				shY=8;
 			}
-			if((this.dir==0)&&(this.has[hasID.Shield]))
+			if((this.dir==0)&&(this.has[hasID.Shield]) && (!this.grabbed))
 			{
 				this.shieldSprites[1].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
 			}else if((this.dir==1) &&(this.has[hasID.Shield]))
 			{
-				this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
+				this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+3+yOffset-14-this.fallingY*2+shY);
 			}
 			this.swingSprites[this.dir][this.swingtrack].draw(can,this.x*32+this.xSmall+xOffset+knuckx+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+knucky);
-			if((this.dir!=0) && (this.dir!=1) &&(this.has[hasID.Shield]))
+			if((this.dir!=0) &&(this.has[hasID.Shield]))
 			{
 				if(this.dir==2)
 				{
@@ -2099,8 +2484,9 @@ function entity(croom)
 				{
 					this.shieldSprites[2].draw(can,this.x*32+this.xSmall+xOffset+shX+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2+shY);
 				}
+
 			}
-		}else if((this.isPlayer) && (this.poking))
+		}else if((this.isPlayer) && (this.poking)&& (this.gotHurt%2==0))
 		{
 			var knuckx=-48;
 			var knucky=-48;
@@ -2184,11 +2570,17 @@ function entity(croom)
 					this.swimSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
 				}else
 				{
-					if((this.has[hasID.Shield]) && (this.dir==0))
+					if(this.has[hasID.Shield])
 					{
-						this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+						if((!this.pushing) && (!this.grabbed) && (this.dir==0))
+						{
+							this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+						}else if ((this.pushing) || (this.grabbed) && (this.dir==2))
+						{
+							this.shieldSprites[0].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack-4,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+						}
 					}
-					
+				
 				
 					if(this.acting)
 					{
@@ -2212,14 +2604,43 @@ function entity(croom)
 					
 					if((this.has[hasID.Shield]) && (this.dir>0))
 					{
-						if(this.dir==3)
+						if((this.grabbed) || (this.pushing))
 						{
-							this.shieldSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset-5+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+							if(this.dir==3)
+							{
+								this.shieldSprites[1].draw(can,this.x*32+this.xSmall+xOffset-5+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+							}else if(this.dir==1)
+							{
+								this.shieldSprites[3].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack+4,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+							}
 						}else
 						{
-							this.shieldSprites[this.dir].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+							if(this.dir==3)
+							{
+								this.shieldSprites[3].draw(can,this.x*32+this.xSmall+xOffset-5+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+							}else if(this.dir==1)
+							{
+								this.shieldSprites[1].draw(can,this.x*32+this.xSmall+xOffset-5+4+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+							}else
+							{
+								this.shieldSprites[2].draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset-14-this.fallingY*2);
+							}							
 						}
-					
+	
+					}else if ((this.has[hasID.Shield]) && (this.dir==0))
+					{
+						if((this.grabbed) || (this.pushing))
+						{
+							var shx=8;
+							if(this.has[hasID.BestShield])
+							{
+								shx=4;
+							}else if(this.has[hasID.BetterShield])
+							{
+								shx=4;
+							}
+							this.shieldSprites[2].draw(can,this.x*32+this.xSmall+xOffset+shx+this.shakeTrack,this.y*32+this.ySmall+yOffset-22-this.fallingY*2);
+						}
 					}
 				}
 				
@@ -2252,20 +2673,41 @@ function entity(croom)
 			can.globalAlpha=1;*/
 		}
 		
-		for(var i=0;i<this.activebombs.length;i++)
+		/*for(var i=0;i<this.activebombs.length;i++)
 		{
 			if((this.activebombs[i].exists) && ((this.activebombs[i].room.z==curDungeon.roomZ) &&(this.activebombs[i].room.x==curDungeon.roomX) &&(this.activebombs[i].room.y==curDungeon.roomY)))
 			{
 				this.activebombs[i].draw(can,xOffset,yOffset);
 			}
+		}*/
+		if(this.grabbed)
+		{
+			this.grabbed.draw(can,camera,xOffset,yOffset,"no shadow");
 		}
 		if(this.room.tiles[this.x][this.y].data==DungeonTileType.Grass)
 		{
-			can.globalAlpha=0.80;
-			//halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset,this.y*32+this.ySmall+yOffset+10-this.fallingY*2);
+			can.globalAlpha=0.85;
+			if(this.dir==0)
+			{
+				halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset-6,this.y*32+this.ySmall+yOffset+10-4-this.fallingY*2);
+			}else if(this.dir==1)
+			{
+				halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset-6,this.y*32+this.ySmall+yOffset+10-this.fallingY*2);
+			}else if(this.dir==2)
+			{
+				halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset+4-6,this.y*32+this.ySmall+yOffset+10-4-this.fallingY*2);
+			}else if(this.dir==3)
+			{
+				halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset-4-6,this.y*32+this.ySmall+yOffset+10-this.fallingY*2);
+			}
 			can.globalAlpha=1;
 		}
-		
+		if(this.frozen)
+		{
+			can.globalAlpha=0.8;
+			frozenSprite.draw(can,this.x*32+this.xSmall+xOffset+this.shakeTrack,this.y*32+this.ySmall+yOffset);
+		}
+		can.globalAlpha=1;
 	}
 	this.goHole=function(x,y,obj)
 	{
@@ -2329,10 +2771,13 @@ function entity(croom)
 		return;
 	}
 	
-	this.getFacingObject=function()
+	this.getFacingObject=function(special)
 	{
 		var gx=this.x;
 		var gy=this.y;
+		
+		if(special=="1up"){ gy--;}
+		if(special=="1left"){ gx--;}
 		if(this.dir==0)
 		{
 			gy--;
@@ -2348,7 +2793,7 @@ function entity(croom)
 		}
 		for(var i=0;i<this.room.objects.length;i++)
 		{
-			if((this.room.objects[i].x==gx) && (this.room.objects[i].y==gy)&& (this.room.objects[i].type!=ObjectID.PotStand)&&(this.room.objects[i].type!=ObjectID.ToggleSwitch))
+			if((this.room.objects[i].x==gx) && (this.room.objects[i].y==gy)&& (this.room.objects[i].type!=ObjectID.PotStand)&&(this.room.objects[i].type!=ObjectID.ToggleSwitch) && (this.room.objects[i].type!=ObjectID.HoldSwitch))
 			{
 				if(this.grabbed==null) 
 				{
@@ -2460,8 +2905,51 @@ function entity(croom)
 		return null;
 	}
 	
+	this.freeze=function(dur)
+	{
+		this.frozen=dur;
+		if(!dur)
+		{
+			this.frozen=5000;
+		}
+		this.frozenAt=new Date().getTime();
+		playSound("freeze");
+	}
+	
+	
+	this.unfreeze=function()
+	{
+		this.frozen=0;
+		playSound("unfreeze");
+	}
+	
 	this.update=function()
 	{
+		if(this.capon)
+		{
+			this.mp-=0.5;
+			if(this.mp<0)
+			{
+				this.capon=false;
+				this.invincible=false;
+				this.invisible=false;
+				playSound("capeoff");
+			}
+		}
+		this.mp+=this.magicRegen;
+		if(this.mp>this.maxMp)
+		{
+			this.mp=this.maxMp;
+		}
+		//thaw
+		if(this.frozen)
+		{
+			var plopl=new Date().getTime();
+			if(plopl-this.frozenAt>this.frozen)
+			{
+				this.unfreeze();
+			}
+		}
 		if (this.RumHam)
 		{
 			var juk=this.maxArrows-this.arrows;
@@ -2486,7 +2974,7 @@ function entity(croom)
 		for(var i=0;i<this.projectiles.length;i++)
 		{
 			this.projectiles[i].update();
-			if((this.projectiles[i].type==ProjTypes.Boomarang) || (this.projectiles[i].type==ProjTypes.MagicBoomarang))
+			if((this.projectiles[i].type==ProjTypes.Boomerang) || (this.projectiles[i].type==ProjTypes.MagicBoomerang))
 			{
 				if(!this.busyrang)
 				{
@@ -2631,27 +3119,63 @@ function entity(croom)
 			{
 				if(this.room.exits[i].orientation==0)
 				{
-					if((this.y==2) && (this.ySmall<-8)&& ((this.x==this.room.exits[i].x) || (this.x==this.room.exits[i].x+1)))
+					if((this.y==2) && (this.ySmall<-7)&& ((this.x==this.room.exits[i].x) || (this.x==this.room.exits[i].x+1)))
 					{
-						curDungeon.changeRoom(0,true);
+						if((controller.pad) && (controller.checkUp()))
+						{
+							curDungeon.changeRoom(0,true);
+						}else if (SNESUpKey.checkDown())
+						{
+							curDungeon.changeRoom(0,true);
+						}else if ((this.reallyDashing) && (this.dir==0))
+						{
+							curDungeon.changeRoom(0,true);
+						}
 					}
 				}else if(this.room.exits[i].orientation==2)
 				{
-					if((this.y==12) && (this.ySmall>8)&& ((this.x==this.room.exits[i].x) || (this.x==this.room.exits[i].x+1)))
+					if((this.y==12) && (this.ySmall>7)&& ((this.x==this.room.exits[i].x) || (this.x==this.room.exits[i].x+1)))
 					{
-						curDungeon.changeRoom(2,true);
+						if((controller.pad) &&(controller.checkDown()))
+						{
+							curDungeon.changeRoom(2,true);
+						}else if (SNESDownKey.checkDown())
+						{
+							curDungeon.changeRoom(2,true);
+						}else if ((this.reallyDashing) && (this.dir==2))
+						{
+							curDungeon.changeRoom(2,true);
+						}
 					}
 				}else if(this.room.exits[i].orientation==3)
 				{
-					if((this.x==2)&& (this.xSmall<-8) && ((this.y==this.room.exits[i].y) || (this.y==this.room.exits[i].y+1)))
+					if((this.x==2)&& (this.xSmall<-7) && ((this.y==this.room.exits[i].y) || (this.y==this.room.exits[i].y+1)))
 					{
-						curDungeon.changeRoom(3,true);
+						if((controller.pad) &&(controller.checkLeft()))
+						{
+							curDungeon.changeRoom(3,true);
+						}else if (SNESLeftKey.checkDown())
+						{
+							curDungeon.changeRoom(3,true);
+						}else if ((this.reallyDashing) && (this.dir==3))
+						{
+							curDungeon.changeRoom(3,true);
+						}
 					}
 				}else if(this.room.exits[i].orientation==1)
 				{
-					if((this.x==17) && (this.xSmall>8) && ((this.y==this.room.exits[i].y) || (this.y==this.room.exits[i].y+1)))
+					if((this.x==17) && (this.xSmall>7) && ((this.y==this.room.exits[i].y) || (this.y==this.room.exits[i].y+1)))
 					{
-						curDungeon.changeRoom(1,true);
+						if((controller.pad) &&(controller.checkRight()))
+						{
+							curDungeon.changeRoom(1,true);
+						}else if (SNESRightKey.checkDown())
+						{
+							curDungeon.changeRoom(1,true);
+						}else if ((this.reallyDashing) && (this.dir==1))
+						{
+							curDungeon.changeRoom(1,true);
+						}
 					}
 				}
 			}
@@ -2813,7 +3337,7 @@ function entity(croom)
 				{
 					if((this.room.objects[i].x==hurtx) && (this.room.objects[i].y==hurty))
 					{
-						if(this.room.objects[i].swordActivate()) 
+						if((this.room.objects[i].swordActivate()) && (this.room.objects[i].pokable))
 						{
 							this.room.objects[i].playerActivate();
 						}
@@ -2927,6 +3451,9 @@ function entity(croom)
 				if((this.room.tiles[this.x][this.y].data>19) && (this.room.tiles[this.x][this.y].data<24))
 				{
 					playSound("splash");
+					var bumj= new explosionEffect(this.room);
+					bumj.setup(this.x,this.y,this.room,2);
+					explosions.push(bumj);
 				}
 				
 			}
@@ -3019,7 +3546,7 @@ function entity(croom)
 			{
 				if((this.x!=this.lastX) || (this.y!=this.lastY))
 				{
-					if((this.room.z<1) || (!curDungeon.rooms[curDungeon.roomZ-1][curDungeon.roomX][curDungeon.roomY].active))
+					if((this.room.z<1) || (!curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active))
 					{
 						this.room.tiles[this.x][this.y].data=DungeonTileType.DeathHole;
 					}else
@@ -3109,11 +3636,15 @@ function entity(croom)
 							{
 									curDungeon.roomZ--;
 									this.room=curDungeon.curRoom();
+									if(this.grabbed)
+									{
+										this.grabbed.changeRoom(curDungeon.roomZ,curDungeon.roomX,curDungeon.roomY);
+									}
 									this.room.explored=true;
 									this.room.hidden=false;
 							}else
 							{
-								this.room=curDungeon.rooms[curDungeon.roomZ-1][this.room.x][this.room.y];
+								this.room=curDungeon.rooms[this.room.z-1][this.room.x][this.room.y];
 							}
 							
 						
@@ -3142,8 +3673,65 @@ function entity(croom)
 				}
 			}
 		}
+		this.pushing=false;
+		if((this.isPlayer) && (!this.grabbed) && (!this.swimming) && (!this.dashing)&& (!this.poking)&& (!this.swinging))
+		{
+			//up pushing
+			var mufasa=this.getFacingObject();
+			if(!mufasa)
+			{
+				if((this.dir==1) || (this.dir==3))
+				{
+					//var mufasa=this.getFacingObject("1up");
+				}
+			}
+			if(!mufasa)
+			{
+				if((this.dir==0) || (this.dir==0))
+				{
+					//var mufasa=this.getFacingObject("1left");
+				}
+			}
+			if(mufasa!=null)
+			{
+			if((mufasa) &&((controller.pad) && (controller.checkUp())) || (SNESUpKey.checkDown()))
+			{
+				
+				if((this.ySmall<-7) && (mufasa.pushable) && (mufasa.y=this.y-1)) 
+				{	
+					this.pushing=true;
+					mufasa.slide(0);
+				}
+			}else if((mufasa) &&((controller.pad) && (controller.checkRight())) || (SNESRightKey.checkDown()))
+			{
+				
+				if((this.xSmall>7) && (mufasa.pushable) && (mufasa.x=this.x+1)) 
+				{	
+					this.pushing=true;
+					mufasa.slide(1);
+				}
+			}else if((mufasa) &&((controller.pad) && (controller.checkDown())) || (SNESDownKey.checkDown()))
+			{
+				
+				if((this.ySmall>7) && (mufasa.pushable) && (mufasa.y=this.y+1)) 
+				{	
+					this.pushing=true;
+					mufasa.slide(2);
+				}
+			}else if((mufasa) &&((controller.pad) && (controller.checkLeft())) || (SNESLeftKey.checkDown()))
+			{
+				
+				if((this.xSmall<-7) && (mufasa.pushable) && (mufasa.x=this.x-1)) 
+				{	
+					this.pushing=true;
+					mufasa.slide(3);
+				}
+			}
+			
+			}			
+		}
 		
-		if((this.AI==1) && (!this.going))
+		if((this.AI==1) && (!this.going)&& (this.alive)&& (!this.frozen))
 		{
 			//this.go(Math.floor(Math.random()*12) need function to find walkable tile.
 			

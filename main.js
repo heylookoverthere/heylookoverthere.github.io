@@ -451,7 +451,7 @@ var buttons=new Array();
 var timy=new button();
 timy.text="Edit";
 timy.x=56;
-timy.y=127;
+timy.y=677;
 timy.height=17;
 if(MobileMode)
 {
@@ -665,7 +665,7 @@ buttons.push(timy);
 var timy=new button();
 timy.text="Exit";
 timy.x=94;
-timy.y=127;
+timy.y=677;
 timy.height=17;
 if(MobileMode)
 {
@@ -770,7 +770,7 @@ buttons.push(timy);
 var timy=new button();
 timy.text="Help";
 timy.x=18;
-timy.y=127;
+timy.y=677;
 timy.height=17;
 if(MobileMode)
 {
@@ -786,7 +786,7 @@ timy.doThings=function()
 		logControls();
 	}else
 	{
-		var blex="Click where you want to go or what you want to use. Mousewheel to select an item once you have one. Right click to use your selected item. Some items like the hammer and lantern are used automatically when you click the appropriate object. Try to find the Triforce. " 
+		var blex="Walk around with the controller or WASD. Try to find the tri-force" 
 		if(editMode)
 		{
 			if(editor.mode==editModes.Pen)
@@ -1113,6 +1113,7 @@ miles.deadSprites=new Array();
 miles.deadSprites.push(Sprite("linkdead1"));
 miles.deadSprites.push(Sprite("linkdead2"));
 miles.deadSprites.push(Sprite("linkdead3"));
+miles.deadinwatersprite=Sprite("deadinwater");
 miles.swimSprites=new Array();
 miles.swimSprites.push(Sprite("swim0"));
 miles.swimSprites.push(Sprite("swim1"));
@@ -1585,9 +1586,17 @@ function drawGUI(can)
 		can.fillText("x"+miles.money,84+24,85);
 		bombsprite.draw(can,42,58);
 		can.fillText("x"+miles.bombs,42+24,85);
-		arrowsprite.draw(can,42,90);
-		can.fillText("x"+miles.arrows,42+24,117);
+		arrowsprite.draw(can,62,90);
+		can.fillText("x"+miles.arrows,62+24,117);
+		
+		can.fillStyle="white";
+		can.fillText("Magic:",2,120);
 		can.globalAlpha=0.75;
+		can.fillRect(4,128,108,14);
+		can.fillStyle="black";
+		canvas.fillRect(8,130,100,10);
+		can.fillStyle="green";
+		canvas.fillRect(8,130,miles.mp,10);
 		if(showNancyInfo)
 		{
 			/*var surd="";
@@ -1625,8 +1634,8 @@ function drawGUI(can)
 			var jam=miles.getContext();
 			if(jam)
 			{
-				arrowkeysprite[2].draw(can,2,616);
-				can.fillText(jam,42,640);
+				arrowkeysprite[2].draw(can,2,620);
+				can.fillText(jam,42,644);
 			}
 			arrowkeysprite[1].draw(can,760,60);
 			arrowkeysprite[3].draw(can,760,110);
@@ -1659,8 +1668,8 @@ function drawGUI(can)
 			var jam=miles.getContext();
 			if(jam)
 			{
-				xboxbsprite.draw(can,2,616);
-				can.fillText(jam,42,640);
+				xboxbsprite.draw(can,2,620);
+				can.fillText(jam,42,644);
 			}
 			if(miles.has[hasID.Sword])
 			{
@@ -1683,8 +1692,8 @@ function drawGUI(can)
 			var jam=miles.getContext();
 			if(jam)
 			{
-				xboxasprite.draw(can,2,616);
-				can.fillText(jam,42,640);
+				xboxasprite.draw(can,2,620);
+				can.fillText(jam,42,644);
 			}
 			if(miles.has[hasID.Sword])
 			{
@@ -1711,7 +1720,7 @@ function drawGUI(can)
 			//console.log(nep[miles.equippedTrack]);
 			nep[miles.equippedTrack].sprites[0].draw(can,812,60);
 			can.fillStyle="white";
-			if(true)//miles.inventoryAmounts[miles.equippedTrack]>1)
+			if(!miles.inventory[miles.equippedTrack].singular)//miles.inventoryAmounts[miles.equippedTrack]>1)
 			{
 				can.fillText("x"+miles.inventoryAmounts[miles.equippedTrack],849,80);
 			}
@@ -1723,7 +1732,7 @@ function drawGUI(can)
 			//console.log(nep[miles.equippedTrack]);
 			nep[miles.equippedTrack2].sprites[0].draw(can,812,109);
 			can.fillStyle="white";
-			if(true)//miles.inventoryAmounts[miles.equippedTrack]>1)
+			if(!miles.inventory[miles.equippedTrack2].singular)
 			{
 				can.fillText("x"+miles.inventoryAmounts[miles.equippedTrack2],849,135);
 			}
@@ -1875,14 +1884,14 @@ function inventoryUpdate()
 		playSound("unpause");
 	}
 	
-	if((inventorykey.check()) || ((Xbox) && (controller.Xcheck(11))) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
+	if((inventorykey.check()) || ((Xbox) && (controller.Xcheck(11))) || ((!Xbox) && (controller.pad) && (controller.buttons[SNESKey.Start].check())))
 	{
 		mode=1;
 		playSound("unpause");
 	}
 	if(miles.has[hasID.Map])
 	{
-		if(((Xbox) && (controller.pad) && (controller.Xcheck(10))) || ((!Xbox) && (controller.buttons[SNESKey.Select].check())))
+		if(((Xbox) && (controller.pad) && (controller.Xcheck(10))) || ((!Xbox)&& (controller.pad) && (controller.buttons[SNESKey.Select].check())))
 		{
 			mode=2;
 		}
@@ -1908,9 +1917,17 @@ function inventoryDraw() {
 	canvas.fillStyle="white";
 	canvas.fillRect(xFset-8,yFset-28,558,754);
 	canvas.fillRect(xFset+556,yFset+200,128,250);
+	if((miles.has[hasID.Map]) || (miles.has[hasID.Compass]))
+	{
+		canvas.fillRect(xFset+556,yFset+460,128,70);
+	}
 	canvas.fillStyle="blue";
 	canvas.fillRect(xFset-4,yFset-24,548,744);
 	canvas.fillRect(xFset+560,yFset+204,120,240);
+	if((miles.has[hasID.Map]) || (miles.has[hasID.Compass]))
+	{
+		canvas.fillRect(xFset+560,yFset+464,120,60);
+	}
 	canvas.font = "20pt Calibri";
 	canvas.fillStyle="white";
 	canvas.fillText("Inventory ",xFset+200,yFset+20-6);
@@ -1945,16 +1962,16 @@ function inventoryDraw() {
 		shinex.type=ObjectID.Mirror;
 		shinex.setup();
 		thelist.push(shinex);
-	}if(miles.has[hasID.MagicBoomarang])
+	}if(miles.has[hasID.MagicBoomerang])
 	{
 		var shinex=new object();
-		shinex.type=ObjectID.MagicBoomarang;
+		shinex.type=ObjectID.MagicBoomerang;
 		shinex.setup();
 		thelist.push(shinex);
-	}else if(miles.has[hasID.Boomarang])
+	}else if(miles.has[hasID.Boomerang])
 	{
 		var shinex=new object();
-		shinex.type=ObjectID.Boomarang;
+		shinex.type=ObjectID.Boomerang;
 		shinex.setup();
 		thelist.push(shinex);
 	}if(miles.has[hasID.Hookshot])
@@ -2011,7 +2028,33 @@ function inventoryDraw() {
 		shinex.type=ObjectID.Poo;
 		shinex.setup();
 		thelist.push(shinex);
-	}if(miles.has[hasID.Map])
+	}if(miles.hasItem(ObjectID.Cane))
+	{
+		var shinex=new object();
+		shinex.type=ObjectID.Cane;
+		shinex.setup();
+		thelist.push(shinex);
+	}
+	if(miles.hasItem(ObjectID.Cape))
+	{
+		var shinex=new object();
+		shinex.type=ObjectID.Cape;
+		shinex.setup();
+		thelist.push(shinex);
+	}if(miles.hasItem(ObjectID.FireRod))
+	{
+		var shinex=new object();
+		shinex.type=ObjectID.FireRod;
+		shinex.setup();
+		thelist.push(shinex);
+	}
+	if(miles.hasItem(ObjectID.IceRod))
+	{
+		var shinex=new object();
+		shinex.type=ObjectID.IceRod;
+		shinex.setup();
+		thelist.push(shinex);
+	}/*if(miles.has[hasID.Map])
 	{
 		var shinex=new object();
 		shinex.type=ObjectID.Map;
@@ -2024,7 +2067,7 @@ function inventoryDraw() {
 		shinex.type=ObjectID.Compass;
 		shinex.setup();
 		thelist.push(shinex);
-	}
+	}*/
 	
 	for(var i=0;i<thelist.length;i++)
 	{
@@ -2063,16 +2106,16 @@ function inventoryDraw() {
 		}
 	}
 
-	objectSprites[ObjectID.Gold].draw(canvas,xFset+120,yFset+670);
+	objectSprites[ObjectID.Gold].draw(canvas,607,19);
 		canvas.font = "12pt Calibri";
-		canvas.fillText("x"+miles.money+"/"+miles.wallet,xFset+152,yFset+695);
+		canvas.fillText("x"+miles.money+"/"+miles.wallet,637,42);
 		canvas.font = "20pt Calibri";
 	
 	if(miles.shells>0)
 	{
-		objectSprites[ObjectID.Shell].draw(canvas,xFset+320,yFset+670);
+		objectSprites[ObjectID.Shell].draw(canvas,607,53);
 		canvas.font = "12pt Calibri";
-		canvas.fillText("x"+miles.shells,xFset+352,yFset+695);
+		canvas.fillText("x"+miles.shells,637,75);
 		canvas.font = "20pt Calibri";
 	}
 
@@ -2088,9 +2131,9 @@ function inventoryDraw() {
 		canvas.font = "20pt Calibri";
 	
 
-		objectSprites[ObjectID.GreenPotion].draw(canvas,xFset+600,yFset+325);
+		objectSprites[ObjectID.PurplePotion].draw(canvas,xFset+600,yFset+325);
 		canvas.font = "12pt Calibri";
-		canvas.fillText("x"+miles.getItemAmt(ObjectID.GreenPotion),xFset+632,yFset+350);
+		canvas.fillText("x"+miles.getItemAmt(ObjectID.PurplePotion),xFset+632,yFset+350);
 		canvas.font = "20pt Calibri";
 	
 		if(miles.has[hasID.BestShield])
@@ -2110,6 +2153,15 @@ function inventoryDraw() {
 		}else if(miles.has[hasID.Sword])
 		{
 			objectSprites[ObjectID.Sword].draw(canvas,xFset+632,yFset+380);
+		}
+		
+		if(miles.has[hasID.Map])
+		{
+			objectSprites[ObjectID.Map].draw(canvas,xFset+590,yFset+476);
+		}
+		if(miles.has[hasID.Compass])
+		{
+			objectSprites[ObjectID.Compass].draw(canvas,xFset+632,yFset+476);
 		}
 	
 	//canvas.fillText("14) Bombs set off other bombs: "+OPTIONS.ChainingExplosions,xFset+15,yFset+400-6);
@@ -2533,6 +2585,12 @@ function mapUpdate()
 		curDungeon.mapFloor=curDungeon.roomZ;
 		mode=1;
 	}
+	if((Xbox) && (controller.pad) && (controller.Xcheck(10)) || ((!Xbox) && (controller.buttons[SNESKey.Select].check())))
+	{
+		playSound("unpause");
+		mode=1;
+	}
+	
 	if((Xbox) && (controller.pad) && (controller.Xcheck(11)) || ((!Xbox) && (controller.buttons[SNESKey.Start].check())))
 	{
 		playSound("pause");
@@ -2869,13 +2927,46 @@ function mainDraw() {
 	}
 	if(true)
 	{
-		//miles.draw(canvas,camera);
-		/*var ploj=canvas.fillStyle;
-		canvas.fillStyle="blue";
-        canvas.fillRect(miles.x*32+xOffset,miles.y*32+yOffset,32,32);
-		canvas.fillStyle=ploj*/
-		entities.sort(function(a, b) //todo not this every frame. only when changes. 
+		var allentities=new Array();
+		
+		for(var p=0;p<curDungeon.curRoom().objects.length;p++)
 		{
+			allentities.push(curDungeon.curRoom().objects[p]);
+		}
+		for(var p=0;p<entities.length;p++)
+		{
+			allentities.push(entities[p]);
+			for(var i=0;i<entities[p].projectiles.length;i++)
+			{
+				if((entities[p].projectiles[i].room.x==curDungeon.roomX) && (entities[p].projectiles[i].room.y==curDungeon.roomY)&&(entities[p].projectiles[i].room.z==curDungeon.roomZ))
+				{
+					allentities.push(entities[p].projectiles[i]);
+				}
+			}
+		}
+		for(var p=0;p<curDungeon.curRoom().bombs.length;p++)
+		{
+			allentities.push(curDungeon.curRoom().bombs[p]);
+		}
+		allentities.sort(function(a, b) //todo not this every frame. only when changes. 
+		{
+			if((a.type==ObjectID.PotStand) || (a.type==ObjectID.HoldSwitch)|| (a.type==ObjectID.ToggleSwitch)|| ((a.type==ObjectID.HolePlugger) && (a.on)))
+			{
+				if((b.type==ObjectID.PotStand) || (b.type==ObjectID.HoldSwitch)|| (b.type==ObjectID.ToggleSwitch)|| ((b.type==ObjectID.HolePlugger) && (b.on)))
+				{
+					return 0;
+				}
+				return -1;
+			}
+			if((b.type==ObjectID.PotStand) || (b.type==ObjectID.HoldSwitch)|| (b.type==ObjectID.ToggleSwitch)|| ((b.type==ObjectID.HolePlugger) && (b.on)))
+			{
+				if((a.type==ObjectID.PotStand) || (a.type==ObjectID.HoldSwitch)|| (a.type==ObjectID.ToggleSwitch)|| ((a.type==ObjectID.HolePlugger) && (a.on)))
+				{
+					return 0;
+				}
+				return 1;
+			}
+			
 			if(a.y>b.y)
 			{
 				return 1;
@@ -2885,11 +2976,20 @@ function mainDraw() {
 			}
 				return 0;
 		});
-		for(var i=0;i<entities.length;i++)
+		for(var i=0;i<allentities.length;i++)
 		{
-			if((entities[i].exists) && (entities[i].room.name==curDungeon.curRoom().name)&&(entities[i].room.z==curDungeon.roomZ))
+			if((allentities[i].exists) && (allentities[i].room.name==curDungeon.curRoom().name)&&(allentities[i].room.z==curDungeon.roomZ))
 			{
-				entities[i].draw(canvas);//.sprites[entities[i].dir].draw(canvas,entities[i].x*32+xOffset,entities[i].y*32+yOffset-14);
+				if(allentities[i].entity)
+				{
+					allentities[i].draw(canvas);//.sprites[entities[i].dir].draw(canvas,entities[i].x*32+xOffset,entities[i].y*32+yOffset-14);
+				}else if((allentities[i].bomb) || (allentities[i].projectile))
+				{
+					allentities[i].draw(canvas,xOffset,yOffset);
+				}else
+				{
+					allentities[i].draw(canvas,camera,xOffset,yOffset);
+				}
 			}
 		}
 	}
@@ -3658,60 +3758,7 @@ function mainUpdate()
 			{
 				//contextual. if NPC in talk range, talk. 
 				//if object in front, activate
-				if(miles.grabbed!=null)
-				{
-					miles.grabbed.toss(miles.dir,10);
-					miles.grabbed=null;
-				}else
-				{
-					var mled=miles.getFacingBomb();
-					if((mled) && (mled.fallingY<1))
-					{
-						miles.grab(mled);
-					}
-					var gled=miles.getFacingObject();
-					if((gled) &&(miles.has[hasID.Glove])&& (gled.fallingY<1) && (gled.grababble))
-					{
-						miles.grab(gled);
-					}else if((gled) && (gled.playerUsable))
-					{
-						//console.log(miles.grabbed.ID,gled.ID);
-						if((miles.grabbed) && (miles.grabbed.ID==gled.ID))
-						{
-						}else
-						{
-							if(gled.frontOnly)
-							{
-								if(gled.y<miles.y)
-								{
-									gled.playerActivate();
-								}
-							}else
-							{
-								gled.playerActivate();
-							}
-						}
-					}else 
-					{
-						var pled=miles.getFacingEntity();
-						if((pled) && (pled.team==miles.team))
-						{
-							if(pled.alive) 
-							{
-								pled.say();
-								if((!pled.partyMember) && (pled.autoJoin))
-								{
-									theParty.add(pled);
-								}
-								return;
-							}else if(miles.hasItem(ObjectID.GreenPotion))
-							{
-								pled.revive();
-								miles.removeItem(ObjectID.GreenPotion,1); 
-							}
-						}
-					}
-				}
+				miles.doContextual();
 			}
 			if(miles.holding)
 			{
@@ -3806,20 +3853,20 @@ function mainUpdate()
 					if((!Xbox) && (controller.pad) && (controller.buttons[SNESKey.R].checkDown()))
 					{
 						miles.cycleEquipped(true);
-					}else if(miles.inventory[miles.equippedTrack].type==ObjectID.Boomarang)
+					}else if(miles.inventory[miles.equippedTrack].type==ObjectID.Boomerang)
 					{
 						if(controller.checkDownRight())
 						{
-							miles.tossBoomarang(225);	
+							miles.tossBoomerang(225);	
 						}else if(controller.checkDownLeft())
 						{
-							miles.tossBoomarang(315);	
+							miles.tossBoomerang(315);	
 						}else if(controller.checkUpLeft())
 						{
-							miles.tossBoomarang(45);	
+							miles.tossBoomerang(45);	
 						}else if(controller.checkUpRight())
 						{
-							miles.tossBoomarang(135);	
+							miles.tossBoomerang(135);	
 						}else
 						{
 							miles.useItem();
@@ -3854,20 +3901,20 @@ function mainUpdate()
 					if((!Xbox) && (controller.pad) && (controller.buttons[SNESKey.R].checkDown()))
 					{
 						miles.cycleEquipped(true,true);
-					}else if(miles.inventory[miles.equippedTrack2].type==ObjectID.Boomarang)
+					}else if(miles.inventory[miles.equippedTrack2].type==ObjectID.Boomerang)
 					{
 						if(controller.checkDownRight())
 						{
-							miles.tossBoomarang(225);	
+							miles.tossBoomerang(225);	
 						}else if(controller.checkDownLeft())
 						{
-							miles.tossBoomarang(315);	
+							miles.tossBoomerang(315);	
 						}else if(controller.checkUpLeft())
 						{
-							miles.tossBoomarang(45);	
+							miles.tossBoomerang(45);	
 						}else if(controller.checkUpRight())
 						{
-							miles.tossBoomarang(135);	
+							miles.tossBoomerang(135);	
 						}else
 						{
 							miles.useItem(true);
@@ -3927,7 +3974,7 @@ function mainUpdate()
 				//console.log("L trigger")
 				miles.cycleEquipped(true,false);
 			}
-			if((!miles.holding) && (!miles.dashing) && (!((miles.swimming) && (!miles.canSwim))))
+			if((!miles.holding) && (!miles.dashing) && (!((miles.swimming) && (!miles.canSwim))&& (!miles.frozen)))
 			{
 				if(controller.checkUp())
 				{
@@ -3940,6 +3987,13 @@ function mainUpdate()
 						if(miles.swimming)
 						{
 							playSound("swim");
+						}else if(miles.room.tiles[miles.x][miles.y].data==DungeonTileType.Grass)
+						{
+							playSound("grasswalk");
+						}
+						if(miles.pushing)
+						{
+							playSound("push");
 						}
 					}
 				}else if(controller.checkDown())
@@ -3953,6 +4007,13 @@ function mainUpdate()
 						if(miles.swimming)
 						{
 							playSound("swim");
+						}else if(miles.room.tiles[miles.x][miles.y].data==DungeonTileType.Grass)
+						{
+							playSound("grasswalk");
+						}
+						if(miles.pushing)
+						{
+							playSound("push");
 						}
 					}
 				}else if(controller.checkLeft())
@@ -3966,6 +4027,13 @@ function mainUpdate()
 						if(miles.swimming)
 						{
 							playSound("swim");
+						}else if(miles.room.tiles[miles.x][miles.y].data==DungeonTileType.Grass)
+						{
+							playSound("grasswalk");
+						}
+						if(miles.pushing)
+						{
+							playSound("push");
 						}
 					}
 				}else if(controller.checkRight())
@@ -3979,6 +4047,13 @@ function mainUpdate()
 						if(miles.swimming)
 						{
 							playSound("swim");
+						}else if(miles.room.tiles[miles.x][miles.y].data==DungeonTileType.Grass)
+						{
+							playSound("grasswalk");
+						}
+						if(miles.pushing)
+						{
+							playSound("push");
 						}
 					}
 				}else
@@ -4025,21 +4100,7 @@ function mainUpdate()
 			{
 				//contextual. if NPC in talk range, talk. 
 				//if object in front, activate
-				var pled=miles.getFacingEntity();
-				if(pled)
-				{
-					pled.say();
-					if((!pled.partyMember) && (pled.autoJoin))
-					{
-						theParty.add(pled);
-					}
-					return;
-				}
-				var gled=miles.getFacingObject();
-				if((gled) && (gled.playerUsable))
-				{
-					gled.playerActivate();
-				}
+				miles.doContextual();
 			}
 			if(miles.holding)
 			{
@@ -4090,7 +4151,7 @@ function mainUpdate()
 				//console.log("L")
 				miles.cycleEquipped(true,true);
 			}
-			if((!miles.holding) && (!miles.dashing))
+			if((!miles.holding) && (!miles.dashing)&& (!((miles.swimming) && (!miles.canSwim))&& (!miles.frozen)))
 			{
 				if(SNESUpKey.checkDown())
 				{
@@ -4319,30 +4380,32 @@ function mainUpdate()
 	{
 		curDungeon.curRoom().fires[i].update();
 	}*/
+	for(var d=0;d<curDungeon.floors;d++)
+	{
 	for(var a=0;a<curDungeon.getWidth();a++)
 	{
 		for(var b=0;b<curDungeon.getHeight();b++)
 		{
-			for(var i=0;i<curDungeon.rooms[curDungeon.roomZ][a][b].objects.length;i++) //should do adjacent rooms too, no?
+			for(var i=0;i<curDungeon.rooms[d][a][b].objects.length;i++) //should do adjacent rooms too, no?
 			{
-				//TODO: getting errors here. dunno why but will hack around. 
-				curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].update();
-				if(curDungeon.rooms[curDungeon.roomZ][a][b].objects[i]) //why needed?
+				//TODO: getting errors here. dunno why but will hack around. maybe ccause roomZ is changing mid stream?
+				curDungeon.rooms[d][a][b].objects[i].update();
+				if(curDungeon.rooms[d][a][b].objects[i]) //why needed?
 				{
 					
 					
-					if(!curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].exists)
+					if(!curDungeon.rooms[d][a][b].objects[i].exists)
 					{
-						if(curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].flame)
+						if(curDungeon.rooms[d][a][b].objects[i].flame)
 						{
-							curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].flame.flare=null;//.alive=false;
-							curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].flame=null;alive=false;
+							curDungeon.rooms[d][a][b].objects[i].flame.flare=null;//.alive=false;
+							curDungeon.rooms[curDungeon.roomZ][a][b].objects[i].flame=null;//alive=false;
 						}
 					
-						curDungeon.rooms[curDungeon.roomZ][a][b].objects.splice(i,1);
+						curDungeon.rooms[d][a][b].objects.splice(i,1);
 						i--;
 					}
-				}else if(!curDungeon.rooms[curDungeon.roomZ][a][b].objects[i])
+				}else if(!curDungeon.rooms[d][a][b].objects[i])
 				{
 					
 					continue;
@@ -4350,7 +4413,7 @@ function mainUpdate()
 			}
 		}
 	}
-	
+	}
 	if(thyme.tock)
 	{
 		/*for(var i=0;i<ships.length;i++)

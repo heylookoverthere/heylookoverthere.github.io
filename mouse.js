@@ -17,7 +17,7 @@ $(document).bind("contextmenu",function(e){
 	}
 	if((mode==1) && (!editMode)) //non-edit right click
 	{
-		if(!OPTIONS.MouseControls){return;}
+		if(!OPTIONS.MouseControls){return false;}
 		if((miles.getEquipped()==105) && (miles.has[hasID.Sword]))
 		{
 			miles.swingSword();
@@ -94,6 +94,7 @@ $(document).bind("contextmenu",function(e){
 			}else
 			{
 				//monsta.startOrbit(40000,mX+camera.x,mY+camera.y,60,8,false,12);
+				return false;
 			}
 		}else
 		{

@@ -746,11 +746,53 @@ function room(I) { //room object
 			{
 				//if((I.objects[i].x==x) && (I.objects[i].y==y))
 				//if((x>I.objects[i].x-1) && (x<I.objects[i].x+I.objects[i].width/32) && (y>I.objects[i].y-1) && (y<I.objects[i].y+I.objects[i].height/32))
-				if((obj.room.objects[i].x==obj.x) && (obj.room.objects[i].y==obj.y) && (obj.room.objects[i].ID!=obj.ID))
+				if(obj.room.objects[i].ID==obj.ID)
 				{
+					continue;
+				}
+				if((obj.room.objects[i].x==obj.x) && (obj.room.objects[i].y==obj.y) && (obj.room.objects[i].ID!=obj.ID)&& (obj.room.objects[i].fallingY<20))
+				{	
 					if(!obj.room.objects[i].walkable())
 					{
+						
 						return true;
+					}
+				}
+				if(obj.dir==0)
+				{
+					if((obj.room.objects[i].x==obj.x) && (obj.room.objects[i].y==obj.y-1) && (obj.room.objects[i].ID!=obj.ID)&& (obj.room.objects[i].fallingY<20))
+					{
+						if(!obj.room.objects[i].walkable())
+						{
+							return true;
+						}
+					}
+				}else if(obj.dir==1)
+				{
+					if((obj.room.objects[i].x==obj.x+1) && (obj.room.objects[i].y==obj.y) && (obj.room.objects[i].ID!=obj.ID)&& (obj.room.objects[i].fallingY<20))
+					{
+						if(!obj.room.objects[i].walkable())
+						{
+							return true;
+						}
+					}
+				}else if(obj.dir==2)
+				{
+					if((obj.room.objects[i].x==obj.x) && (obj.room.objects[i].y==obj.y+1) && (obj.room.objects[i].ID!=obj.ID)&& (obj.room.objects[i].fallingY<20))
+					{
+						if(!obj.room.objects[i].walkable())
+						{
+							return true;
+						}
+					}
+				}else if(obj.dir==3)
+				{
+					if((obj.room.objects[i].x==obj.x-1) && (obj.room.objects[i].y==obj.y) && (obj.room.objects[i].ID!=obj.ID)&& (obj.room.objects[i].fallingY<20))
+					{
+						if(!obj.room.objects[i].walkable())
+						{
+							return true;
+						}
 					}
 				}
 			}
@@ -805,7 +847,7 @@ function room(I) { //room object
 					//if((I.objects[i].x==x) && (I.objects[i].y==y))
 					if((x>I.objects[i].x-1) && (x<I.objects[i].x+I.objects[i].width/32) && (y>I.objects[i].y-1) && (y<I.objects[i].y+I.objects[i].height/32))
 					{
-						if(!I.objects[i].walkable())
+						if((!I.objects[i].walkable()) && (I.objects[i].fallingY<20)&& (aPlayer.fallingY<20))
 						{
 							return false;
 						}
@@ -1078,7 +1120,7 @@ function room(I) { //room object
 				ffset=6;
 				mitly++;
 				higgins.setup();
-			}else if((higgins.type==ObjectID.ToggleSwitch) || (higgins.type==ObjectID.EyeSwitch))
+			}else if((higgins.type==ObjectID.ToggleSwitch) || (higgins.type==ObjectID.EyeSwitch)|| (higgins.type==ObjectID.HoldSwitch))
 			{
 				var nerp=tempstring[i+5] //number of dests
 				var plerp=i+5;
@@ -1109,6 +1151,22 @@ function room(I) { //room object
 		}
 		I.objects.sort(function(a, b) //todo not this every frame. only when changes. 
 		{
+			if((a.type==ObjectID.PotStand) || (a.type==ObjectID.HoldSwitch)|| (a.type==ObjectID.ToggleSwitch)|| ((a.type==ObjectID.HolePlugger) && (a.on)))
+			{
+				if((b.type==ObjectID.PotStand) || (b.type==ObjectID.HoldSwitch)|| (b.type==ObjectID.ToggleSwitch) || ((b.type==ObjectID.HolePlugger) && (b.on)))
+				{
+					return 0;
+				}
+				return -1;
+			}
+			if((b.type==ObjectID.PotStand) || (b.type==ObjectID.HoldSwitch)|| (b.type==ObjectID.ToggleSwitch) || ((b.type==ObjectID.HolePlugger) && (b.on)))
+			{
+				if((a.type==ObjectID.PotStand) || (a.type==ObjectID.HoldSwitch)|| (a.type==ObjectID.ToggleSwitch)|| ((a.type==ObjectID.HolePlugger) && (a.on)))
+				{
+					return 0;
+				}
+				return 1;
+			}
 			if(a.y>b.y)
 			{
 				return 1;
@@ -1117,10 +1175,10 @@ function room(I) { //room object
 				return -1;
 			}else
 			{
-				if((a.type==ObjectID.PotStand) && (b.type==ObjectID.Pot))
+				if(((a.type==ObjectID.PotStand) || (a.type==ObjectID.HoldSwitch)|| (a.type==ObjectID.ToggleSwitch)) && ((b.type==ObjectID.Brick) || (b.type==ObjectID.Pot)))
 				{
 					return -1;
-				}else if((b.type==ObjectID.PotStand) && (a.type==ObjectID.Pot))
+				}else if(((b.type==ObjectID.PotStand) || (b.type==ObjectID.HoldSwitch)|| (b.type==ObjectID.ToggleSwitch)) && ((a.type==ObjectID.Brick)||(a.type==ObjectID.Pot)))
 				{
 					return 1;
 				}
@@ -1404,10 +1462,10 @@ function room(I) { //room object
 			return 0;
 		});*/
 		
-		for(var p=0;p<this.objects.length;p++)
+		/*for(var p=0;p<this.objects.length;p++)
 		{
 			this.objects[p].draw(can,cam,xOffset,yOffset);
-		}
+		}*/
 	  };
 	  
 	I.darkenAdj=function(can,rxOffset,ryOffset) 
