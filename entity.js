@@ -818,6 +818,7 @@ function entity(croom)
 	this.swimming=false;
 	this.diving=false;
 	this.busyrang=false;
+	this.busyHook=false;
 	this.lastY=3;
 	this.width=32;
 	this.height=48;
@@ -889,6 +890,7 @@ function entity(croom)
 	this.falling=false;
 	this.fallingY=0;
 	this.room=null;
+	this.reeling=false;
 	this.tracker=false;
 	this.tracking=null;
 	this.shells=0;
@@ -1811,7 +1813,6 @@ function entity(croom)
 
 		}else if(this.getEquipped(secondary)==ObjectID.Hookshot)
 		{
-	
 			if(this.dir==0)
 			{
 				this.shootHook(90);
@@ -1929,24 +1930,31 @@ function entity(croom)
 			
 		}else if(this.getEquipped(secondary)==ObjectID.Mirror)
 		{
-			playSound("warp");
-			this.busyrang=false;
-			curDungeon.roomZ=curDungeon.startFloor;
-			curDungeon.roomX=curDungeon.startX;
-			curDungeon.roomY=curDungeon.startY;
-			for(var i=0;i<theParty.members.length;i++)
+			if(this.mp>49)
 			{
-				if(theParty.members[i].alive){
-					theParty.members[i].room=curDungeon.curRoom();
-					theParty.members[i].x=9;
-					theParty.members[i].y=12;
-					theParty.members[i].fallingY=0;
+				this.mp-=50;
+				playSound("warp");
+				this.busyrang=false;
+				curDungeon.roomZ=curDungeon.startFloor;
+				curDungeon.roomX=curDungeon.startX;
+				curDungeon.roomY=curDungeon.startY;
+				for(var i=0;i<theParty.members.length;i++)
+				{
+					if(theParty.members[i].alive){
+						theParty.members[i].room=curDungeon.curRoom();
+						theParty.members[i].x=9;
+						theParty.members[i].y=12;
+						theParty.members[i].fallingY=0;
+					}
 				}
-			}
-			if(OPTIONS.MirrorBreaks)
+				if(OPTIONS.MirrorBreaks)
+				{
+					this.removeItem(ObjectID.Mirror,1); 
+					//this.equippedTrack=0;
+				}
+			}else
 			{
-				this.removeItem(ObjectID.Mirror,1); 
-				//this.equippedTrack=0;
+				playSound("error");
 			}
 		}else if (this.getEquipped(secondary)==ObjectID.Poo)
 		{
@@ -2303,8 +2311,13 @@ function entity(croom)
 		//this.actfor=750;
 		//this.actStart=new Date().getTime();
 
+		if(this.busyHook) {
+			playSound("error");
+			return;
+		}
+		this.busyHook=true; 
 		var poot=new projectile(this);
-
+	
 		poot.exists=true; 
 		poot.angle=ang;
 		if(ang==270) //hack
@@ -2357,10 +2370,15 @@ function entity(croom)
 		if(ang==270) //hack
 		{
 			poot.x+=32;
+			poot.y+=28;
 		}
 		if(ang==0)
 		{
 			poot.y+=28;
+		}
+		if(ang==180)
+		{
+			poot.x+=28;
 		}
 		if(ang==225)
 		{
@@ -2415,7 +2433,7 @@ function entity(croom)
 					halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset-6,this.y*32+this.ySmall+yOffset+10-this.fallingY*2);
 				}else if(this.dir==2)
 				{
-					halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset+4-6,this.y*32+this.ySmall+yOffset+10-4-this.fallingY*2);
+					halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset+4-12,this.y*32+this.ySmall+yOffset+10-4-this.fallingY*2);
 				}else if(this.dir==3)
 				{
 					halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset-4-6,this.y*32+this.ySmall+yOffset+10-this.fallingY*2);
@@ -2695,7 +2713,7 @@ function entity(croom)
 				halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset-6,this.y*32+this.ySmall+yOffset+10-this.fallingY*2);
 			}else if(this.dir==2)
 			{
-				halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset+4-6,this.y*32+this.ySmall+yOffset+10-4-this.fallingY*2);
+				halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset+4-10,this.y*32+this.ySmall+yOffset+10-4-this.fallingY*2);
 			}else if(this.dir==3)
 			{
 				halfgrasssprite.draw(can,this.x*32+this.xSmall+xOffset-4-6,this.y*32+this.ySmall+yOffset+10-this.fallingY*2);
@@ -2925,6 +2943,7 @@ function entity(croom)
 	
 	this.update=function()
 	{
+		if((this.isPlayer) && (this.busyHook)) {playSound("hooking");}
 		if(this.capon)
 		{
 			this.mp-=0.5;
@@ -3097,7 +3116,7 @@ function entity(croom)
 			{
 				for(var i=0;i<this.room.stairs.length;i++)
 				{
-					if((this.room.stairs[i].x==this.x) && (this.room.stairs[i].y==this.y) &&(!this.room.stairs[i].hidden))
+					if((this.room.stairs[i].x==this.x) && (this.room.stairs[i].y==this.y) &&(!this.room.stairs[i].hidden)&& (!this.reeling))
 					{
 						if(this.room.tiles[this.x][this.y].data==DungeonTileType.UpStair)
 						{
@@ -3294,6 +3313,41 @@ function entity(croom)
 						}
 					}
 				
+				}
+			}
+			if(this.room.tiles[hurtx][hurty].data==DungeonTileType.Grass)
+			{
+				playSound("curtains");
+				this.room.tiles[hurtx][hurty].data=DungeonTileType.CutGrass;
+				if(Math.random()*10>6)
+				{
+					var bmoke=3;
+					if((miles.hp<miles.maxHp) && (Math.random()*10<3))
+					{
+						makeObject(hurtx,hurty,this.room,ObjectID.Heart);
+						return;
+					}
+					if((miles.has[hasID.Bow]) && (Math.random()*10<3))
+					{
+						makeObject(hurtx,hurty,this.room,ObjectID.Arrow);
+						return;
+					}
+					if((miles.has[hasID.Bomb]) && (Math.random()*10<3))
+					{
+						makeObject(hurtx,hurty,this.room,ObjectID.BombRefill);
+						return;
+					}
+					if((miles.mp<miles.maxMp) && (Math.random()*10<3))
+					{
+						makeObject(hurtx,hurty,this.room,ObjectID.MagicJar);
+						return;
+					}else if((miles.mp<miles.maxMp) && (Math.random()*10>6))
+					{
+						makeObject(hurtx,hurty,this.room,ObjectID.SmallJar);
+						return;
+					}
+					var pojk=500+Math.floor(Math.random()*2);
+					makeObject(this.x,this.y,this.room,pojk);
 				}
 			}
 		}else if(this.poking)
@@ -3563,7 +3617,7 @@ function entity(croom)
 						this.ignoreHoleY=this.y;
 					}
 				}
-			}else if((this.room.isHole(this.x,this.y)) &&(!this.falling) &&(!this.jumping))
+			}else if((this.room.isHole(this.x,this.y)) &&(!this.falling) &&(!this.jumping) && (!this.reeling))
 			{
 				var dontFall=false;
 				if((this.reallyDashing) && (this.ignoreHole>0))

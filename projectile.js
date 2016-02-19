@@ -48,6 +48,7 @@ function projectile(aPlayer)
 	this.width=32;
 	this.height=32;
 	this.counter=0;
+	this.count=0;//number of tiles it has moved
 	this.bombArrow=false;
 	this.exists=false;
 	this.smart=true; // tracks player on return
@@ -125,34 +126,38 @@ projectile.prototype.draw=function(can)
 	if(this.type==ProjTypes.Hookshot)
 	{
 		var mangle=this.angle;
-
+		
 		if(this.player.dir==0)
-		{
-			for(var i=this.player.y;i<(this.y-yOffset)/32;i++)
+		{	
+			for(var i=this.player.y-1;i>this.getTileY()+1;i--)
 			{
-				chainsprite[0].draw(can,this.x+xOffset,(this.player.y+i)*32+yOffset-14)
+				chainsprite[0].draw(can,this.x+xOffset+20,(i)*32+yOffset)
+				chainsprite[1].draw(can,this.x+xOffset+20,(i)*32+yOffset-16)
 			}
 		}else if(this.player.dir==2)
 		{
-			for(var i=this.player.y;i>(this.y-yOffset)/32;i--)
+			for(var i=this.player.y+1;i<this.getTileY()+1;i++)
 			{
-				chainsprite[0].draw(can,this.x+xOffset,(this.player.y+i)*32+yOffset-14)
+				chainsprite[0].draw(can,this.x+xOffset-6,(i)*32+yOffset)
+				chainsprite[1].draw(can,this.x+xOffset-6,(i)*32+yOffset-16)
 			}
 		}else if(this.player.dir==1)
 		{
-			for(var i=this.player.x;i<(this.x-xOffset)/32;i++)
+			for(var i=this.player.x+1;i<this.getTileX()+1;i++)
 			{
-				chainsprite[0].draw(can,(this.player.x+i)*32+xOffset,this.y+yOffset-14)
+				chainsprite[0].draw(can,(i)*32+xOffset,this.y+yOffset+20)
+				chainsprite[1].draw(can,(i)*32+xOffset-16,this.y+yOffset+20)
 			}
 		}else //if(mangle==0)
 		{
-			for(var i=this.player.x;i>(this.x-xOffset)/32;i--)
+			for(var i=this.player.x;i>this.getTileX()+1;i--)
 			{
-				chainsprite[0].draw(can,(this.player.x+i)*32+xOffset,this.y+yOffset-14)
+				chainsprite[0].draw(can,(i)*32+xOffset,this.y+yOffset-6)
+				chainsprite[1].draw(can,(i)*32+xOffset-16,this.y+yOffset-6)
 			}
 		}
-		this.sprites[this.curSprite].draw(can,this.x+xOffset,this.y+yOffset-14)
-	}else if((this.type==0) || (this.type==ProjTypes.SwordBeam)|| (this.type==ProjTypes.Fireball)|| (this.type==ProjTypes.Iceball) || (this.type==ProjTypes.Hookshot))
+		//this.sprites[this.curSprite].draw(can,this.x+xOffset,this.y+yOffset-14)
+	}if((this.type==0) || (this.type==ProjTypes.SwordBeam)|| (this.type==ProjTypes.Fireball)|| (this.type==ProjTypes.Iceball) || (this.type==ProjTypes.Hookshot))
 	{
 		can.save();
 		can.translate(this.x+16+xOffset,this.y+16+yOffset);
@@ -221,11 +226,26 @@ projectile.prototype.kill=function()
 	{
 		this.player.busyrang=false;
 	}
+	if(this.type==ProjTypes.Hookshot)
+	{
+		this.player.busyHook=false;
+		playSound("chink");
+		this.returning=false;
+	}
 	//fireball start fire? 
 }
 
+projectile.prototype.getTileX=function()
+{
+	return Math.floor((this.x)/32);// * Math.pow(2, 1);//curMap.zoom-1);
+}
+projectile.prototype.getTileY=function()
+{
+	return Math.floor((this.y)/32);// * Math.pow(2, 1);//curMap.zoom-1);
+}
 projectile.prototype.update=function() //remember, this one's X,Y shoudl not be tile based!!! 
 {
+	if(!this.exists) {return;}
 	var hoat=new Date().getTime();
 	if(((this.type==1) || (this.type==2)) && (hoat-this.startTime>this.peakTime))
 	{
@@ -254,34 +274,94 @@ projectile.prototype.update=function() //remember, this one's X,Y shoudl not be 
 	//update position based on...? see space game!
 	if(this.returning)
 	{
-		//again, use angles and shit to move back to tosser.
-       //but bear in mind tilex vs screenx.
-	   if(this.smart)
-	   {
-
-		var beta=Math.atan2(this.player.getScreenY()-this.y,this.player.getScreenX()-this.x)* (180 / Math.PI);
-		if (beta < 0.0)
-			beta += 360.0;
-		else if (beta > 360.0)
-			beta -= 360;
-			this.angle=beta;
-			this.xv=Math.cos((Math.PI / 180)*Math.floor(this.angle));
-			this.yv=Math.sin((Math.PI / 180)*Math.floor(this.angle));
-
-		this.x+=this.xv*this.speed*gameSpeed;
-		this.y+=this.yv*this.speed*gameSpeed;
-		if(this.hit(this.player))
+		if(this.type==ProjTypes.Hookshot)
 		{
-			this.exists=false;
-			this.player.busyrang=false;
-			return;
+			//reel in player
+			if(this.player.dir==0)
+			{
+				this.player.y--; //incmove?
+				if(this.player.y<this.getTileY()+1)
+				{
+					this.player.y=this.getTileY()+1;
+					this.player.ySmall=0;
+					this.player.reeling=false;
+					this.returning=false;
+					this.exists=false;
+					//this.kill();
+					this.player.busyHook=false;
+				}
+			}else if(this.player.dir==2)
+			{
+				this.player.y++; //incmove?
+				if(this.player.y>this.getTileY()-1)
+				{
+					this.player.y=this.getTileY()-1;
+					this.player.ySmall=0;
+					this.player.reeling=false;
+					this.returning=false;
+					this.exists=false;
+					//this.kill();
+					this.player.busyHook=false;
+				}
+			}else if(this.player.dir==3)
+			{
+				this.player.x--; //incmove?
+				if(this.player.x<this.getTileX()+1)
+				{
+					this.player.x=this.getTileX()+1;
+					this.player.xSmall=0;
+					this.player.reeling=false;
+					this.returning=false;
+					this.exists=false;
+					//this.kill();
+					this.player.busyHook=false;
+				}
+			}else if(this.player.dir==1)
+			{
+				this.player.x++; //incmove?
+				if(this.player.x>this.getTileX())
+				{
+					this.player.x=this.getTileX();
+					this.player.xSmall=0;
+					this.player.reeling=false;
+					this.returning=false;
+					this.exists=false;
+					//this.kill();
+					this.player.busyHook=false;
+				}
+			}
+					
+		}else
+		{
+			//again, use angles and shit to move back to tosser.
+		   //but bear in mind tilex vs screenx.
+		   if(this.smart)
+		   {
+
+			var beta=Math.atan2(this.player.getScreenY()-this.y,this.player.getScreenX()-this.x)* (180 / Math.PI);
+			if (beta < 0.0)
+				beta += 360.0;
+			else if (beta > 360.0)
+				beta -= 360;
+				this.angle=beta;
+				this.xv=Math.cos((Math.PI / 180)*Math.floor(this.angle));
+				this.yv=Math.sin((Math.PI / 180)*Math.floor(this.angle));
+
+			this.x+=this.xv*this.speed*gameSpeed;
+			this.y+=this.yv*this.speed*gameSpeed;
+			if(this.hit(this.player))
+			{
+				this.exists=false;
+				this.player.busyrang=false;
+				return;
+			}
+				
+		   }else
+		   {
+			this.x-=this.xv*this.speed*gameSpeed;
+			this.y-=this.yv*this.speed*gameSpeed;
+		   }
 		}
-			
-	   }else
-	   {
-	   	this.x-=this.xv*this.speed*gameSpeed;
-		this.y-=this.yv*this.speed*gameSpeed;
-	   }
 	}else
 	{
 		//away from tosser along angle. 
@@ -331,7 +411,10 @@ projectile.prototype.update=function() //remember, this one's X,Y shoudl not be 
 			{
 				if((this.player.isPlayer) && (entities[i].isPlayer))
 				{
-					this.exists=true;
+					if(this.type!=ProjTypes.Hookshot)
+					{
+						this.exists=true;
+					}
 				}else if((this.player.partyMember) && (entities[i].partyMember))
 				{
 					this.exists=true;
@@ -368,6 +451,26 @@ projectile.prototype.update=function() //remember, this one's X,Y shoudl not be 
 				}
 				if(this.room.objects[i].blockArrows)
 				{
+					//playSound("arrowhit");
+					this.kill(); //todo, link it to target so it moves with him stuck in him for  abit?
+				}
+			}else if(this.type==ProjTypes.Hookshot)
+			{
+				/*if(this.room.objects[i].arrowsActivate) //Maybe we will let people activate things with hookshot. but for now it would just confuse things.
+				{
+					this.room.objects[i].activate();
+				}*/
+				if(this.room.objects[i].hookable)
+				{
+		
+					//reel in player!
+					this.returning=true;
+					if(this.exists)
+					{
+						this.player.reeling=true;	
+					}
+		
+				}else{
 					//playSound("arrowhit");
 					this.kill(); //todo, link it to target so it moves with him stuck in him for  abit?
 				}

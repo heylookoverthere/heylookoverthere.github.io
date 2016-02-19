@@ -41,8 +41,9 @@ objectName[24]="Magic Cape";
 objectName[25]="Fire Rod";
 objectName[26]="Ice Rod";
 objectName[27]="Green Potion";
-objectName[28]="Rum Ham";
-     
+objectName[28]="Ocarina";
+objectName[29]="Rum Ham";
+
 objectName[100]="Lamp";
 objectName[101]="Sign";
 objectName[102]="Candle";
@@ -96,6 +97,8 @@ objectName[408]="larger wallet";
 objectName[409]="Pendant of Power";
 objectName[410]="Pendant of Wisdom";
 objectName[411]="Pendant of Swiftness";
+objectName[412]="Pendant of ????";
+objectName[413]="Pendant of ????";
 
 objectName[500]="a rupee";
 objectName[501]="five rupees";
@@ -137,7 +140,8 @@ ObjectID.Cape=24;
 ObjectID.FireRod=25;
 ObjectID.IceRod=26;
 ObjectID.GreenPotion=27;
-ObjectID.RumHam=28;
+ObjectID.Ocarina=28;
+ObjectID.RumHam=29;
 
 //furniture
 ObjectID.Lamp=100;
@@ -195,6 +199,8 @@ ObjectID.Wallet=408;
 ObjectID.PendantPower=409; 
 ObjectID.PendantWisdom=410;
 ObjectID.PendantSwiftness=411;
+ObjectID.PendantFour=412;
+ObjectID.PendantFive=413;
 
 //random drops
 ObjectID.Gold=500;
@@ -737,6 +743,46 @@ object.prototype.setup=function(id,par)
 			miles.baseSpeed=6;
 			miles.holding=this.sprites[0];
 			miles.has[hasID.PendantSwiftness]=true;
+			this.exists=false;
+		}
+		this.playerActivate=this.activate;
+	}else if(this.type==ObjectID.PendantFour)
+	{
+		this.sprites=new Array();
+		this.sprites.push(Sprite("pendantyellow"));
+		this.name="Pendant of ????";
+		this.pickupable=true;
+		this.alwaysWalkable=true;
+		this.activate=function()
+		{
+			if(this.buried){return;}
+						
+			playSound("itemfanfare");
+			bConsoleBox.log("You found the Pendant of ????!");
+			btext="You found the Pendant of ????!";
+			//miles.baseSpeed=6;
+			miles.holding=this.sprites[0];
+			miles.has[hasID.PendantFour]=true;
+			this.exists=false;
+		}
+		this.playerActivate=this.activate;
+	}else if(this.type==ObjectID.PendantFive)
+	{
+		this.sprites=new Array();
+		this.sprites.push(Sprite("pendantpurple"));
+		this.name="Pendant of ????";
+		this.pickupable=true;
+		this.alwaysWalkable=true;
+		this.activate=function()
+		{
+			if(this.buried){return;}
+						
+			playSound("itemfanfare");
+			bConsoleBox.log("You found the Pendant of ????!");
+			btext="You found the Pendant of ????!";
+			//miles.baseSpeed=6;
+			miles.holding=this.sprites[0];
+			miles.has[hasID.PendantFive]=true;
 			this.exists=false;
 		}
 		this.playerActivate=this.activate;
@@ -2756,6 +2802,30 @@ object.prototype.setup=function(id,par)
 			
 		}
 		this.playerActivate=this.activate;
+	}else if (this.type==ObjectID.Ocarina) {
+	    this.sprites=new Array();
+		this.alwaysWalkable=true;
+		this.sprites.push(Sprite("ocarina"));
+	    this.name="Ocarina";
+		this.pickupable=true;
+		this.activate=function()
+		{
+			if(this.buried){return;}
+			if(!miles.hasItem[ObjectID.Ocarina])
+			{
+				playSound("itemfanfare");
+				bConsoleBox.log("You found an Ocarina!");
+				miles.holding=this.sprites[0];
+			}else
+			{
+				playSound("item");
+				bConsoleBox.log("You don't really need another Ocarina.");
+			}
+			this.exists=false;
+			miles.giveItem(this,1);
+			
+		}
+		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Lens) {
 	    this.sprites=new Array();
 		this.alwaysWalkable=true;
@@ -3259,7 +3329,7 @@ object.prototype.setup=function(id,par)
 			miles.RumHam=true;
 			miles.equippedTrack=0;
 			miles.equippedTrack2=0;
-			for(var i=0;i<28;i++)
+			for(var i=0;i<29;i++)
 			{	
 				if((i!=ObjectID.Glove) &&(i!=ObjectID.Lens) &&(i!=ObjectID.Flippers) &&(i!=ObjectID.Sword) &&(i!=ObjectID.MasterSword) && (i!=ObjectID.Shield) && (i!=ObjectID.BetterShield)&& (i!=ObjectID.BestShield)&& (i!=ObjectID.Hammer)&& (i!=ObjectID.MagicBoomerang))
 				{
@@ -3320,6 +3390,18 @@ object.prototype.setup=function(id,par)
 			
 			var shinex=new object();
 			shinex.type=ObjectID.PendantSwiftness;
+			shinex.room=this.room;
+			shinex.setup();
+			shinex.activate();
+			
+			var shinex=new object();
+			shinex.type=ObjectID.PendantFour;
+			shinex.room=this.room;
+			shinex.setup();
+			shinex.activate();
+			
+			var shinex=new object();
+			shinex.type=ObjectID.PendantFive;
 			shinex.room=this.room;
 			shinex.setup();
 			shinex.activate();

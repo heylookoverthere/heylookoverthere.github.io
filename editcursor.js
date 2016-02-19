@@ -37,10 +37,10 @@ editCursor.prototype.cycleLoot=function(up)
 		}else if((this.lootType>407) && (this.lootType<500))
 		{
 			this.lootType=500;
-		}else if((this.lootType>300) && (this.lootType<411))
+		}else if((this.lootType>300) && (this.lootType<413))
 		{
 			this.lootType=400;
-		}else if((this.lootType>28) && (this.lootType<100))
+		}else if((this.lootType>29) && (this.lootType<100))
 		{
 			this.lootType=300;
 		}
@@ -52,13 +52,13 @@ editCursor.prototype.cycleLoot=function(up)
 			this.lootType=509;
 		}else if(this.lootType==499)
 		{
-			this.lootType=411;
+			this.lootType=413;
 		}else if(this.lootType==399)
 		{
 			this.lootType=300;
 		}else if(this.lootType==299)
 		{
-			this.lootType=28;
+			this.lootType=29;
 		}
 	}
 }
@@ -160,6 +160,7 @@ editCursor.prototype.click=function(m,mx,my)
 				if((meg)&&(meg.type==ObjectID.Chest))
 				{
 					meg.loot=this.lootType;
+					meg.curSprite=0;
 					bConsoleBox.log("Filled chest at "+meg.x+","+meg.y+" with "+objectName[this.lootType]);
 				}
 			}else if(this.mode==editModes.Stamp)
@@ -371,7 +372,7 @@ editCursor.prototype.cycleObjects=function(up)
 		if(this.objectType>509)
 		{
 			this.objectType=0;
-		}else if((this.objectType>411) && (this.objectType<500))
+		}else if((this.objectType>413) && (this.objectType<500))
 		{
 			this.objectType=500;
 		}else if((this.objectType>301) && (this.objectType<400))
@@ -383,7 +384,7 @@ editCursor.prototype.cycleObjects=function(up)
 		}else if((this.objectType>118) && (this.objectType<200))
 		{
 			this.objectType=200;
-		}else if((this.objectType>28) && (this.objectType<100))
+		}else if((this.objectType>29) && (this.objectType<100))
 		{
 			this.objectType=100;
 		}
@@ -395,7 +396,7 @@ editCursor.prototype.cycleObjects=function(up)
 			this.objectType=509;
 		}else if(this.objectType==499)
 		{
-			this.objectType=411;
+			this.objectType=413;
 		}else if(this.objectType==399)
 		{
 			this.objectType=301;
@@ -407,7 +408,7 @@ editCursor.prototype.cycleObjects=function(up)
 			this.objectType=118;
 		}else if(this.objectType==99)
 		{
-			this.objectType=28;
+			this.objectType=29;
 		}
 		
 	}

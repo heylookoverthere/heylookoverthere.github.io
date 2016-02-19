@@ -282,7 +282,8 @@ objectSprites[24]=Sprite("cape");
 objectSprites[25]=Sprite("firerod");
 objectSprites[26]=Sprite("icerod");
 objectSprites[27]=Sprite("greenpotion");
-objectSprites[28]=Sprite("rumham");
+objectSprites[28]=Sprite("ocarina");
+objectSprites[29]=Sprite("rumham");
 
 //furniture
 objectSprites[100]=Sprite("lamp");
@@ -340,7 +341,8 @@ objectSprites[408]=Sprite("wallet");
 objectSprites[409]=Sprite("pendantred");
 objectSprites[410]=Sprite("pendantgreen");
 objectSprites[411]=Sprite("pendantblue");
-
+objectSprites[412]=Sprite("pendantyellow");
+objectSprites[413]=Sprite("pendantpurple");
 //drops
 objectSprites[500]=Sprite("rupee");
 objectSprites[501]=Sprite("tenrupee");
