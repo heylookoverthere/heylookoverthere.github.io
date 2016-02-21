@@ -225,6 +225,7 @@ function object(oroom) //not a tile, not an enemy
 	this.on=false;
 	this.ctype=0;
 	this.room=oroom;
+	this.flammable=false;
 	this.hurty=false; 
 	this.singular=true;
 	this.pickupable=false;
@@ -233,6 +234,7 @@ function object(oroom) //not a tile, not an enemy
 	this.returning=false;
 	this.targetedX=false;
 	this.targetedY=false;
+	this.projPassable=false;
 	this.targX=0;
 	this.targY=0;
 	this.homeX=0;
@@ -246,11 +248,12 @@ function object(oroom) //not a tile, not an enemy
 	this.buried=false; 
 	this.createdTime=0;
 	this.bombable=false;
+	this.projPassible=false; 
 	this.blockArrows=false;
 	this.arrowsActivate=false;
 	this.boomerangActivate=false;
 	this.swordActivate=function(){return false;};
-	this.hookable=false;
+	this.hookable=true;
 	this.hidden=false;
 	this.active=false;
 	this.activateOnImpact=false;
@@ -286,6 +289,22 @@ function object(oroom) //not a tile, not an enemy
 	this.height=32;
 	this.alwaysWalkable=false;
 
+	this.ignite=function()
+	{
+		if(this.flammable)
+		{
+			this.exists=false;
+			//playSound("melt");
+		}
+		if((this.type==ObjectID.Lamp) && (!this.on))
+		{
+			this.activate();
+			//this.on=true;
+			//playSound();
+		}
+		
+	}
+	
 	this.walkable=function()
 	{
 		if(this.alwaysWalkable)
@@ -377,13 +396,15 @@ object.prototype.move=function(x,y) //brings along what is needed (like the flam
 object.prototype.setup=function(id,par)
 {
 	if(id) {this.type=id;}
+	//this.ignite=function() {return;};
 	if((this.room)&&(this.room.tiles[this.x][this.y].data>19) && (this.room.tiles[this.x][this.y].data<25))
 	{
 		this.underWater=true;
 	}
 	if (this.type==ObjectID.TallLamp) {
 		this.aniRate=5;
-		this.blockArrows=true;
+		this.projPossible=false;
+		this.projPassable=false;
 	    this.sprites=new Array();
 		this.sprites.push(Sprite("talllamp"));
 		this.topLayer.push(Sprite("talllamptopoff"));
@@ -433,6 +454,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.activateEdit=this.activate;
 		this.activate(); //oooh that's why it's backwards. 
+		//this.ignite=this.activate();
 	}else if (this.type==ObjectID.Lamp) {
 	    this.sprites=new Array();
 		this.sprites.push(Sprite("lamp"));
@@ -474,7 +496,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.activateEdit=this.activate;
 		this.activate(); //oooh that's why it's backwards. 
-		
+		//this.ignite=this.activate();
 	}else if (this.type==ObjectID.Candle) {
 	    this.sprites=new Array();
 		this.sprites.push(Sprite("candle"));
@@ -516,7 +538,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.activateEdit=this.activate;
 		this.activate(); //oooh that's why it's backwards. 
-		
+		//this.ignite=this.activate();
 	}else if (this.type==ObjectID.Sign) {
 		this.sprites=new Array();
 		this.sprites.push( Sprite("sign"));
@@ -693,6 +715,9 @@ object.prototype.setup=function(id,par)
 		this.name="Pendant of Power";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -713,6 +738,9 @@ object.prototype.setup=function(id,par)
 		this.name="Pendant of Wisdom";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -733,6 +761,9 @@ object.prototype.setup=function(id,par)
 		this.name="Pendant of Swiftness";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -753,6 +784,9 @@ object.prototype.setup=function(id,par)
 		this.name="Pendant of ????";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -773,6 +807,9 @@ object.prototype.setup=function(id,par)
 		this.name="Pendant of ????";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -1226,6 +1263,9 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.floating=false;
 		this.alwaysWalkable=true;
+		this.hookable=true;
+		this.projPassable=true;
+		this.drawOrder=1;
 		this.usable=true;
 		this.activate=function()
 		{
@@ -1268,6 +1308,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push( Sprite("switchpressed"));
 		this.name="Hold Switch";
 		this.alwaysWalkable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=0;
 		this.activateEdit=function(){
 			editor.mode=editModes.SwitchLink
 			editor.linkingFrom=this;
@@ -1279,6 +1322,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push( Sprite("switch"));
 		this.sprites.push( Sprite("switchpressed"));
 		this.name="Switch";
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=0;
 		this.alwaysWalkable=true;
 		this.activateEdit=function(){
 			editor.mode=editModes.SwitchLink
@@ -1328,6 +1374,9 @@ object.prototype.setup=function(id,par)
 		this.sprites=new Array();
 		this.alwaysWalkable=true;
 		this.playerUsable=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=0;
 		this.sprites.push(Sprite("potstand"));
 		this.name="Pot stand";
 		this.playerActivate=function() {};//this.activate;
@@ -1346,7 +1395,7 @@ object.prototype.setup=function(id,par)
 		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.playerUsable=false;
-		this.blockArrows=true;
+		this.projPossible=false;
 		this.pokable=true;
 		this.on=true;
 		this.swordActivate=function() {
@@ -1381,7 +1430,7 @@ object.prototype.setup=function(id,par)
 		this.swordActivate=function() {
 			return (miles.reallyDashing);
 		}
-		this.blockArrows=true;
+		this.projPossible=false;
 		this.pokable=true;
 		this.sprites.push(Sprite("crystal2"));
 		this.name="stranger crystal";
@@ -1390,13 +1439,13 @@ object.prototype.setup=function(id,par)
 			this.exists=false
 			playSound("shatter");
 		}
-		//this.playerActivate=this.activate;
+		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.KeyBrick) {
 		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.playerUsable=true;
 		this.hookable=true;
-		this.blockArrows=true;
+		this.projPossible=false;
 		this.sprites.push(Sprite("keybrick"));
 		this.name="Key Block"; 
 		this.playerActivate=function()
@@ -1477,7 +1526,7 @@ object.prototype.setup=function(id,par)
 		this.alwaysWalkable=false;
 		this.playerUsable=true;
 		this.width=96;
-		this.blockArrows=true;
+		this.projPossible=false;
 		this.height=32;
 		this.sprites.push(Sprite("bookcase0"));
 		this.topLayer.push(Sprite("bookcase0top"));
@@ -1502,7 +1551,7 @@ object.prototype.setup=function(id,par)
 		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.playerUsable=false;
-		this.blockArrows=true;
+		this.projPossible=false;
 		//this.height=64;
 		this.sprites.push(Sprite("statue1"));
 		this.topLayer.push(Sprite("statue1top"));
@@ -1513,6 +1562,7 @@ object.prototype.setup=function(id,par)
 		this.bombable=true;
 		this.grababble=true;
 		this.floating=false;
+		this.drawOrder=4;
 		this.activateOnImpact=true;
 		this.sprites.push(Sprite("pot"));
 		this.sprites.push(Sprite("shatter0"));
@@ -1581,7 +1631,7 @@ object.prototype.setup=function(id,par)
 		this.bombable=false;//true;
 		this.on=true;
 		this.grababble=true;
-		this.blockArrows=true;
+		this.projPossible=false;
 		this.floating=false;
 		this.activateOnImpact=true;
 		this.sprites.push(Sprite("skull"));
@@ -1655,7 +1705,7 @@ object.prototype.setup=function(id,par)
 		this.on=true;
 		this.floating=false;
 		this.grababble=true;
-		this.blockArrows=true;
+		this.projPossible=false;
 		this.activateOnImpact=true;
 		this.sprites.push(Sprite("rock"));
 		this.sprites.push(Sprite("shatter0"));
@@ -1726,7 +1776,7 @@ object.prototype.setup=function(id,par)
 		this.sprites=new Array();
 		this.bombable=false;//true;
 		this.on=true;
-		this.blockArrows=true;
+		this.projPossible=false;
 		this.floating=false;
 		this.sprites.push(Sprite("rock2"));
 		this.sprites.push(Sprite("shatter0"));
@@ -1785,8 +1835,9 @@ object.prototype.setup=function(id,par)
 		this.sprites=new Array();
 		this.bombable=true;
 		this.on=true;
-		this.blockArrows=true;
+		this.projPossible=false;
 		this.floating=false;
+		this.drawOrder=3;
 		this.sprites.push(Sprite("rock2cracked"));
 		this.sprites.push(Sprite("shatter0"));
 		this.sprites.push(Sprite("shatter1"));
@@ -1843,6 +1894,7 @@ object.prototype.setup=function(id,par)
 	}else if (this.type==ObjectID.Bush) {
 		this.sprites=new Array();
 		this.bombable=true;
+		this.hookable=false;
 		this.swordActivate=function(){return true;};
 		this.sprites.push(Sprite("bush"));
 		this.sprites.push(Sprite("bushcut")); //todo!
@@ -1850,6 +1902,7 @@ object.prototype.setup=function(id,par)
 		this.pokable=true;
 		this.on=true;
 		this.playerUsable=false;
+		this.drawOrder=4;
 		this.aniRate=3;
 		this.boomerangActivate=true;
 		this.activate=function(rang)
@@ -1864,6 +1917,9 @@ object.prototype.setup=function(id,par)
 				bumj.numFrames=7;
 				bumj.type=1;
 				explosions.push(bumj);
+				this.hookable=false;
+				this.projPassable=true;
+				this.drawOrder=1;
 				this.on=false;
 				if(false)//(this.loot)
 				{
@@ -1916,6 +1972,9 @@ object.prototype.setup=function(id,par)
 				bumj.setup(this.x-2,this.y-2,this.room);
 				bumj.numFrames=7;
 				bumj.type=1;
+				this.hookable=false;
+				this.projPassable=true;
+				this.drawOrder=1;
 				explosions.push(bumj);
 				this.on=false;
 				if(false)//(this.loot)
@@ -2084,8 +2143,9 @@ object.prototype.setup=function(id,par)
 		this.sprites=new Array();
 		this.curSprite=1;
 		this.on=true;
+		this.hookable=false;
 		this.arrowsActivate=true;
-		this.blockArrows=true;
+		this.projPossible=false;
 		this.alwaysWalkable=true;
 //		console.log(this.x,this.y);
 		if(this.y==1)
@@ -2166,7 +2226,7 @@ object.prototype.setup=function(id,par)
 		{
 			return; 
 		}
-	}else if (this.type==ObjectID.Peg) { //blue blocker
+	}else if (this.type==ObjectID.Peg) { 
 	    this.sprites=new Array();
 		this.on=true;
 		this.hookable=true;
@@ -2174,14 +2234,21 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("pegup"));
 		this.sprites.push(Sprite("pegdown"));
 	    this.name="peg";
+		this.drawOrder=2;
 		this.activateEdit=function()
 		{
 			this.on=!this.on;
 			if(this.on)
 			{
+				this.hookable=true;
+				this.projPassable=false;
 				this.curSprite=0;
+				this.drawOrder=2;
 			}else
 			{
+				this.hookable=false;
+				this.projPassable=true;
+				this.drawOrder=0;
 				this.curSprite=1;
 			}
 		}
@@ -2201,9 +2268,13 @@ object.prototype.setup=function(id,par)
 			playSound("hammerpost");
 			if(this.on)
 			{
+				this.hookable=true;
 				this.curSprite=0;
+				this.drawOrder=3;
 			}else
 			{
+				this.hookable=false;
+				this.drawOrder=0;
 				this.curSprite=1;
 			}
 		}
@@ -2211,15 +2282,17 @@ object.prototype.setup=function(id,par)
 	}else if (this.type==ObjectID.BlueBlocker) { //blue blocker
 	    this.sprites=new Array();
 		this.playerUsable=false;
-		
+		this.hookable=false;
 		if(this.on)
 		{
 			this.curSprite=0;
-			this.blockArrows=true;
+			this.projPossible=false;
+			this.projPassable=false;
 		}else
 		{
 			this.curSprite=1;
 			this.blockArrows=false;
+			this.projPassable=true;
 		}
 		this.sprites.push(Sprite("blueblocker"));
 		this.sprites.push(Sprite("blueblockerdown"));
@@ -2230,11 +2303,13 @@ object.prototype.setup=function(id,par)
 			if(this.on)
 			{
 				this.curSprite=0;
-				this.blockArrows=true;
+				this.projPossible=false;
+				this.projPassable=false;
 			}else
 			{
 				this.curSprite=1;
 				this.blockArrows=false;
+				this.projPassable=true;
 			}
 		}
 		this.activateEdit=this.activate;
@@ -2242,14 +2317,16 @@ object.prototype.setup=function(id,par)
 	}else if (this.type==ObjectID.RedBlocker) { //red blocker
 	    this.sprites=new Array();
 		this.playerUsable=false;
+		this.hookable=false;
 		if(this.on)
 		{
 			this.curSprite=0;
-			this.blockArrows=true;
+			this.projPossible=false;
 		}else
 		{
 			this.curSprite=1;
 			this.blockArrows=false;
+			this.projPassable=true;
 		}
 		this.sprites.push(Sprite("redblocker"));
 		this.sprites.push(Sprite("redblockerdown"));
@@ -2260,11 +2337,12 @@ object.prototype.setup=function(id,par)
 			if(this.on)
 			{
 				this.curSprite=0;
-				this.blockArrows=true;
+				this.projPassable=false;
 			}else
 			{
 				this.curSprite=1;
 				this.blockArrows=false;
+				this.projPassable=true;
 			}
 		}
 		this.activateEdit=this.activate;
@@ -2274,11 +2352,12 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("blueorb"));
 	    this.name="Blue orb";
 		this.bombable=true;
-		this.blockArrows=true;
+		this.projPossible=false;
 		this.arrowsActivate=true;
 		this.boomerangActivate=true;
 		this.swordActivate=function(){return true;};
 		this.cooldown=400;
+		this.hookable=false;
 		this.activate=function()
 		{
 			var npo=new Date().getTime();
@@ -2306,7 +2385,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("redorb"));
 	    this.name="Red orb";
 		this.bombable=true;
-		this.blockArrows=true;
+		this.hookable=false;
+		this.projPossible=false;
+		this.projPossible=false;
 		this.arrowsActivate=true;
 		this.boomerangActivate=true;
 		this.swordActivate=function(){return true;};
@@ -2339,6 +2420,9 @@ object.prototype.setup=function(id,par)
 	    this.sprites=new Array();
 		this.active=false;
 		this.alwaysWalkable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=0;
 		this.sprites.push(Sprite("warpoff"));
 		this.sprites.push(Sprite("warp0"));
 		this.sprites.push(Sprite("warp1"));
@@ -2362,6 +2446,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("heartcontainer"));
 	    this.name="Heart container";
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2380,6 +2467,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("feather"));
 	    this.name="Roc's Feather";
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2407,6 +2497,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Magic Mirror";
 		this.pickupable=true;
 		this.usable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2434,6 +2527,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Shovel";
 		this.pickupable=true;
 		this.usable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2457,6 +2553,7 @@ object.prototype.setup=function(id,par)
 	    this.sprites=new Array();
 		this.pushable=true;
 		this.floating=false;
+		this.drawOrder=2;
 		this.sprites.push(Sprite("brick2"));
 	    this.name="Moveable brick";
 		this.playerUsable=false;
@@ -2467,6 +2564,9 @@ object.prototype.setup=function(id,par)
 		this.pushable=true;
 		this.floating=true;
 		this.on=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=2;
 		this.sprites.push(Sprite("plugbrick"));
 		this.sprites.push(Sprite("plugbrick1"));
 	    this.name="Hole Plugger";
@@ -2480,6 +2580,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("mastersword"));
 	    this.name="Master sword";
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2507,6 +2610,9 @@ object.prototype.setup=function(id,par)
 			this.sprites.push(Sprite("sword"));
 			this.name="Half-decent sword";
 			this.pickupable=true;
+			this.hookable=false;
+			this.projPassable=true;
+			this.drawOrder=3;
 			this.activate=function()
 			{
 				if(this.buried){return;}
@@ -2532,6 +2638,9 @@ object.prototype.setup=function(id,par)
 		this.usable=true;
 		this.singular=false;
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2558,6 +2667,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("glove"));
 	    this.name="Power Glove";
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2584,6 +2696,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Cane of Somaria";
 		this.pickupable=true;
 		this.usable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2610,6 +2725,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Magic Cape";
 		this.pickupable=true;
 		this.usable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2636,6 +2754,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Fire Rod";
 		this.pickupable=true;
 		this.usable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2662,6 +2783,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Ice Rod";
 		this.pickupable=true;
 		this.usable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2688,6 +2812,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Boomerang";
 		this.pickupable=true;
 		this.usable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2713,6 +2840,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("flippers"));
 	    this.name="Flippers";
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2739,6 +2869,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("mushroom"));
 	    this.name="mushroom";
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2757,6 +2890,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("boots"));
 	    this.name="Pegasus Boots";
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2783,6 +2919,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("hookshot"));
 	    this.name="Hookshot";
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2808,6 +2947,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("ocarina"));
 	    this.name="Ocarina";
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2832,6 +2974,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("lens"));
 	    this.name="Creepy Lens";
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2859,6 +3004,9 @@ object.prototype.setup=function(id,par)
 		this.pickupable=true;
 		this.usable=true;
 		this.singular=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}	
@@ -2891,6 +3039,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Lantern";
 		this.playerUsable=true;
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2916,6 +3067,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("Hammer"));
 	    this.name="Hammer";
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -2942,7 +3096,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("spikes"));
 		this.sprites.push(Sprite("spikeslowered"));
 	    this.name="Spikes";
-		
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=2;
 		this.activate=function()
 		{
 			this.on=!this.on;
@@ -2972,7 +3128,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("triforce1"));
 		this.sprites.push(Sprite("triforce2"));
 		this.sprites.push(Sprite("triforce3"));
-		
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 	    this.name="Triforce";
 		this.activate=function()
 		{
@@ -3067,6 +3225,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Bombs";
 		this.pickupable=true;
 		this.floating=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		if((!OPTIONS.DropsPersist) && (!editMode))
 		{
 			this.timed=true;
@@ -3102,6 +3263,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Magic Jar";
 		this.pickupable=true;
 		this.floating=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		if((!OPTIONS.DropsPersist) && (!editMode))
 		{
 			this.timed=true;
@@ -3127,6 +3291,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Small Magic Jar";
 		this.pickupable=true;
 		this.floating=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		if((!OPTIONS.DropsPersist) && (!editMode))
 		{
 			this.timed=true;
@@ -3152,6 +3319,9 @@ object.prototype.setup=function(id,par)
 	    this.name="Arrow";
 		this.floating=false;
 		this.pickupable=true;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		if((!OPTIONS.DropsPersist) && (!editMode))
 		{
 			this.timed=true;
@@ -3182,6 +3352,9 @@ object.prototype.setup=function(id,par)
 	    this.name="sea shell";
 		this.pickupable=true;
 		this.floating=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		if((!OPTIONS.DropsPersist)&& (!editMode))
 		{
 			//this.timed=true;
@@ -3204,6 +3377,9 @@ object.prototype.setup=function(id,par)
 	    this.name="rupee";
 		this.pickupable=true;
 		this.floating=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		if((!OPTIONS.DropsPersist)&& (!editMode))
 		{
 			this.timed=true;
@@ -3228,6 +3404,9 @@ object.prototype.setup=function(id,par)
 	    this.name="apple";
 		this.pickupable=true;
 		this.floating=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		if((!OPTIONS.DropsPersist)&& (!editMode))
 		{
 			this.timed=true;
@@ -3249,6 +3428,9 @@ object.prototype.setup=function(id,par)
 	    this.name="rupee";
 		this.pickupable=true;
 		this.floating=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		if((!OPTIONS.DropsPersist)&& (!editMode))
 		{
 			this.timed=true;
@@ -3273,6 +3455,9 @@ object.prototype.setup=function(id,par)
 	    this.name="rupee";
 		this.pickupable=true;
 		this.floating=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		if((!OPTIONS.DropsPersist)&& (!editMode))
 		{
 			this.timed=true;
@@ -3296,6 +3481,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("heartpickup"));
 	    this.name="heart";
 		this.floating=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		if((!OPTIONS.DropsPersist)&& (!editMode))
 		{
 			this.timed=true;
@@ -3322,6 +3510,9 @@ object.prototype.setup=function(id,par)
 		this.sprites.push(Sprite("rumham"));
 	    this.name="RUM HAM";
 		this.floating=false;
+		this.hookable=false;
+		this.projPassable=true;
+		this.drawOrder=3;
 		bConsoleBox.log("You found the Rum Ham!");
 		//miles.holding=this.sprites[0];
 		this.activate=function()
@@ -4001,6 +4192,7 @@ object.prototype.update=function()
 		playSound("arrowhit");
 		this.xSmall=0;
 		this.ySmall=0;
+		this.drawOrder=0;
 		this.room.tiles[this.x][this.y].data=DungeonTileType.GreenFloor;
 	}
 	if(((this.type==ObjectID.Lamp) || (this.type==ObjectID.TallLamp))&&(this.on))

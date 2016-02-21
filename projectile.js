@@ -189,6 +189,9 @@ projectile.prototype.draw=function(can)
 
 projectile.prototype.hit=function(obj)
 {
+	if(obj.projPassable) {return false;}
+	if(obj.underWater) {return false;} 
+	if(obj.buried) {return false;}
 	if(this.room.z!=obj.room.z)
 	{
 		return false;
@@ -201,7 +204,7 @@ projectile.prototype.hit=function(obj)
 	{
 		return false;
 	}
-	if((this.x < obj.getScreenX()+obj.width) && (this.x+this.width>obj.getScreenX()) && (this.y<obj.getScreenY()+obj.height) && (this.y+this.height>obj.getScreenY()))
+	if((this.x+12 < obj.getScreenX()+obj.width) && (this.x+12+this.width>obj.getScreenX()) && (this.y<obj.getScreenY()+obj.height) && (this.y+this.height>obj.getScreenY()))
 	{
 		return true;
 	}
@@ -293,9 +296,9 @@ projectile.prototype.update=function() //remember, this one's X,Y shoudl not be 
 			}else if(this.player.dir==2)
 			{
 				this.player.y++; //incmove?
-				if(this.player.y>this.getTileY()-1)
+				if(this.player.y>this.getTileY())
 				{
-					this.player.y=this.getTileY()-1;
+					this.player.y=this.getTileY();
 					this.player.ySmall=0;
 					this.player.reeling=false;
 					this.returning=false;
@@ -319,9 +322,9 @@ projectile.prototype.update=function() //remember, this one's X,Y shoudl not be 
 			}else if(this.player.dir==1)
 			{
 				this.player.x++; //incmove?
-				if(this.player.x>this.getTileX())
+				if(this.player.x>this.getTileX()+1)
 				{
-					this.player.x=this.getTileX();
+					this.player.x=this.getTileX()+1;
 					this.player.xSmall=0;
 					this.player.reeling=false;
 					this.returning=false;
@@ -392,7 +395,7 @@ projectile.prototype.update=function() //remember, this one's X,Y shoudl not be 
 	
 	for(var i=0;i<entities.length;i++)
 	{
-		if(this.hit(entities[i]))
+		if((this.hit(entities[i])) && (entities[i].ID!=this.player.ID))
 		{
 			if(this.type==0)
 			{
@@ -438,7 +441,7 @@ projectile.prototype.update=function() //remember, this one's X,Y shoudl not be 
 				{
 					this.room.objects[i].activate();
 				}
-				if(this.room.objects[i].blockArrows)
+				if(!this.room.objects[i].projPassable) //(this.room.objects[i].blockArrows)
 				{
 					playSound("arrowhit");
 					this.kill(); //todo, link it to target so it moves with him stuck in him for  abit?
@@ -449,11 +452,14 @@ projectile.prototype.update=function() //remember, this one's X,Y shoudl not be 
 				{
 					this.room.objects[i].activate(true);
 				}
-				if(this.room.objects[i].blockArrows)
+				if(!this.room.objects[i].projPassable) //|| (this.room.objects[i].blockArrows))
 				{
 					//playSound("arrowhit");
 					this.kill(); //todo, link it to target so it moves with him stuck in him for  abit?
 				}
+			}else if(this.type==ProjTypes.Fireball)
+			{
+				this.room.objects[i].ignite();
 			}else if(this.type==ProjTypes.Hookshot)
 			{
 				/*if(this.room.objects[i].arrowsActivate) //Maybe we will let people activate things with hookshot. but for now it would just confuse things.
@@ -470,7 +476,7 @@ projectile.prototype.update=function() //remember, this one's X,Y shoudl not be 
 						this.player.reeling=true;	
 					}
 		
-				}else{
+				}else if(!this.room.objects[i].projPassable){
 					//playSound("arrowhit");
 					this.kill(); //todo, link it to target so it moves with him stuck in him for  abit?
 				}

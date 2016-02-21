@@ -524,6 +524,7 @@ function dungeon(path)
 		
 		dung.lastSaved=new Date();
 		grmath="Dungeon/dungeons/"+this.name+"/main.txt";
+		bgrmath="Dungeon/dungeons/"+this.name+"/entities.txt";
 		var dunpth=curVersion+","+dung.floors+","+dung.numRooms+","+dung.startFloor+","+dung.startX+","+dung.startY+","+dung.lastSaved;
 			$.post("/save/", {"data": dunpth, "path": grmath}).done(function(response) 
 			{ 
@@ -534,6 +535,23 @@ function dungeon(path)
 			{
 				dung.saveFloor(i);
 			}
+			
+			var junpth=(entities.length-1)+";";
+			
+			for( var i=0;i<entities.length;i++)
+			{
+				if(!entities[i].isPlayer)
+				{
+					junpth+=entities[i].stringify();
+					junpth+=";";
+				}
+			}
+			
+			$.post("/save/", {"data": junpth, "path": bgrmath}).done(function(response) 
+			{ 
+				bConsoleBox.log("Saved " +bgrmath); 
+
+			});
 		//dung.blank();
 		if(!dung.saveExists)
 		{
