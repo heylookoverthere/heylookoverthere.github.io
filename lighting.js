@@ -99,7 +99,6 @@ flameTypes.Torch=3;
 flameTypes.wallTorch=4;
 flameTypes.Wildfire=5;
 
-var torchSprite=Sprite("torch");
 
 function flame(lightlist,type)
 {

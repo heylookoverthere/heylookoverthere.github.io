@@ -21,19 +21,22 @@ masterSwingSprites.push(new Array());
 masterSwingSprites.push(new Array());
 masterSwingSprites.push(new Array());
 masterSwingSprites.push(new Array());
+masterPokeSprites=new Array();
+
 for(var i=0;i<4;i++)
 {
 	for(var j=0;j<8;j++) 
 	{
-		var daPath= "masterswordswing"+i+j;
+		var daPath= "entities/link/masterswordswing"+i+j;
 		masterSwingSprites[i].push(Sprite(daPath));
 	}
 }
-masterPokeSprites=new Array()
-masterPokeSprites.push(Sprite("masterpoke0"));
-masterPokeSprites.push(Sprite("masterpoke1"));
-masterPokeSprites.push(Sprite("masterpoke2"));
-masterPokeSprites.push(Sprite("masterpoke3"));
+
+masterPokeSprites.push(Sprite("entities/link/masterpoke0"));
+masterPokeSprites.push(Sprite("entities/link/masterpoke1"));
+masterPokeSprites.push(Sprite("entities/link/masterpoke2"));
+masterPokeSprites.push(Sprite("entities/link/masterpoke3"));
+
 
 var bombCount=0;
 
@@ -770,9 +773,14 @@ actionID.Bow=1;
 actionID.Hookshot=2;
 actionID.Sword=3; //for holding sword out/ pegasus dash
 
-function entity(croom)
+function entity(croom,play,smatp)
 {
 	this.dir=0;
+	if(smatp==null)
+	{
+		smatp="entities/professor/";
+	}
+	this.spritePath=smatp;
 	this.hp=100;
 	this.maxHp=100;
 	this.keys=0;
@@ -807,7 +815,7 @@ function entity(croom)
 	this.enteredY=this.y;
 	this.partyPos=0;
 	this.partyMember=false;
-	this.mapSprite=Sprite("profhead");
+	this.mapSprite=Sprite(this.spritePath+"head");
 	this.name="Waffles";
 	this.xSmall=0;
 	this.ySmall=0;
@@ -842,14 +850,17 @@ function entity(croom)
 	this.actingSprites.push(new Array());
 	this.actingSprites.push(new Array());
 	this.actingSprites.push(new Array());
-	this.actingSprites[0].push(Sprite("linkupbooma"));
-	this.actingSprites[1].push(Sprite("linkrightbooma"));
-	this.actingSprites[2].push(Sprite("linkdownbooma"));
-	this.actingSprites[3].push(Sprite("linkleftbooma"));
-	this.actingSprites[0].push(Sprite("linkbow0"));
-	this.actingSprites[1].push(Sprite("linkbow1"));
-	this.actingSprites[2].push(Sprite("linkbow2"));
-	this.actingSprites[3].push(Sprite("linkbow3"));
+	if(play)
+	{
+		this.actingSprites[0].push(Sprite("entities/link/upbooma"));
+		this.actingSprites[1].push(Sprite("entities/link/rightbooma"));
+		this.actingSprites[2].push(Sprite("entities/link/downbooma"));
+		this.actingSprites[3].push(Sprite("entities/link/leftbooma"));
+		this.actingSprites[0].push(Sprite("entities/link/bow0"));
+		this.actingSprites[1].push(Sprite("entities/link/bow1"));
+		this.actingSprites[2].push(Sprite("entities/link/bow2"));
+		this.actingSprites[3].push(Sprite("entities/link/bow3"));
+	}
 	//sword?
 	this.swinging=false; 
 	this.poking=false; 
@@ -859,11 +870,14 @@ function entity(croom)
 	this.ignoreHole=0;
 	this.ignoreHoleX=0;
 	this.ignoreHoleY=0;
-	this.pokeSprites=new Array()
-	this.pokeSprites.push(Sprite("poke0"));
-	this.pokeSprites.push(Sprite("poke1"));
-	this.pokeSprites.push(Sprite("poke2"));
-	this.pokeSprites.push(Sprite("poke3"));
+	this.pokeSprites=new Array();
+	if(play)
+	{
+		this.pokeSprites.push(Sprite("entities/link/poke0"));
+		this.pokeSprites.push(Sprite("entities/link/poke1"));
+		this.pokeSprites.push(Sprite("entities/link/poke2"));
+		this.pokeSprites.push(Sprite("entities/link/poke3"));
+	}
 	this.animated=false;
 	this.walkTrack=0;
 	this.walkFrames=1;
@@ -881,15 +895,17 @@ function entity(croom)
 	this.swingSprites.push(new Array());
 	this.swingSprites.push(new Array());
 	this.swingSprites.push(new Array());
-	for(var i=0;i<4;i++)
+	if(play)
 	{
-		for(var j=0;j<8;j++) // change j max to eight!
+		for(var i=0;i<4;i++)
 		{
-			var daPath= "swordswing"+i+j;
-			this.swingSprites[i].push(Sprite(daPath));
+			for(var j=0;j<8;j++) // change j max to eight!
+			{
+				var daPath= "entities/link/swordswing"+i+j;
+				this.swingSprites[i].push(Sprite(daPath));
+			}
 		}
 	}
-
 	
 	this.tookBreath=0;
 	this.canSwim=false;
@@ -919,16 +935,58 @@ function entity(croom)
 	this.status="not set";
 	
 	this.sprites=new Array();
-	this.sprites.push(Sprite("prof0"));
-	this.sprites.push(Sprite("prof1"));
-	this.sprites.push(Sprite("prof2"));
-	this.sprites.push(Sprite("prof3"));
+	this.sprites.push(Sprite(this.spritePath+"0"));
+	this.sprites.push(Sprite(this.spritePath+"1"));
+	this.sprites.push(Sprite(this.spritePath+"2"));
+	this.sprites.push(Sprite(this.spritePath+"3"));
+	if(play)
+	{
+		this.sprites.push(Sprite(this.spritePath+"holding"));
+	}
 	this.swimSprites=new Array();
-	this.swimSprites.push(Sprite("profswim0"));
-	this.swimSprites.push(Sprite("profswim1"));
-	this.swimSprites.push(Sprite("profswim2"));
-	this.swimSprites.push(Sprite("profswim3"));
+	this.swimSprites.push(Sprite(this.spritePath+"swim0"));
+	this.swimSprites.push(Sprite(this.spritePath+"swim1"));
+	this.swimSprites.push(Sprite(this.spritePath+"swim2"));
+	this.swimSprites.push(Sprite(this.spritePath+"swim3"));
 	this.isPlayer=false;
+	if(play)
+	{
+		this.isPlayer=true;
+		this.walkSpeed=6;
+		this.animated=true;
+		this.walkTrack=0;
+		this.walkFrames=7;
+		this.walkSprites[0].push(Sprite("entities/link/up1"));
+		this.walkSprites[0].push(Sprite("entities/link/up2"));
+		this.walkSprites[0].push(Sprite("entities/link/up3"));
+		this.walkSprites[0].push(Sprite("entities/link/up4"));
+		this.walkSprites[0].push(Sprite("entities/link/up5"));
+		this.walkSprites[0].push(Sprite("entities/link/up6"));
+		this.walkSprites[0].push(Sprite("entities/link/up7"));
+		this.walkSprites[1].push(Sprite("entities/link/right1"));
+		this.walkSprites[1].push(Sprite("entities/link/right2"));
+		this.walkSprites[1].push(Sprite("entities/link/right3"));
+		this.walkSprites[1].push(Sprite("entities/link/right4"));
+		this.walkSprites[1].push(Sprite("entities/link/right5"));
+		this.walkSprites[1].push(Sprite("entities/link/right6"));
+		this.walkSprites[1].push(Sprite("entities/link/right7"));
+
+		this.walkSprites[2].push(Sprite("entities/link/down1"));
+		this.walkSprites[2].push(Sprite("entities/link/down2"));
+		this.walkSprites[2].push(Sprite("entities/link/down3"));
+		this.walkSprites[2].push(Sprite("entities/link/down4"));
+		this.walkSprites[2].push(Sprite("entities/link/down5"));
+		this.walkSprites[2].push(Sprite("entities/link/down6"));
+		this.walkSprites[2].push(Sprite("entities/link/down7"));
+
+		this.walkSprites[3].push(Sprite("entities/link/left1"));
+		this.walkSprites[3].push(Sprite("entities/link/left2"));
+		this.walkSprites[3].push(Sprite("entities/link/left3"));
+		this.walkSprites[3].push(Sprite("entities/link/left4"));
+		this.walkSprites[3].push(Sprite("entities/link/left5"));
+		this.walkSprites[3].push(Sprite("entities/link/left6"));
+		this.walkSprites[3].push(Sprite("entities/link/left7"));
+	}
 	this.money=0;
 	this.bombs=0;
 	this.arrows=0;
@@ -954,10 +1012,10 @@ function entity(croom)
 	this.gotHurt=0;
 	this.drawOrder=3;
 	this.deadSprites=new Array();
-	this.deadSprites.push(Sprite("profdeath0"));
-	this.deadSprites.push(Sprite("profdeath1"));
-	this.deadSprites.push(Sprite("profdeath2"));
-	this.deadinswatersprite=Sprite("profdeath2");
+	this.deadSprites.push(Sprite(this.spritePath+"death0"));
+	this.deadSprites.push(Sprite(this.spritePath+"death1"));
+	this.deadSprites.push(Sprite(this.spritePath+"death2"));
+	this.deadinswatersprite=Sprite(this.spritePath+"death2");
 	this.deathAniTrack=0;
 	this.aniCount=0;
 	this.aniTrack=0;

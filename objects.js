@@ -5,7 +5,7 @@ var Object_Count=0;
 var Spikey_Accel=100;
 var Spikey_Vel=7;
 
-var ObjectID={};
+
 var objectName=new Array()
 
 for(var i=0;i<600;i++)
@@ -20,8 +20,8 @@ objectName[3]="Lantern";
 objectName[4]="Hammer";
 objectName[5]="Red Potion";
 objectName[6]="Blue Potion";
-objectName[7]="Purple Potion";
-objectName[8]="Shovel";
+objectName[7]="Green Potion";
+objectName[8]="Purple Potion";
 objectName[9]="Mirror";
 objectName[10]="Boomerang";
 objectName[11]="Hookshot";
@@ -40,7 +40,7 @@ objectName[23]="Cane of Somaria";
 objectName[24]="Magic Cape";
 objectName[25]="Fire Rod";
 objectName[26]="Ice Rod";
-objectName[27]="Green Potion";
+objectName[27]="Shovel";
 objectName[28]="Ocarina";
 objectName[29]="Rum Ham";
 
@@ -111,108 +111,7 @@ objectName[507]="fifty rupees";
 
 //var howManyOfEach={18,16,10,1,7,7} //use this eventually. 
 
-//tools
-ObjectID.Feather=0;
-ObjectID.Bomb=1;
-ObjectID.Bow=2;
-ObjectID.Lantern=3;
-ObjectID.Hammer=4;
-ObjectID.RedPotion=5;
-ObjectID.BluePotion=6;
-ObjectID.PurplePotion=7;
-ObjectID.Shovel=8;
-ObjectID.Mirror=9;
-ObjectID.Boomerang=10;
-ObjectID.Hookshot=11;
-ObjectID.Flippers=12;
-ObjectID.Lens=13;
-ObjectID.Boots=14;
-ObjectID.Glove=15;
-ObjectID.Poo=16;
-ObjectID.Sword=17;
-ObjectID.Mushroom=18;
-ObjectID.Shield=19;
-ObjectID.BetterShield=20;
-ObjectID.BestShield=21;
-ObjectID.MagicBoomerang=22;
-ObjectID.Cane=23;
-ObjectID.Cape=24;
-ObjectID.FireRod=25;
-ObjectID.IceRod=26;
-ObjectID.GreenPotion=27;
-ObjectID.Ocarina=28;
-ObjectID.RumHam=29;
 
-//furniture
-ObjectID.Lamp=100;
-ObjectID.Sign=101;
-ObjectID.Candle=102;
-ObjectID.TallLamp=103;
-ObjectID.ToggleSwitch=104;
-ObjectID.PotStand=105;
-ObjectID.Pot=106;
-ObjectID.Curtains=107;
-ObjectID.Warp=108;
-ObjectID.WallShield=109;
-ObjectID.Table=110;
-ObjectID.Chest=111;
-ObjectID.StumpSeat=112;
-ObjectID.Statue=113;
-ObjectID.Bookcase=114;
-ObjectID.Bones=115;
-ObjectID.SpikeyThing=116;
-ObjectID.EyeSwitch=117;
-ObjectID.HoldSwitch=118;
-
-//obstacle
-ObjectID.Bush=200;
-ObjectID.Peg=201;
-ObjectID.BlueBlocker=202;
-ObjectID.RedBlocker=203;
-ObjectID.BlueOrb=204;
-ObjectID.RedOrb=205;
-ObjectID.Spikes=206;
-ObjectID.Brick=207;
-ObjectID.KeyBrick=208;
-ObjectID.Rock=209;
-ObjectID.Crystal=210;
-ObjectID.Crystal2=211;
-ObjectID.Rock2=212;
-ObjectID.Rock2Cracked=213;
-ObjectID.Skull=214;
-ObjectID.HolePlugger=215;
-
-//pickups
-ObjectID.Key=300;
-ObjectID.Triforce=301;
-
-//upgrades/unlocks
-ObjectID.BombBag=400;
-ObjectID.Quiver=401;
-ObjectID.HeartContainer=402;
-ObjectID.SuperBomb=403; 
-ObjectID.Map=404;
-ObjectID.Compass=405;
-ObjectID.MasterSword=406; 
-ObjectID.SilverArrow=407;
-ObjectID.Wallet=408;
-ObjectID.PendantPower=409; 
-ObjectID.PendantWisdom=410;
-ObjectID.PendantSwiftness=411;
-ObjectID.PendantFour=412;
-ObjectID.PendantFive=413;
-
-//random drops
-ObjectID.Gold=500;
-ObjectID.FiveGold=501;
-ObjectID.FiftyGold=507;
-ObjectID.Arrow=502;
-ObjectID.Heart=503;
-ObjectID.BombRefill=504;
-ObjectID.MagicJar=505;
-ObjectID.SmallJar=506; 
-ObjectID.Shell=508;
-ObjectID.Apple=509; 
 
 
 
@@ -224,6 +123,8 @@ function object(oroom) //not a tile, not an enemy
 	this.curSprite=0;
 	this.on=false;
 	this.ctype=0;
+	this.shatters=false;
+	this.offWalkable=false;
 	this.room=oroom;
 	this.flammable=false;
 	this.hurty=false; 
@@ -319,7 +220,7 @@ function object(oroom) //not a tile, not an enemy
 		{
 			return true;
 		}
-		if((this.type==ObjectID.BlueBlocker) || (this.type==ObjectID.RedBlocker)|| (this.type==ObjectID.Peg) ||(this.type==ObjectID.Bush)||(this.type==ObjectID.Rock)||(this.type==ObjectID.Curtains))
+		if(this.offWalkable)
 		{
 			if(!this.on) {
 				return true;
@@ -397,6 +298,7 @@ object.prototype.setup=function(id,par)
 {
 	if(id) {this.type=id;}
 	//this.ignite=function() {return;};
+	this.sprites=objectSprites[this.type];
 	if((this.room)&&(this.room.tiles[this.x][this.y].data>19) && (this.room.tiles[this.x][this.y].data<25))
 	{
 		this.underWater=true;
@@ -405,8 +307,6 @@ object.prototype.setup=function(id,par)
 		this.aniRate=5;
 		this.projPossible=false;
 		this.projPassable=false;
-	    this.sprites=new Array();
-		this.sprites.push(Sprite("talllamp"));
 		this.topLayer.push(Sprite("talllamptopoff"));
 		this.topLayer.push(Sprite("talllamptop0"));
 		this.topLayer.push(Sprite("talllamptop1"));
@@ -456,8 +356,6 @@ object.prototype.setup=function(id,par)
 		this.activate(); //oooh that's why it's backwards. 
 		//this.ignite=this.activate();
 	}else if (this.type==ObjectID.Lamp) {
-	    this.sprites=new Array();
-		this.sprites.push(Sprite("lamp"));
 	    this.name="lamp";
 		this.flame=new flame(this.room.lights);
 		this.flame.x=this.x*32+xOffset+2;
@@ -498,8 +396,6 @@ object.prototype.setup=function(id,par)
 		this.activate(); //oooh that's why it's backwards. 
 		//this.ignite=this.activate();
 	}else if (this.type==ObjectID.Candle) {
-	    this.sprites=new Array();
-		this.sprites.push(Sprite("candle"));
 	    this.name="candle";
 		this.flame=new flame(this.room.lights);
 		this.flame.x=this.x*32+xOffset+2;
@@ -540,8 +436,6 @@ object.prototype.setup=function(id,par)
 		this.activate(); //oooh that's why it's backwards. 
 		//this.ignite=this.activate();
 	}else if (this.type==ObjectID.Sign) {
-		this.sprites=new Array();
-		this.sprites.push( Sprite("sign"));
 		this.name="sign";
 		this.frontOnly=true;
 		this.text="Snoke";
@@ -571,9 +465,7 @@ object.prototype.setup=function(id,par)
 			this.text = prompt("Enter Sign Text");
 		}
 	}else if (this.type==ObjectID.Chest) {
-		this.sprites=new Array();
-		this.sprites.push( Sprite("chest"));
-		this.sprites.push( Sprite("chestopen"));
+		this.sprites=objectSprites[this.type];
 		this.name="Chest";
 		this.frontOnly=true;
 		//this.loot=0;
@@ -710,8 +602,6 @@ object.prototype.setup=function(id,par)
 		}
 	}else if(this.type==ObjectID.PendantPower)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("pendantred"));
 		this.name="Pendant of Power";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -733,8 +623,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.PendantWisdom)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("pendantgreen"));
 		this.name="Pendant of Wisdom";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -756,8 +644,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.PendantSwiftness)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("pendantBlue"));
 		this.name="Pendant of Swiftness";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -779,8 +665,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.PendantFour)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("pendantyellow"));
 		this.name="Pendant of ????";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -802,8 +686,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.PendantFive)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("pendantpurple"));
 		this.name="Pendant of ????";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -825,8 +707,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.Shield)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("shield"));
 		this.name="Shield";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -852,8 +732,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.BetterShield)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("bettershield"));
 		this.name="Better shield";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -891,8 +769,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.BestShield)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("bestshield"));
 		this.name="Mirror shield";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -920,8 +796,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.MagicBoomerang)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("magicboomerang"));
 		this.name="Magic Boomerang";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -968,8 +842,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.SuperBomb)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("superbomb"));
 		this.name="Super Bombs";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1011,8 +883,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.SilverArrow)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("silverarrow"));
 		this.name="Silver Arrow";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1049,8 +919,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.RedPotion)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("redpotion"));
 		this.name="Red potion";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1068,8 +936,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.PurplePotion)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("purplepotion"));
 		this.name="Life potion";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1088,8 +954,6 @@ object.prototype.setup=function(id,par)
 		
 	}else if(this.type==ObjectID.GreenPotion)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("greenpotion"));
 		this.name="Green potion";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1108,8 +972,6 @@ object.prototype.setup=function(id,par)
 		
 	}else if(this.type==ObjectID.BluePotion)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("bluepotion"));
 		this.name="Blue potion";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1126,8 +988,6 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Key) {
-		this.sprites=new Array();
-		this.sprites.push(Sprite("key"));
 		this.name="Key";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1143,8 +1003,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.Wallet)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("wallet"));
 		this.name="Wallet";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1165,8 +1023,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.Quiver)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("quiver"));
 		this.name="Quiver";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1184,8 +1040,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.BombBag)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("bombbag"));
 		this.name="bomb bag";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1203,8 +1057,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.Map)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("map"));
 		this.name="Map";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1230,8 +1082,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.Compass)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("compass"));
 		this.name="Compass";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
@@ -1257,8 +1107,6 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}else if(this.type==ObjectID.Poo)
 	{
-		this.sprites=new Array();
-		this.sprites.push(Sprite("poo"));
 		this.name="Poop";
 		this.pickupable=true;
 		this.floating=false;
@@ -1303,9 +1151,6 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.HoldSwitch) {
-		this.sprites=new Array();
-		this.sprites.push( Sprite("switch"));
-		this.sprites.push( Sprite("switchpressed"));
 		this.name="Hold Switch";
 		this.alwaysWalkable=true;
 		this.hookable=false;
@@ -1318,9 +1163,6 @@ object.prototype.setup=function(id,par)
 		this.activate=function(){}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.ToggleSwitch) {
-		this.sprites=new Array();
-		this.sprites.push( Sprite("switch"));
-		this.sprites.push( Sprite("switchpressed"));
 		this.name="Switch";
 		this.hookable=false;
 		this.projPassable=true;
@@ -1371,28 +1213,23 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.PotStand) {
-		this.sprites=new Array();
 		this.alwaysWalkable=true;
 		this.playerUsable=false;
 		this.hookable=false;
 		this.projPassable=true;
 		this.drawOrder=0;
-		this.sprites.push(Sprite("potstand"));
 		this.name="Pot stand";
 		this.playerActivate=function() {};//this.activate;
 	}else if (this.type==ObjectID.SpikeyThing) {
-		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.hurty=true; 
 		//this.friction=0;
 		this.homeX=this.x;
 		this.homeY=this.y;
 		this.playerUsable=false;
-		this.sprites.push(Sprite("spikey"));
 		this.name="Spikey thing";
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Crystal) {
-		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.playerUsable=false;
 		this.projPossible=false;
@@ -1405,7 +1242,6 @@ object.prototype.setup=function(id,par)
 			}
 			return false;
 		}
-		this.sprites.push(Sprite("crystal"));
 		this.name="strange crystal";
 		this.activate=function()
 		{
@@ -1424,7 +1260,6 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Crystal2) {
-		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.playerUsable=false;
 		this.swordActivate=function() {
@@ -1432,7 +1267,6 @@ object.prototype.setup=function(id,par)
 		}
 		this.projPossible=false;
 		this.pokable=true;
-		this.sprites.push(Sprite("crystal2"));
 		this.name="stranger crystal";
 		this.activate=function()
 		{
@@ -1441,12 +1275,10 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.KeyBrick) {
-		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.playerUsable=true;
 		this.hookable=true;
 		this.projPossible=false;
-		this.sprites.push(Sprite("keybrick"));
 		this.name="Key Block"; 
 		this.playerActivate=function()
 		{
@@ -1465,10 +1297,8 @@ object.prototype.setup=function(id,par)
 			}
 		}
 	}else if (this.type==ObjectID.Bones) {
-		this.sprites=new Array();
 		this.alwaysWalkable=true;
 		this.playerUsable=true;
-		this.sprites.push(Sprite("bones"));
 		this.name="Bones";
 		this.width=48;
 		this.height=32;
@@ -1505,30 +1335,24 @@ object.prototype.setup=function(id,par)
 		}
 
 	}else if (this.type==ObjectID.Table) {
-		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.playerUsable=false;
 		this.width=96;
 		this.height=64;
-		this.sprites.push(Sprite("table1"));
 		this.name="Table";
 		this.activate=function() {};
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.StumpSeat) {
-		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.playerUsable=false;
-		this.sprites.push(Sprite("stumpseat"));
 		this.name="Seat";
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Bookcase) {
-		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.playerUsable=true;
 		this.width=96;
 		this.projPossible=false;
 		this.height=32;
-		this.sprites.push(Sprite("bookcase0"));
 		this.topLayer.push(Sprite("bookcase0top"));
 		this.name="Bookcase";
 		this.playerActivate=function()
@@ -1548,31 +1372,20 @@ object.prototype.setup=function(id,par)
 			}
 		};
 	}else if (this.type==ObjectID.Statue) {
-		this.sprites=new Array();
 		this.alwaysWalkable=false;
 		this.playerUsable=false;
 		this.projPossible=false;
 		//this.height=64;
-		this.sprites.push(Sprite("statue1"));
 		this.topLayer.push(Sprite("statue1top"));
 		this.name="Statue";
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Pot) {
-		this.sprites=new Array();
 		this.bombable=true;
 		this.grababble=true;
 		this.floating=false;
+		this.shatters=true;
 		this.drawOrder=4;
 		this.activateOnImpact=true;
-		this.sprites.push(Sprite("pot"));
-		this.sprites.push(Sprite("shatter0"));
-		this.sprites.push(Sprite("shatter1"));
-		this.sprites.push(Sprite("shatter2"));
-		this.sprites.push(Sprite("shatter3"));
-		this.sprites.push(Sprite("shatter4"));
-		this.sprites.push(Sprite("shatter5"));
-		this.sprites.push(Sprite("shatter6"));
-		this.sprites.push(Sprite("shatter7"));
 		this.name="Pot";
 		this.playerUsable=false;
 		this.swordActivate=function() {
@@ -1627,22 +1440,13 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Skull) {
-		this.sprites=new Array();
 		this.bombable=false;//true;
 		this.on=true;
+		this.shatters=true;
 		this.grababble=true;
 		this.projPossible=false;
 		this.floating=false;
 		this.activateOnImpact=true;
-		this.sprites.push(Sprite("skull"));
-		this.sprites.push(Sprite("shatter0"));
-		this.sprites.push(Sprite("shatter1"));
-		this.sprites.push(Sprite("shatter2"));
-		this.sprites.push(Sprite("shatter3"));
-		this.sprites.push(Sprite("shatter4"));
-		this.sprites.push(Sprite("shatter5"));
-		this.sprites.push(Sprite("shatter6"));
-		this.sprites.push(Sprite("shatter7"));
 		this.name="skull";
 		this.activate=function()
 		{
@@ -1700,22 +1504,14 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Rock) {
-		this.sprites=new Array();
+		this.shatters=true;
 		this.bombable=false;//true;
 		this.on=true;
+		this.offWalkable=true;
 		this.floating=false;
 		this.grababble=true;
 		this.projPossible=false;
 		this.activateOnImpact=true;
-		this.sprites.push(Sprite("rock"));
-		this.sprites.push(Sprite("shatter0"));
-		this.sprites.push(Sprite("shatter1"));
-		this.sprites.push(Sprite("shatter2"));
-		this.sprites.push(Sprite("shatter3"));
-		this.sprites.push(Sprite("shatter4"));
-		this.sprites.push(Sprite("shatter5"));
-		this.sprites.push(Sprite("shatter6"));
-		this.sprites.push(Sprite("shatter7"));
 		this.name="rock";
 		this.activate=function()
 		{
@@ -1773,20 +1569,11 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Rock2) {
-		this.sprites=new Array();
 		this.bombable=false;//true;
 		this.on=true;
+		this.shatters=true;
 		this.projPossible=false;
 		this.floating=false;
-		this.sprites.push(Sprite("rock2"));
-		this.sprites.push(Sprite("shatter0"));
-		this.sprites.push(Sprite("shatter1"));
-		this.sprites.push(Sprite("shatter2"));
-		this.sprites.push(Sprite("shatter3"));
-		this.sprites.push(Sprite("shatter4"));
-		this.sprites.push(Sprite("shatter5"));
-		this.sprites.push(Sprite("shatter6"));
-		this.sprites.push(Sprite("shatter7"));
 		this.name="rock";
 		this.activate=function()
 		{
@@ -1832,21 +1619,12 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=function(){};
 	}else if (this.type==ObjectID.Rock2Cracked) {
-		this.sprites=new Array();
 		this.bombable=true;
 		this.on=true;
+		this.shatters=true;
 		this.projPossible=false;
 		this.floating=false;
 		this.drawOrder=3;
-		this.sprites.push(Sprite("rock2cracked"));
-		this.sprites.push(Sprite("shatter0"));
-		this.sprites.push(Sprite("shatter1"));
-		this.sprites.push(Sprite("shatter2"));
-		this.sprites.push(Sprite("shatter3"));
-		this.sprites.push(Sprite("shatter4"));
-		this.sprites.push(Sprite("shatter5"));
-		this.sprites.push(Sprite("shatter6"));
-		this.sprites.push(Sprite("shatter7"));
 		this.name="cracked rock";
 		this.activate=function()
 		{
@@ -1892,12 +1670,10 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=function(){};
 	}else if (this.type==ObjectID.Bush) {
-		this.sprites=new Array();
 		this.bombable=true;
 		this.hookable=false;
+		this.offWalkable=true;
 		this.swordActivate=function(){return true;};
-		this.sprites.push(Sprite("bush"));
-		this.sprites.push(Sprite("bushcut")); //todo!
 		this.name="bush";
 		this.pokable=true;
 		this.on=true;
@@ -2012,9 +1788,10 @@ object.prototype.setup=function(id,par)
 			}
 		}
 	}else if (this.type==ObjectID.Curtains) {
-		this.sprites=new Array();
+		this.sprites=new Array(); //exception to the new rule.
 		this.curSprite=1;
 		this.on=true;
+		this.offWalkable=true;
 		this.orientation=0;
 		this.swordActivate=function(){return true;};
 		this.alwaysWalkable=true;//false;
@@ -2105,7 +1882,7 @@ object.prototype.setup=function(id,par)
 			}
 		}
 	}else if (this.type==ObjectID.WallShield) {
-		this.sprites=new Array();
+		this.sprites=new Array(); //exception
 		this.curSprite=0;
 		this.alwaysWalkable=true;
 		if(this.y==1)
@@ -2140,7 +1917,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.EyeSwitch) {
-		this.sprites=new Array();
+		this.sprites=new Array(); //exception
 		this.curSprite=1;
 		this.on=true;
 		this.hookable=false;
@@ -2227,12 +2004,10 @@ object.prototype.setup=function(id,par)
 			return; 
 		}
 	}else if (this.type==ObjectID.Peg) { 
-	    this.sprites=new Array();
-		this.on=true;
+	  	this.on=true;
+		this.offWalkable=true;
 		this.hookable=true;
 		this.curSprite=0;
-		this.sprites.push(Sprite("pegup"));
-		this.sprites.push(Sprite("pegdown"));
 	    this.name="peg";
 		this.drawOrder=2;
 		this.activateEdit=function()
@@ -2280,8 +2055,8 @@ object.prototype.setup=function(id,par)
 		}
 		
 	}else if (this.type==ObjectID.BlueBlocker) { //blue blocker
-	    this.sprites=new Array();
 		this.playerUsable=false;
+		this.offWalkable=true;
 		this.hookable=false;
 		if(this.on)
 		{
@@ -2294,8 +2069,6 @@ object.prototype.setup=function(id,par)
 			this.blockArrows=false;
 			this.projPassable=true;
 		}
-		this.sprites.push(Sprite("blueblocker"));
-		this.sprites.push(Sprite("blueblockerdown"));
 	    this.name="Blue blocker thingy";
 		this.activate=function()
 		{
@@ -2315,8 +2088,8 @@ object.prototype.setup=function(id,par)
 		this.activateEdit=this.activate;
 		curDungeon.blueBlockers.push(this);
 	}else if (this.type==ObjectID.RedBlocker) { //red blocker
-	    this.sprites=new Array();
 		this.playerUsable=false;
+		this.offWalkable=true;
 		this.hookable=false;
 		if(this.on)
 		{
@@ -2328,8 +2101,6 @@ object.prototype.setup=function(id,par)
 			this.blockArrows=false;
 			this.projPassable=true;
 		}
-		this.sprites.push(Sprite("redblocker"));
-		this.sprites.push(Sprite("redblockerdown"));
 	    this.name="Red blocker thingy";
 		this.activate=function()
 		{
@@ -2348,8 +2119,6 @@ object.prototype.setup=function(id,par)
 		this.activateEdit=this.activate;
 		curDungeon.redBlockers.push(this);
 	}else if (this.type==ObjectID.BlueOrb) { //blue orb
-	    this.sprites=new Array();
-		this.sprites.push(Sprite("blueorb"));
 	    this.name="Blue orb";
 		this.bombable=true;
 		this.projPossible=false;
@@ -2381,8 +2150,6 @@ object.prototype.setup=function(id,par)
 			this.playerUsable=true
 		}
 	}else if (this.type==ObjectID.RedOrb) { //red orb
-	    this.sprites=new Array();
-		this.sprites.push(Sprite("redorb"));
 	    this.name="Red orb";
 		this.bombable=true;
 		this.hookable=false;
@@ -2417,16 +2184,11 @@ object.prototype.setup=function(id,par)
 			this.playerUsable=true;
 		}
 	}else if (this.type==ObjectID.Warp) { //warp
-	    this.sprites=new Array();
 		this.active=false;
 		this.alwaysWalkable=true;
 		this.hookable=false;
 		this.projPassable=true;
 		this.drawOrder=0;
-		this.sprites.push(Sprite("warpoff"));
-		this.sprites.push(Sprite("warp0"));
-		this.sprites.push(Sprite("warp1"));
-		this.sprites.push(Sprite("warp2"));
 		this.dest=null;
 	    this.name="Warp tile";
 		this.activate=function()
@@ -2441,9 +2203,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.HeartContainer) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("heartcontainer"));
 	    this.name="Heart container";
 		this.pickupable=true;
 		this.hookable=false;
@@ -2462,9 +2222,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Feather) {
-	    this.sprites=new Array();
-		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("feather"));
+	    this.alwaysWalkable=true;
 	    this.name="Roc's Feather";
 		this.pickupable=true;
 		this.hookable=false;
@@ -2491,9 +2249,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Mirror) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("mirror"));
 	    this.name="Magic Mirror";
 		this.pickupable=true;
 		this.usable=true;
@@ -2521,9 +2277,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Shovel) {
-	    this.sprites=new Array();
-		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("shovel"));
+	   	this.alwaysWalkable=true;
 	    this.name="Shovel";
 		this.pickupable=true;
 		this.usable=true;
@@ -2550,34 +2304,27 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Brick) {
-	    this.sprites=new Array();
-		this.pushable=true;
+	 	this.pushable=true;
 		this.floating=false;
 		this.drawOrder=2;
-		this.sprites.push(Sprite("brick2"));
 	    this.name="Moveable brick";
 		this.playerUsable=false;
 		this.activate=function(){};
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.HolePlugger) {
-	    this.sprites=new Array();
 		this.pushable=true;
 		this.floating=true;
 		this.on=false;
 		this.hookable=false;
 		this.projPassable=true;
 		this.drawOrder=2;
-		this.sprites.push(Sprite("plugbrick"));
-		this.sprites.push(Sprite("plugbrick1"));
 	    this.name="Hole Plugger";
 		this.playerUsable=false;
 		this.activate=function(){};
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.MasterSword)
 	{
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("mastersword"));
 	    this.name="Master sword";
 		this.pickupable=true;
 		this.hookable=false;
@@ -2605,9 +2352,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Sword) {
-			this.sprites=new Array();
 			this.alwaysWalkable=true;
-			this.sprites.push(Sprite("sword"));
 			this.name="Half-decent sword";
 			this.pickupable=true;
 			this.hookable=false;
@@ -2631,9 +2376,7 @@ object.prototype.setup=function(id,par)
 			}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Bow) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("bow"));
 	    this.name="Bow and Arrows";
 		this.usable=true;
 		this.singular=false;
@@ -2662,9 +2405,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Glove) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("glove"));
 	    this.name="Power Glove";
 		this.pickupable=true;
 		this.hookable=false;
@@ -2690,9 +2431,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Cane) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("somaria"));
 	    this.name="Cane of Somaria";
 		this.pickupable=true;
 		this.usable=true;
@@ -2719,9 +2458,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Cape) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("cape"));
 	    this.name="Magic Cape";
 		this.pickupable=true;
 		this.usable=true;
@@ -2748,9 +2485,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.FireRod) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("firerod"));
 	    this.name="Fire Rod";
 		this.pickupable=true;
 		this.usable=true;
@@ -2777,9 +2512,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.IceRod) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("icerod"));
 	    this.name="Ice Rod";
 		this.pickupable=true;
 		this.usable=true;
@@ -2806,9 +2539,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Boomerang) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("boomerang"));
 	    this.name="Boomerang";
 		this.pickupable=true;
 		this.usable=true;
@@ -2835,9 +2566,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Flippers) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("flippers"));
 	    this.name="Flippers";
 		this.pickupable=true;
 		this.hookable=false;
@@ -2864,9 +2593,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Mushroom) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("mushroom"));
 	    this.name="mushroom";
 		this.pickupable=true;
 		this.hookable=false;
@@ -2885,9 +2612,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Boots) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("boots"));
 	    this.name="Pegasus Boots";
 		this.pickupable=true;
 		this.hookable=false;
@@ -2914,9 +2639,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Hookshot) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("hookshot"));
 	    this.name="Hookshot";
 		this.pickupable=true;
 		this.hookable=false;
@@ -2942,9 +2665,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Ocarina) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("ocarina"));
 	    this.name="Ocarina";
 		this.pickupable=true;
 		this.hookable=false;
@@ -2969,9 +2690,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Lens) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("lens"));
 	    this.name="Creepy Lens";
 		this.pickupable=true;
 		this.hookable=false;
@@ -2997,9 +2716,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Bomb) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("bombpickup"));
 	    this.name="Bombs";
 		this.pickupable=true;
 		this.usable=true;
@@ -3033,9 +2750,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Lantern) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("lantern"));
 	    this.name="Lantern";
 		this.playerUsable=true;
 		this.pickupable=true;
@@ -3062,9 +2777,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Hammer) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("Hammer"));
 	    this.name="Hammer";
 		this.pickupable=true;
 		this.hookable=false;
@@ -3090,12 +2803,9 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Spikes) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
 		this.on=true;
-		this.sprites.push(Sprite("spikes"));
-		this.sprites.push(Sprite("spikeslowered"));
-	    this.name="Spikes";
+		this.name="Spikes";
 		this.hookable=false;
 		this.projPassable=true;
 		this.drawOrder=2;
@@ -3118,16 +2828,13 @@ object.prototype.setup=function(id,par)
 			//do nothing.
 		}
 	}else if (this.type==ObjectID.Triforce) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
 		this.pickupable=true;
 		this.aniRate=5;
+		this.curSprite=1;
 		this.active=true;
 		this.width=64;
 		this.height=64;
-		this.sprites.push(Sprite("triforce1"));
-		this.sprites.push(Sprite("triforce2"));
-		this.sprites.push(Sprite("triforce3"));
 		this.hookable=false;
 		this.projPassable=true;
 		this.drawOrder=3;
@@ -3219,9 +2926,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.BombRefill) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("bomb1"));
 	    this.name="Bombs";
 		this.pickupable=true;
 		this.floating=false;
@@ -3257,9 +2962,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.MagicJar) {
-	    this.sprites=new Array();
-		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("magicjar"));
+	   	this.alwaysWalkable=true;
 	    this.name="Magic Jar";
 		this.pickupable=true;
 		this.floating=false;
@@ -3285,9 +2988,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.SmallJar) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("magicjarsmall"));
 	    this.name="Small Magic Jar";
 		this.pickupable=true;
 		this.floating=false;
@@ -3313,9 +3014,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Arrow) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("arrow"));
 	    this.name="Arrow";
 		this.floating=false;
 		this.pickupable=true;
@@ -3346,9 +3045,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Shell) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("shell"));
 	    this.name="sea shell";
 		this.pickupable=true;
 		this.floating=false;
@@ -3371,9 +3068,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Gold) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("rupee"));
 	    this.name="rupee";
 		this.pickupable=true;
 		this.floating=false;
@@ -3398,9 +3093,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Apple) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("apple"));
 	    this.name="apple";
 		this.pickupable=true;
 		this.floating=false;
@@ -3422,9 +3115,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.FiveGold) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("tenrupee"));
 	    this.name="rupee";
 		this.pickupable=true;
 		this.floating=false;
@@ -3449,9 +3140,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.FiftyGold) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("fiftyrupee"));
 	    this.name="rupee";
 		this.pickupable=true;
 		this.floating=false;
@@ -3476,9 +3165,7 @@ object.prototype.setup=function(id,par)
 		}
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Heart) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
-		this.sprites.push(Sprite("heartpickup"));
 	    this.name="heart";
 		this.floating=false;
 		this.hookable=false;
@@ -3504,10 +3191,8 @@ object.prototype.setup=function(id,par)
 		this.playerActivate=this.activate;
 	}
 	else if (this.type==ObjectID.RumHam) {
-	    this.sprites=new Array();
 		this.alwaysWalkable=true;
 		playSound("chant");
-		this.sprites.push(Sprite("rumham"));
 	    this.name="RUM HAM";
 		this.floating=false;
 		this.hookable=false;
@@ -4469,7 +4154,7 @@ object.prototype.update=function()
 			//console.log(this.curTopSprite);
 		}
 	}
-	if(((this.type==ObjectID.Pot)||(this.type==ObjectID.Rock)||(this.type==ObjectID.Skull)||(this.type==ObjectID.Rock2Cracked))&&(this.curSprite>0))
+	if((this.shatters)&&(this.curSprite>0))
 	{
 		this.ani++;
 		if(this.ani>this.aniRate)
@@ -4589,7 +4274,7 @@ object.prototype.draw=function(can,cam,xOffh,yOffh,special)
 		can.globalAlpha=1;
 		if ((this.messagebox) && (this.messagebox.exists) && (this.loot>19) && (this.loot!=505) && ((this.loot<400) || (this.loot>407)) )
 		{
-			objectSprites[this.loot].draw(can, this.x*32+xOffh+this.xSmall, this.y*32+yOffh-20+this.ySmall-this.fallingY*2);
+			objectSprites[this.loot][0].draw(can, this.x*32+xOffh+this.xSmall, this.y*32+yOffh-20+this.ySmall-this.fallingY*2);
 		}
 	}
 	can.globalAlpha=1;

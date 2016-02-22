@@ -32,6 +32,8 @@ var	xboxlcsprite=Sprite("xboxlc");
 var	xboxrcsprite=Sprite("xboxrc");
 var	xboxdpadupsprite=Sprite("xboxdpadup");
 
+var ObjectID={};
+
 var SNESKey={}
 SNESKey.A=1;
 SNESKey.B=0;
@@ -42,6 +44,108 @@ SNESKey.L=6;
 SNESKey.Select=8;
 SNESKey.Start=9;
 
+//tools
+ObjectID.Feather=0;
+ObjectID.Bomb=1;
+ObjectID.Bow=2;
+ObjectID.Lantern=3;
+ObjectID.Hammer=4;
+ObjectID.RedPotion=5;
+ObjectID.BluePotion=6;
+ObjectID.GreenPotion=7;
+ObjectID.PurplePotion=8;
+ObjectID.Mirror=9;
+ObjectID.Boomerang=10;
+ObjectID.Hookshot=11;
+ObjectID.Flippers=12;
+ObjectID.Lens=13;
+ObjectID.Boots=14;
+ObjectID.Glove=15;
+ObjectID.Poo=16;
+ObjectID.Sword=17;
+ObjectID.Mushroom=18;
+ObjectID.Shield=19;
+ObjectID.BetterShield=20;
+ObjectID.BestShield=21;
+ObjectID.MagicBoomerang=22;
+ObjectID.Cane=23;
+ObjectID.Cape=24;
+ObjectID.FireRod=25;
+ObjectID.IceRod=26;
+ObjectID.Shovel=27;
+ObjectID.Ocarina=28;
+ObjectID.RumHam=29;
+
+//furniture
+ObjectID.Lamp=100;
+ObjectID.Sign=101;
+ObjectID.Candle=102;
+ObjectID.TallLamp=103;
+ObjectID.ToggleSwitch=104;
+ObjectID.PotStand=105;
+ObjectID.Pot=106;
+ObjectID.Curtains=107;
+ObjectID.Warp=108;
+ObjectID.WallShield=109;
+ObjectID.Table=110;
+ObjectID.Chest=111;
+ObjectID.StumpSeat=112;
+ObjectID.Statue=113;
+ObjectID.Bookcase=114;
+ObjectID.Bones=115;
+ObjectID.SpikeyThing=116;
+ObjectID.EyeSwitch=117;
+ObjectID.HoldSwitch=118;
+
+//obstacle
+ObjectID.Bush=200;
+ObjectID.Peg=201;
+ObjectID.BlueBlocker=202;
+ObjectID.RedBlocker=203;
+ObjectID.BlueOrb=204;
+ObjectID.RedOrb=205;
+ObjectID.Spikes=206;
+ObjectID.Brick=207;
+ObjectID.KeyBrick=208;
+ObjectID.Rock=209;
+ObjectID.Crystal=210;
+ObjectID.Crystal2=211;
+ObjectID.Rock2=212;
+ObjectID.Rock2Cracked=213;
+ObjectID.Skull=214;
+ObjectID.HolePlugger=215;
+
+//pickups
+ObjectID.Key=300;
+ObjectID.Triforce=301;
+
+//upgrades/unlocks
+ObjectID.BombBag=400;
+ObjectID.Quiver=401;
+ObjectID.HeartContainer=402;
+ObjectID.SuperBomb=403; 
+ObjectID.Map=404;
+ObjectID.Compass=405;
+ObjectID.MasterSword=406; 
+ObjectID.SilverArrow=407;
+ObjectID.Wallet=408;
+ObjectID.PendantPower=409; 
+ObjectID.PendantWisdom=410;
+ObjectID.PendantSwiftness=411;
+ObjectID.PendantFour=412;
+ObjectID.PendantFive=413;
+
+//random drops
+ObjectID.Gold=500;
+ObjectID.FiveGold=501;
+ObjectID.FiftyGold=507;
+ObjectID.Arrow=502;
+ObjectID.Heart=503;
+ObjectID.BombRefill=504;
+ObjectID.MagicJar=505;
+ObjectID.SmallJar=506; 
+ObjectID.Shell=508;
+ObjectID.Apple=509; 
 
 function party()
 {
@@ -118,10 +222,10 @@ bestshieldSprites.push(Sprite("bestshield2"));
 bestshieldSprites.push(Sprite("bestshield3"));
 
 var magicboomact=new Array()
-magicboomact.push(Sprite("linkupmagicbooma"));
-magicboomact.push(Sprite("linkrightmagicbooma"));
-magicboomact.push(Sprite("linkdownmagicbooma"));
-magicboomact.push(Sprite("linkleftmagicbooma"));
+magicboomact.push(Sprite("entities/link/upmagicbooma"));
+magicboomact.push(Sprite("entities/link/rightmagicbooma"));
+magicboomact.push(Sprite("entities/link/downmagicbooma"));
+magicboomact.push(Sprite("entities/link/leftmagicbooma"));
 
 var Darkness=14;
 
@@ -196,6 +300,16 @@ var halfheartsprite=Sprite("halfheart");
 var lightcirclesprite=Sprite("lightcircle");
 var middlelightcirclesprite=Sprite("innerlightcircle");
 var innerlightcirclesprite=Sprite("furtherinnerlightcircle");
+var shatterSprites=new Array();
+shatterSprites.push(Sprite("shatter0"));
+shatterSprites.push(Sprite("shatter1"));
+shatterSprites.push(Sprite("shatter2"));
+shatterSprites.push(Sprite("shatter3"));
+shatterSprites.push(Sprite("shatter4"));
+shatterSprites.push(Sprite("shatter5"));
+shatterSprites.push(Sprite("shatter6"));
+shatterSprites.push(Sprite("shatter7"));
+
 function drawHearts(p,can) {
 	
 	can.font = "14pt Calibri";
@@ -252,108 +366,165 @@ function drawHearts(p,can) {
 var objectSprites=new Array();
 for (var g=0;g<600;g++)
 {
-	objectSprites.push(null);
+	objectSprites.push(new Array());
+	//objectSprites.push(null);
 }
-objectSprites[0]=Sprite("feather");
-objectSprites[1]=Sprite("bombpickup");
-objectSprites[2]=Sprite("bow");
-objectSprites[3]=Sprite("lantern");
-objectSprites[4]=Sprite("hammer");
-objectSprites[5]=Sprite("redpotion");
-objectSprites[6]=Sprite("bluepotion");
-objectSprites[7]=Sprite("purplepotion");
-objectSprites[8]=Sprite("shovel");
-objectSprites[9]=Sprite("mirror");
-objectSprites[10]=Sprite("boomerang");
-objectSprites[11]=Sprite("hookshot");
-objectSprites[12]=Sprite("flippers");
-objectSprites[13]=Sprite("lens");
-objectSprites[14]=Sprite("boots");
-objectSprites[15]=Sprite("glove");
-objectSprites[16]=Sprite("poo");
-objectSprites[17]=Sprite("sword");
-objectSprites[18]=Sprite("mushroom");
-objectSprites[19]=Sprite("shield");
-objectSprites[20]=Sprite("bettershield");
-objectSprites[21]=Sprite("bestshield");
-objectSprites[22]=Sprite("magicboomerang");
-objectSprites[23]=Sprite("somaria");
-objectSprites[24]=Sprite("cape");
-objectSprites[25]=Sprite("firerod");
-objectSprites[26]=Sprite("icerod");
-objectSprites[27]=Sprite("greenpotion");
-objectSprites[28]=Sprite("ocarina");
-objectSprites[29]=Sprite("rumham");
+objectSprites[0].push(Sprite("feather"));
+objectSprites[1].push(Sprite("bombpickup"));
+objectSprites[2].push(Sprite("bow"));
+objectSprites[3].push(Sprite("lantern"));
+objectSprites[4].push(Sprite("hammer"));
+objectSprites[5].push(Sprite("redpotion"));
+objectSprites[6].push(Sprite("bluepotion"));
+objectSprites[8].push(Sprite("purplepotion"));
+objectSprites[7].push(Sprite("greenpotion"));
+objectSprites[9].push(Sprite("mirror"));
+objectSprites[10].push(Sprite("boomerang"));
+objectSprites[11].push(Sprite("hookshot"));
+objectSprites[12].push(Sprite("flippers"));
+objectSprites[13].push(Sprite("lens"));
+objectSprites[14].push(Sprite("boots"));
+objectSprites[15].push(Sprite("glove"));
+objectSprites[16].push(Sprite("poo"));
+objectSprites[17].push(Sprite("sword"));
+objectSprites[18].push(Sprite("mushroom"));
+objectSprites[19].push(Sprite("shield"));
+objectSprites[20].push(Sprite("bettershield"));
+objectSprites[21].push(Sprite("bestshield"));
+objectSprites[22].push(Sprite("magicboomerang"));
+objectSprites[23].push(Sprite("somaria"));
+objectSprites[24].push(Sprite("cape"));
+objectSprites[25].push(Sprite("firerod"));
+objectSprites[26].push(Sprite("icerod"));
+objectSprites[27].push(Sprite("shovel"));
+objectSprites[28].push(Sprite("ocarina"));
+objectSprites[29].push(Sprite("rumham"));
 
 //furniture
-objectSprites[100]=Sprite("lamp");
-objectSprites[101]=Sprite("sign");;
-objectSprites[102]=Sprite("candle");
-objectSprites[103]=Sprite("talllampsmall");
-objectSprites[104]=Sprite("switch");
-objectSprites[105]=Sprite("potstand");
-objectSprites[106]=Sprite("pot");
-objectSprites[107]=Sprite("curtains");
-objectSprites[108]=Sprite("warpoff");
-objectSprites[109]=Sprite("wallshield0");
-objectSprites[110]=Sprite("smalltable");
-objectSprites[111]=Sprite("chest");
-objectSprites[112]=Sprite("stumpseat");
-objectSprites[113]=Sprite("statue");
-objectSprites[114]=Sprite("bookcasesmall");
-objectSprites[115]=Sprite("bones");
-objectSprites[116]=Sprite("spikey");
-objectSprites[117]=Sprite("eyeswitch0");
-objectSprites[118]=Sprite("switch");
+objectSprites[100].push(Sprite("lamp"));
+objectSprites[101].push(Sprite("sign"));;
+objectSprites[102].push(Sprite("candle"));
+objectSprites[103].push(Sprite("talllampsmall"));
+objectSprites[104].push(Sprite("switch"));
+objectSprites[104].push(Sprite("switchpressed"));
+objectSprites[105].push(Sprite("potstand"));
+objectSprites[106].push(Sprite("pot"));
+objectSprites[ObjectID.Pot].push(shatterSprites[0]);
+objectSprites[ObjectID.Pot].push(shatterSprites[1]);
+objectSprites[ObjectID.Pot].push(shatterSprites[2]);
+objectSprites[ObjectID.Pot].push(shatterSprites[3]);
+objectSprites[ObjectID.Pot].push(shatterSprites[4]);
+objectSprites[ObjectID.Pot].push(shatterSprites[5]);
+objectSprites[ObjectID.Pot].push(shatterSprites[6]);
+objectSprites[ObjectID.Pot].push(shatterSprites[7]);
+objectSprites[107].push(Sprite("curtains")); //special case for now.
+objectSprites[108].push(Sprite("warpoff"));
+objectSprites[ObjectID.Warp].push(Sprite("warp0"));
+objectSprites[ObjectID.Warp].push(Sprite("warp1"));
+objectSprites[ObjectID.Warp].push(Sprite("warp2"));
+objectSprites[109].push(Sprite("wallshield0"));
+objectSprites[110].push(Sprite("smalltable"));
+objectSprites[111].push(Sprite("chest"));
+objectSprites[ObjectID.Chest].push(Sprite("chestopen"));
+objectSprites[112].push(Sprite("stumpseat"));
+objectSprites[113].push(Sprite("statue"));
+objectSprites[114].push(Sprite("bookcasesmall"));
+objectSprites[115].push(Sprite("bones"));
+objectSprites[116].push(Sprite("spikey"));
+objectSprites[117].push(Sprite("eyeswitch0"));
+objectSprites[117].push(Sprite("eyeswitch1"));
+objectSprites[118].push(Sprite("switch"));
+objectSprites[118].push(Sprite("switchpressed"));
 
 //obstacle
-objectSprites[200]=Sprite("bush");
-objectSprites[201]=Sprite("pegup");
-objectSprites[202]=Sprite("blueblocker");
-objectSprites[203]=Sprite("redblocker");
-objectSprites[204]=Sprite("blueorb");
-objectSprites[205]=Sprite("redorb");
-objectSprites[206]=Sprite("spikes");
-objectSprites[207]=Sprite("brick2");
-objectSprites[208]=Sprite("keybrick");
-objectSprites[209]=Sprite("rock");
-objectSprites[210]=Sprite("crystal");
-objectSprites[211]=Sprite("crystal2");
-objectSprites[212]=Sprite("rock2");
-objectSprites[213]=Sprite("rock2cracked");
-objectSprites[214]=Sprite("skull");
-objectSprites[215]=Sprite("plugbrick");
+objectSprites[200].push(Sprite("bush"));
+objectSprites[ObjectID.Bush].push(Sprite("bushcut"));
+objectSprites[201].push(Sprite("pegup"));
+objectSprites[201].push(Sprite("pegdown"));
+objectSprites[202].push(Sprite("blueblocker"));
+objectSprites[202].push(Sprite("blueblockerdown"));
+objectSprites[203].push(Sprite("redblocker"));
+objectSprites[203].push(Sprite("redblockerdown"));
+objectSprites[204].push(Sprite("blueorb"));
+objectSprites[205].push(Sprite("redorb"));
+objectSprites[206].push(Sprite("spikes"));
+objectSprites[206].push(Sprite("spikeslowered"));
+objectSprites[207].push(Sprite("brick2"));
+objectSprites[208].push(Sprite("keybrick"));
+objectSprites[209].push(Sprite("rock"));
+objectSprites[ObjectID.Rock].push(shatterSprites[0]);
+objectSprites[ObjectID.Rock].push(shatterSprites[1]);
+objectSprites[ObjectID.Rock].push(shatterSprites[2]);
+objectSprites[ObjectID.Rock].push(shatterSprites[3]);
+objectSprites[ObjectID.Rock].push(shatterSprites[4]);
+objectSprites[ObjectID.Rock].push(shatterSprites[5]);
+objectSprites[ObjectID.Rock].push(shatterSprites[6]);
+objectSprites[ObjectID.Rock].push(shatterSprites[7]);
+objectSprites[210].push(Sprite("crystal"));
+objectSprites[211].push(Sprite("crystal2"));
+objectSprites[212].push(Sprite("rock2"));
+objectSprites[ObjectID.Rock2].push(shatterSprites[0]);
+objectSprites[ObjectID.Rock2].push(shatterSprites[1]);
+objectSprites[ObjectID.Rock2].push(shatterSprites[2]);
+objectSprites[ObjectID.Rock2].push(shatterSprites[3]);
+objectSprites[ObjectID.Rock2].push(shatterSprites[4]);
+objectSprites[ObjectID.Rock2].push(shatterSprites[5]);
+objectSprites[ObjectID.Rock2].push(shatterSprites[6]);
+objectSprites[ObjectID.Rock2].push(shatterSprites[7]);
+objectSprites[213].push(Sprite("rock2cracked"));
+objectSprites[ObjectID.Rock2Cracked].push(shatterSprites[0]);
+objectSprites[ObjectID.Rock2Cracked].push(shatterSprites[1]);
+objectSprites[ObjectID.Rock2Cracked].push(shatterSprites[2]);
+objectSprites[ObjectID.Rock2Cracked].push(shatterSprites[3]);
+objectSprites[ObjectID.Rock2Cracked].push(shatterSprites[4]);
+objectSprites[ObjectID.Rock2Cracked].push(shatterSprites[5]);
+objectSprites[ObjectID.Rock2Cracked].push(shatterSprites[6]);
+objectSprites[ObjectID.Rock2Cracked].push(shatterSprites[7]);
+objectSprites[214].push(Sprite("skull"));
+objectSprites[ObjectID.Skull].push(shatterSprites[0]);
+objectSprites[ObjectID.Skull].push(shatterSprites[1]);
+objectSprites[ObjectID.Skull].push(shatterSprites[2]);
+objectSprites[ObjectID.Skull].push(shatterSprites[3]);
+objectSprites[ObjectID.Skull].push(shatterSprites[4]);
+objectSprites[ObjectID.Skull].push(shatterSprites[5]);
+objectSprites[ObjectID.Skull].push(shatterSprites[6]);
+objectSprites[ObjectID.Skull].push(shatterSprites[7]);
+objectSprites[215].push(Sprite("plugbrick"));
+objectSprites[215].push(Sprite("plugbrick1"));
 //pickups
-objectSprites[300]=Sprite("key");
-objectSprites[301]=Sprite("triforce");
+objectSprites[300].push(Sprite("key"));
+objectSprites[301].push(Sprite("triforce"));
+objectSprites[301].push(Sprite("triforce1"));
+objectSprites[301].push(Sprite("triforce2"));
+objectSprites[301].push(Sprite("triforce3"));
 
 
 //upgrades
-objectSprites[400]=Sprite("bombbag");
-objectSprites[401]=Sprite("quiver");
-objectSprites[402]=Sprite("heartcontainer");
-objectSprites[403]=Sprite("superbomb");
-objectSprites[404]=Sprite("map");
-objectSprites[405]=Sprite("compass");
-objectSprites[406]=Sprite("mastersword");
-objectSprites[407]=Sprite("silverarrow");
-objectSprites[408]=Sprite("wallet");
-objectSprites[409]=Sprite("pendantred");
-objectSprites[410]=Sprite("pendantgreen");
-objectSprites[411]=Sprite("pendantblue");
-objectSprites[412]=Sprite("pendantyellow");
-objectSprites[413]=Sprite("pendantpurple");
+objectSprites[400].push(Sprite("bombbag"));
+objectSprites[401].push(Sprite("quiver"));
+objectSprites[402].push(Sprite("heartcontainer"));
+objectSprites[403].push(Sprite("superbomb"));
+objectSprites[404].push(Sprite("map"));
+objectSprites[405].push(Sprite("compass"));
+objectSprites[406].push(Sprite("mastersword"));
+objectSprites[407].push(Sprite("silverarrow"));
+objectSprites[408].push(Sprite("wallet"));
+objectSprites[409].push(Sprite("pendantred"));
+objectSprites[410].push(Sprite("pendantgreen"));
+objectSprites[411].push(Sprite("pendantblue"));
+objectSprites[412].push(Sprite("pendantyellow"));
+objectSprites[413].push(Sprite("pendantpurple"));
 //drops
-objectSprites[500]=Sprite("rupee");
-objectSprites[501]=Sprite("tenrupee");
-objectSprites[502]=Sprite("arrow");
-objectSprites[503]=Sprite("heartpickup");
-objectSprites[504]=Sprite("bomb1");
-objectSprites[505]=Sprite("magicjar");
-objectSprites[506]=Sprite("magicjarsmall");
-objectSprites[507]=Sprite("fiftyrupee");
-objectSprites[508]=Sprite("shell");
-objectSprites[509]=Sprite("apple");
+objectSprites[500].push(Sprite("rupee"));
+objectSprites[501].push(Sprite("tenrupee"));
+objectSprites[502].push(Sprite("arrow"));
+objectSprites[503].push(Sprite("heartpickup"));
+objectSprites[504].push(Sprite("bomb1"));
+objectSprites[505].push(Sprite("magicjar"));
+objectSprites[506].push(Sprite("magicjarsmall"));
+objectSprites[507].push(Sprite("fiftyrupee"));
+objectSprites[508].push(Sprite("shell"));
+objectSprites[509].push(Sprite("apple"));
 
 var nullSprite=new Sprite("blank");
 
@@ -1008,33 +1179,6 @@ var holeEdgeSprites=new Array()
 	holeEdgeSprites.push(Sprite("dungeontiles/holeedge3"));
 }
 
-var tileSprite=new Array(39);
-tileSprite[TileType.Grass] = Sprite("grass");
-tileSprite[TileType.Forest] = Sprite("darkgrass"); 
-tileSprite[TileType.Snow] = Sprite("snow"); 
-tileSprite[TileType.Ice] = Sprite("ice"); 
-tileSprite[TileType.IceMountains] = Sprite("icemountain");
-tileSprite[TileType.RedMountains] = Sprite("redmountain");
-tileSprite[TileType.Bridge] = Sprite("road");  
-tileSprite[TileType.Ocean] = Sprite("ocean");
-tileSprite[TileType.Ocean+1] = Sprite("ocean1");
-tileSprite[TileType.Ocean+2] = Sprite("ocean2");
-tileSprite[TileType.Ocean+3] = Sprite("ocean3");
-tileSprite[TileType.Water] = Sprite("water");
-tileSprite[TileType.Water+1] = Sprite("water");
-tileSprite[TileType.Water+2] = Sprite("water");
-tileSprite[TileType.Water+3] = Sprite("water");
-tileSprite[TileType.Lava] = Sprite("lava0");
-tileSprite[TileType.Lava+1] = Sprite("lava1");
-tileSprite[TileType.Lava+2] = Sprite("lava2");
-tileSprite[TileType.Lava+3] = Sprite("lava3");
-tileSprite[TileType.Lava+4] = Sprite("lava4");
-tileSprite[TileType.Mountains] = Sprite("stone");
-tileSprite[TileType.Hills] = Sprite("hills");
-tileSprite[TileType.Swamp] = Sprite("swamp");
-tileSprite[TileType.Plains] = Sprite("dirt");
-tileSprite[TileType.Road] = Sprite("road");
-tileSprite[TileType.Sand] = Sprite("sand");
 
 var dungeonTileSprite=new Array(69);
 dungeonTileSprite[DungeonTileType.Grass] = Sprite("dungeontiles/tallgrass");
@@ -1129,7 +1273,6 @@ tileColors[TileType.Lava] = "#FF0000";
 
 
 
-var selector2 = Sprite("newcursor");
 var titlesprite = Sprite("title");
 //var troopScreensprite = Sprite("troopsscreen");
 var RGB_THRESHOLD=5;
