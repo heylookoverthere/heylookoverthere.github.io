@@ -11,6 +11,7 @@ var graph=null;
 var shiftdown=false;
 var graph=null;
 var MobileMode=false;
+var floorDirty=true;
 var Xbox=false;
 var milesFree=true;
 var LockTime=0;
@@ -114,6 +115,8 @@ ObjectID.Rock2=212;
 ObjectID.Rock2Cracked=213;
 ObjectID.Skull=214;
 ObjectID.HolePlugger=215;
+ObjectID.Mine=216;
+ObjectID.Cactus=217;
 
 //pickups
 ObjectID.Key=300;
@@ -146,6 +149,7 @@ ObjectID.MagicJar=505;
 ObjectID.SmallJar=506; 
 ObjectID.Shell=508;
 ObjectID.Apple=509; 
+
 
 function party()
 {
@@ -343,7 +347,7 @@ function drawHearts(p,can) {
 	{
 		if(h<7)
 		{
-			heartsprite.draw(canvas,12+h*16+h*3, 24);
+			heartsprite.draw(can,12+h*16+h*3, 24);
 		}else
 		{
 			heartsprite.draw(can,12+(h-8)*16+h*3, 39);
@@ -352,7 +356,7 @@ function drawHearts(p,can) {
     {
 		if(h<7)
 		{
-			halfheartsprite.draw(canvas,12+h*16+h*3, 24);
+			halfheartsprite.draw(can,12+h*16+h*3, 24);
 		}else
 		{
 			halfheartsprite.draw(can,12+(h-8)*16+h*3, 39);
@@ -361,6 +365,21 @@ function drawHearts(p,can) {
 	
 }
 
+var objectTopSprites=new Array();
+for (var g=0;g<600;g++)
+{
+	objectTopSprites.push(new Array());
+	//objectSprites.push(null);
+}
+objectTopSprites[ObjectID.TallLamp].push(Sprite("talllamptopoff"));
+objectTopSprites[ObjectID.TallLamp].push(Sprite("talllamptop0"));
+objectTopSprites[ObjectID.TallLamp].push(Sprite("talllamptop1"));
+objectTopSprites[ObjectID.TallLamp].push(Sprite("talllamptop2"));
+objectTopSprites[ObjectID.TallLamp].push(Sprite("talllamptop3"));
+
+objectTopSprites[ObjectID.Bookcase].push(Sprite("bookcase0top"));
+objectTopSprites[ObjectID.Cactus].push(Sprite("cactustop"));
+objectTopSprites[ObjectID.Statue].push(Sprite("statue1top"));
 
 
 var objectSprites=new Array();
@@ -405,6 +424,7 @@ objectSprites[100].push(Sprite("lamp"));
 objectSprites[101].push(Sprite("sign"));;
 objectSprites[102].push(Sprite("candle"));
 objectSprites[103].push(Sprite("talllampsmall"));
+objectSprites[103].push(Sprite("talllamp"));
 objectSprites[104].push(Sprite("switch"));
 objectSprites[104].push(Sprite("switchpressed"));
 objectSprites[105].push(Sprite("potstand"));
@@ -424,11 +444,14 @@ objectSprites[ObjectID.Warp].push(Sprite("warp1"));
 objectSprites[ObjectID.Warp].push(Sprite("warp2"));
 objectSprites[109].push(Sprite("wallshield0"));
 objectSprites[110].push(Sprite("smalltable"));
+objectSprites[110].push(Sprite("table1"));
 objectSprites[111].push(Sprite("chest"));
 objectSprites[ObjectID.Chest].push(Sprite("chestopen"));
 objectSprites[112].push(Sprite("stumpseat"));
 objectSprites[113].push(Sprite("statue"));
+objectSprites[113].push(Sprite("statue1"));
 objectSprites[114].push(Sprite("bookcasesmall"));
+objectSprites[114].push(Sprite("bookcase0"));
 objectSprites[115].push(Sprite("bones"));
 objectSprites[116].push(Sprite("spikey"));
 objectSprites[117].push(Sprite("eyeswitch0"));
@@ -491,6 +514,9 @@ objectSprites[ObjectID.Skull].push(shatterSprites[6]);
 objectSprites[ObjectID.Skull].push(shatterSprites[7]);
 objectSprites[215].push(Sprite("plugbrick"));
 objectSprites[215].push(Sprite("plugbrick1"));
+objectSprites[ObjectID.Cactus].push(Sprite("cactus0"));
+objectSprites[ObjectID.Cactus].push(Sprite("cactus"));
+objectSprites[ObjectID.Mine].push(Sprite("mine"));
 //pickups
 objectSprites[300].push(Sprite("key"));
 objectSprites[301].push(Sprite("triforce"));
@@ -1005,6 +1031,7 @@ DungeonTileType.FloorSixteen=59;
 DungeonTileType.FloorSeventeen=60;
 DungeonTileType.FloorEighteen=61;
 DungeonTileType.CutGrass=62;
+DungeonTileType.FloorNinteen=63;
 DungeonTileType.Ice=2;
 DungeonTileType.Water=20;
 DungeonTileType.Lava=24; 
@@ -1249,6 +1276,7 @@ dungeonTileSprite[DungeonTileType.FloorFifteen] = Sprite("dungeontiles/floor15")
 dungeonTileSprite[DungeonTileType.FloorSixteen] = Sprite("dungeontiles/floor16");
 dungeonTileSprite[DungeonTileType.FloorSeventeen] = Sprite("dungeontiles/floor17");
 dungeonTileSprite[DungeonTileType.FloorEighteen] = Sprite("dungeontiles/dirt");
+dungeonTileSprite[DungeonTileType.FloorNinteen] = Sprite("dungeontiles/floor19");
 var reverseBird = Sprite("dungeontiles/dungeonthing1");
 
 

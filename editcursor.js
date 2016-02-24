@@ -65,6 +65,7 @@ editCursor.prototype.cycleLoot=function(up)
 
 editCursor.prototype.click=function(m,mx,my)
 {
+	floorDirty=true;
 	if(m)
 	{
 		var tx=Math.floor((mx-xOffset)/32);
@@ -334,7 +335,7 @@ editCursor.prototype.cycleTiles=function(up)
 		}else if(this.brushType==25)
 		{
 			this.brushType=44;
-		}else if(this.brushType==63)//skip water animation tiles
+		}else if(this.brushType==64)//skip water animation tiles
 		{
 			this.brushType=70;
 		}else if(this.brushType==73)//skip lava animation tiles.
@@ -356,7 +357,7 @@ editCursor.prototype.cycleTiles=function(up)
 			this.brushType=25;
 		}else if(this.brushType==69)//skip water animation tiles
 		{
-			this.brushType=62;
+			this.brushType=63;
 		}else if(this.brushType==-1)//skip lava animation tiles.
 		{
 			this.brushType=72;
@@ -378,7 +379,7 @@ editCursor.prototype.cycleObjects=function(up)
 		}else if((this.objectType>301) && (this.objectType<400))
 		{
 			this.objectType=400;
-		}else if((this.objectType>215) && (this.objectType<300))
+		}else if((this.objectType>217) && (this.objectType<300))
 		{
 			this.objectType=300;
 		}else if((this.objectType>118) && (this.objectType<200))
@@ -402,7 +403,7 @@ editCursor.prototype.cycleObjects=function(up)
 			this.objectType=301;
 		}else if(this.objectType==299)
 		{
-			this.objectType=215;
+			this.objectType=217;
 		}else if(this.objectType==199)
 		{
 			this.objectType=118;

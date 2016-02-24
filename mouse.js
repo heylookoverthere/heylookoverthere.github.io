@@ -886,7 +886,7 @@ function drawMouseText(can,targ,cam) { //draws unit status info
 	
 	}
 	
-	canvas.fillStyle="black";
+	can.fillStyle="black";
 
     tempstr = targ.name;
     can.fillText(tempstr, (targ.x-cam.x), (targ.y-cam.y)+targ.height+8);

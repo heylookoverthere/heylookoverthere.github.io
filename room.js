@@ -79,6 +79,7 @@ function staircase(up,clone)
 	{
 		playSound("secret");
 		this.hidden=!this.hidden;
+		floorDirty=true;
 	}
 }
 	
@@ -840,7 +841,7 @@ function room(I) { //room object
 			return true;
 		}
 			//Serously wtf was I thinking with this. This is insane. 
-			if(((I.tiles[x][y].data==DungeonTileType.FloorEighteen) ||I.tiles[x][y].data==DungeonTileType.FloorFifteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSixteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSeventeen)||(I.tiles[x][y].data==DungeonTileType.FloorTwelve) ||(I.tiles[x][y].data==DungeonTileType.FloorThirteen) ||(I.tiles[x][y].data==DungeonTileType.FloorFourteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSeven) ||(I.tiles[x][y].data==DungeonTileType.FloorEight) ||(I.tiles[x][y].data==DungeonTileType.FloorNine) ||(I.tiles[x][y].data==DungeonTileType.FloorTen) ||(I.tiles[x][y].data==DungeonTileType.FloorEleven)|| (I.tiles[x][y].data==DungeonTileType.FloorFour) ||(I.tiles[x][y].data==DungeonTileType.FloorFive) ||(I.tiles[x][y].data==DungeonTileType.FloorSix) ||(I.tiles[x][y].data==DungeonTileType.FloorThree) ||(I.tiles[x][y].data==DungeonTileType.FloorTwo) ||(I.tiles[x][y].data==DungeonTileType.FloorOne) ||(I.tiles[x][y].data==DungeonTileType.GreenFloor) ||(I.tiles[x][y].data==DungeonTileType.UpStair)||(I.tiles[x][y].data==DungeonTileType.DownStair) ||(I.tiles[x][y].data==DungeonTileType.Unstable) ||(I.tiles[x][y].data==DungeonTileType.ReallyUnstable) ||(I.tiles[x][y].data==DungeonTileType.DeathHole) ||(I.tiles[x][y].data==DungeonTileType.GrassHole)||((I.tiles[x][y].data==DungeonTileType.Hole) && (!avoidHoles)) ||(I.tiles[x][y].data==DungeonTileType.Grass)||(I.tiles[x][y].data==DungeonTileType.Sand) ||(I.tiles[x][y].data==DungeonTileType.Ice)||(I.tiles[x][y].data==DungeonTileType.CutGrass))
+			if(((I.tiles[x][y].data==DungeonTileType.FloorEighteen) ||I.tiles[x][y].data==DungeonTileType.FloorFifteen)||(I.tiles[x][y].data==DungeonTileType.FloorNinteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSixteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSeventeen)||(I.tiles[x][y].data==DungeonTileType.FloorTwelve) ||(I.tiles[x][y].data==DungeonTileType.FloorThirteen) ||(I.tiles[x][y].data==DungeonTileType.FloorFourteen) ||(I.tiles[x][y].data==DungeonTileType.FloorSeven) ||(I.tiles[x][y].data==DungeonTileType.FloorEight) ||(I.tiles[x][y].data==DungeonTileType.FloorNine) ||(I.tiles[x][y].data==DungeonTileType.FloorTen) ||(I.tiles[x][y].data==DungeonTileType.FloorEleven)|| (I.tiles[x][y].data==DungeonTileType.FloorFour) ||(I.tiles[x][y].data==DungeonTileType.FloorFive) ||(I.tiles[x][y].data==DungeonTileType.FloorSix) ||(I.tiles[x][y].data==DungeonTileType.FloorThree) ||(I.tiles[x][y].data==DungeonTileType.FloorTwo) ||(I.tiles[x][y].data==DungeonTileType.FloorOne) ||(I.tiles[x][y].data==DungeonTileType.GreenFloor) ||(I.tiles[x][y].data==DungeonTileType.UpStair)||(I.tiles[x][y].data==DungeonTileType.DownStair) ||(I.tiles[x][y].data==DungeonTileType.Unstable) ||(I.tiles[x][y].data==DungeonTileType.ReallyUnstable) ||(I.tiles[x][y].data==DungeonTileType.DeathHole) ||(I.tiles[x][y].data==DungeonTileType.GrassHole)||((I.tiles[x][y].data==DungeonTileType.Hole) && (!avoidHoles)) ||(I.tiles[x][y].data==DungeonTileType.Grass)||(I.tiles[x][y].data==DungeonTileType.Sand) ||(I.tiles[x][y].data==DungeonTileType.Ice)||(I.tiles[x][y].data==DungeonTileType.CutGrass))
 			{
 				for(var i=0;i<I.objects.length;i++)
 				{
@@ -1308,6 +1309,23 @@ function room(I) { //room object
 		return false;
 	}
 	
+	I.isSafe=function(x,y,bob)
+	{
+		if(I.tiles[x][y].data==DungeonTileType.DeathHole)
+		{
+			return false;
+		}
+		if((I.tiles[x][y].data>19) && (I.tiles[x][y].data<25) && (!bob.canSwim))
+		{
+			return false;
+		}
+		if((I.tiles[x][y].data>24) && (I.tiles[x][y].data<28) && (!bob.canLavaSwim))
+		{
+			return false;
+		}
+		return true;
+	}
+	
 	I.drawHoleEdges=function(can,cam)
 	{
 		for (i=0;i<ROOM_WIDTH; i++)
@@ -1633,150 +1651,7 @@ function room(I) { //room object
 		return true;
 	};
 
-	I.buildRoom= function(name){
-       // setTimeout(function() {
-		if(!imageExists("images/"+name+".png"))
-		{
-			console.log("No "+"images/"+name+".png");
-			I.active=false;
-			return;
-		}
-		var imageObj = new Image();
-		imageObj.onerror= function()
-		{
-			console.log("No "+"images/"+name+".png, creating null room");
-			I.active=false;
-			//return;
-		};
-		imageObj.onload = function()
-		{
-			mapCanvas.drawImage(imageObj, 0, 0);
-			//ROOM_WIDTH=imageObj.width;
-			//ROOM_HEIGHT=imageObj.height;	
-			I.width=ROOM_WIDTH;
-			I.height=ROOM_HEIGHT;
-			mapBitmap = mapCanvas.getImageData(0, 0, ROOM_WIDTH, ROOM_HEIGHT);
-
-			for( var i=0; i<ROOM_WIDTH * ROOM_HEIGHT * 4; i+=4 )
-			{//TODO/PROBLEMMAPWIDTH?
-			  var rgba = [mapBitmap.data[i], mapBitmap.data[i+1], mapBitmap.data[i+2], mapBitmap.data[i+3]];
-			  var greenfloorrgb =[60,0,64,0];
-			  var birdheadrgb =[128,128,0,0];
-			  var oceanrgb =[0,0,255,0];
-			  var greenwallrgb =[0,0,0,0];
-			  var sandrgb =[255,255,0,0];
-			  var doorrgb =[128,128,128,0];
-			  var wallcornerargb = [64,64,0,0];
-			  var wallcornerbrgb =[0,0,64,0];
-			  var wallcornercrgb= [0,50,0,0];
-			  var wallcornerdrgb= [50,50,0,0];
-			  var walltoprgb = [30,30,0,0];
-			  var wallbottomrgb= [30,0,0,0];
-			  var wallleftrgb= [0,30,0,0];
-			  var wallrightrgb=[0,0,30,0];
-			  var greenbrickrgb =[0,128,0,0];
-			  var swamprgb =[0,255,64,0];
-			  var plainsrgb =[128,64,64,0];
-			  var stonergb =[230,230,230,0];
-			  var hillrgb =[0,75,75,0];
-			  var icergb =[120,64,53,7];
-			  var icemountainrgb=[205,205,205,0]
-			  var orangebrickrgb=[20,205,20,0]
-			  var waterrgb =[0,100,255,0];
-			  var lavargb =[255,0,0,0];
-			  var grassrgb=[0,165,0,0];
-			  var upstairrgb =[240,240,240,0];
-			  var downstairrgb=[220,245,220,0];
-			  var yPos = Math.floor(i / 4 / ROOM_WIDTH);
-			  var xPos = (i / 4) % ROOM_WIDTH;
-			if(closeEnough(rgba,stonergb)) {
-				I.setTile(xPos, yPos, DungeonTileType.Stone);
-			  }else if (closeEnough(rgba,icergb)) {
-				I.setTile(xPos, yPos, DungeonTileType.Ice);
-			  }else if (closeEnough(rgba,greenfloorrgb)){
-				I.setTile(xPos, yPos, DungeonTileType.GreenFloor);
-			  }else if (closeEnough(rgba,orangebrickrgb)){
-				I.setTile(xPos, yPos, DungeonTileTypeOrangeBrick);
-			  } else if (closeEnough(rgba,birdheadrgb)){
-				I.setTile(xPos, yPos, DungeonTileType.BirdHead);
-			  } else if (closeEnough(rgba,sandrgb)){
-				I.setTile(xPos, yPos, DungeonTileType.Sand);
-			  } else if (closeEnough(rgba,waterrgb)){
-				I.setTile(xPos, yPos, DungeonTileType.Water);
-			  } else if (closeEnough(rgba,greenbrickrgb)){
-				I.setTile(xPos, yPos, DungeonTileType.GreenBrick);
-			  } else if (closeEnough(rgba,lavargb)){
-				I.setTile(xPos, yPos, DungeonTileType.Lava);
-			  }else if (closeEnough(rgba,grassrgb)) {
-				I.setTile(xPos, yPos, DungeonTileType.Grass);
-			  }else if (closeEnough(rgba,greenwallrgb)) {
-				I.setTile(xPos, yPos, DungeonTileType.GreenWall);
-			  }else if (closeEnough(rgba,upstairrgb)) {
-				I.setTile(xPos, yPos, DungeonTileType.UpStair);
-				var mindy= new staircase(true);
-				mindy.x=xPos;
-				mindy.y=yPos;
-				mindy.exists=true;
-				I.stairs.push(mindy);
-			  }else if (closeEnough(rgba,downstairrgb)) {
-				I.setTile(xPos, yPos, DungeonTileType.DownStair);
-				var mindy= new staircase(false);
-				mindy.x=xPos;
-				mindy.y=yPos;
-				mindy.exists=true;
-				I.stairs.push(mindy);
-			  }else if (closeEnough(rgba,doorrgb)) {
-				I.setTile(xPos, yPos, DungeonTileType.Door);
-				if(xPos==18)
-				{
-					var mindy= new door(1);
-					mindy.x=xPos;
-					mindy.y=yPos;
-					I.exits.push(mindy);
-				}else if(xPos==1)
-				{
-					var mindy= new door(3);
-					mindy.x=xPos;
-					mindy.y=yPos;
-					I.exits.push(mindy);
-				}else if(yPos==1)
-				{
-					var mindy= new door(0);
-					mindy.x=xPos;
-					mindy.y=yPos;
-					I.exits.push(mindy);
-				}else if (yPos==13)
-				{
-					var mindy= new door(2);
-					mindy.x=xPos;
-					mindy.y=yPos;
-					I.exits.push(mindy);
-				}
-			  }else if (closeEnough(rgba,wallcornerargb)) {
-				I.setTile(xPos, yPos, DungeonTileType.WallCornerA);
-			  }else if (closeEnough(rgba,wallcornerbrgb)){
-				I.setTile(xPos, yPos, DungeonTileType.WallCornerB);
-			  } else if (closeEnough(rgba,wallcornercrgb)){
-				I.setTile(xPos, yPos, DungeonTileType.WallCornerC);
-			  } else if (closeEnough(rgba,wallcornerdrgb)){
-				I.setTile(xPos, yPos, DungeonTileType.WallCornerD);
-			  }else if (closeEnough(rgba,walltoprgb)){
-				I.setTile(xPos, yPos, DungeonTileType.WallTop);
-			  } else if (closeEnough(rgba,wallbottomrgb)){
-				I.setTile(xPos, yPos, DungeonTileType.WallBottom);
-			  } else if (closeEnough(rgba,wallleftrgb)){
-				I.setTile(xPos, yPos, DungeonTileType.WallLeft);
-			  } else if (closeEnough(rgba,wallrightrgb)){
-				I.setTile(xPos, yPos, DungeonTileType.WallRight);
-			  }else{
-				I.setTile(xPos, yPos, DungeonTileType.Sand);
-			  }
-			}
-
-        };
-		imageObj.src = "images/"+name+".png";
-		//}, 2000);
-    };
+	
 	I.addStair=function(x,y,up)
 	{
 		var mindy= new staircase(up);

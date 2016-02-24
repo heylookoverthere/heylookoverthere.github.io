@@ -109,7 +109,7 @@ function bomb(croom,isSuper)
 
 		this.incMove();
 
-		if(this.room.isHole(this.x,this.y))
+		if((this.room.isHole(this.x,this.y)) && (this.fallingY<1))
 		{
 			playSound("itemfall");
 			if((this.room.z>0) && (curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active) && (this.room.tiles[this.x][this.y].data!=DungeonTileType.DeathHole))
@@ -213,7 +213,15 @@ function bomb(croom,isSuper)
 					if((this.room.tiles[n][m].data==DungeonTileType.Unstable) || (this.room.tiles[n][m].data==DungeonTileType.ReallyUnstable))
 					{
 						blow=true;
-						this.room.tiles[n][m].data=DungeonTileType.Hole;
+						floorDirty=true;
+						if((this.room.z<1) || (!curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active))
+						{
+							this.room.tiles[n][m].data=DungeonTileType.DeathHole;
+						}else
+						{
+							this.room.tiles[n][m].data=DungeonTileType.Hole;
+						}
+						
 					}
 					if(blow)
 					{
@@ -350,27 +358,62 @@ function bomb(croom,isSuper)
 		if((this.room.tiles[this.x][this.y].data==DungeonTileType.Unstable) || (this.room.tiles[this.x][this.y].data==DungeonTileType.ReallyUnstable))
 		{
 			blow=true;
-			this.room.tiles[this.x][this.y].data=DungeonTileType.Hole;
+			floorDirty=true;
+			if((this.room.z<1) || (!curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active))
+			{
+				this.room.tiles[this.x][this.y].data=DungeonTileType.DeathHole;
+			}else
+			{
+				this.room.tiles[this.x][this.y].data=DungeonTileType.Hole;
+			}
 		}
 		if((this.room.tiles[this.x+1][this.y].data==DungeonTileType.Unstable) || (this.room.tiles[this.x+1][this.y].data==DungeonTileType.ReallyUnstable))
 		{
 			blow=true;
-			this.room.tiles[this.x+1][this.y].data=DungeonTileType.Hole;
+			floorDirty=true;
+			if((this.room.z<1) || (!curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active))
+			{
+				this.room.tiles[this.x+1][this.y].data=DungeonTileType.DeathHole;
+			}else
+			{
+				this.room.tiles[this.x+1][this.y].data=DungeonTileType.Hole;
+			}
 		}
 		if((this.room.tiles[this.x-1][this.y].data==DungeonTileType.Unstable) || (this.room.tiles[this.x-1][this.y].data==DungeonTileType.ReallyUnstable))
 		{
 			blow=true;
-			this.room.tiles[this.x-1][this.y].data=DungeonTileType.Hole;
+			floorDirty=true;
+			if((this.room.z<1) || (!curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active))
+			{
+				this.room.tiles[this.x-1][this.y].data=DungeonTileType.DeathHole;
+			}else
+			{
+				this.room.tiles[this.x-1][this.y].data=DungeonTileType.Hole;
+			}
 		}
 		if((this.room.tiles[this.x][this.y+1].data==DungeonTileType.Unstable) || (this.room.tiles[this.x][this.y+1].data==DungeonTileType.ReallyUnstable))
 		{
 			blow=true;
-			this.room.tiles[this.x][this.y+1].data=DungeonTileType.Hole;
+			floorDirty=true;
+			if((this.room.z<1) || (!curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active))
+			{
+				this.room.tiles[this.x][this.y+1].data=DungeonTileType.DeathHole;
+			}else
+			{
+				this.room.tiles[this.x][this.y+1].data=DungeonTileType.Hole;
+			}
 		}
 		if((this.room.tiles[this.x][this.y-1].data==DungeonTileType.Unstable) || (this.room.tiles[this.x][this.y-1].data==DungeonTileType.ReallyUnstable))
 		{
 			blow=true;
-			this.room.tiles[this.x][this.y-1].data=DungeonTileType.Hole;
+			floorDirty=true;
+			if((this.room.z<1) || (!curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active))
+			{
+				this.room.tiles[this.x][this.y-1].data=DungeonTileType.DeathHole;
+			}else
+			{
+				this.room.tiles[this.x][this.y-1].data=DungeonTileType.Hole;
+			}
 		}			
 		if(blow)
 		{
@@ -1010,7 +1053,8 @@ function entity(croom,play,smatp)
 	this.mpHealCount=0;
 	this.alive=true;
 	this.gotHurt=0;
-	this.drawOrder=3;
+	this.drawOrder=5;
+	this.canLavaSwim=false;
 	this.deadSprites=new Array();
 	this.deadSprites.push(Sprite(this.spritePath+"death0"));
 	this.deadSprites.push(Sprite(this.spritePath+"death1"));
@@ -3365,6 +3409,25 @@ function entity(croom,play,smatp)
 		this.poking=false;
 	}
 	
+	this.fallback=function()
+	{
+		if(this.room.isSafe(this.enteredX,this.enteredY,this))
+		{
+			this.x=this.enteredX;
+			this.y=this.enteredY;
+		}else
+		{
+			//change room to last room. position to fallback? 
+			console.log("sith penis");
+			
+		}
+		this.xSmall=0;
+		this.ySmall=0;
+		this.stopDashing();
+		this.lastX=this.x;
+		this.lastY=this.y;
+	}
+	
 	this.update=function()
 	{
 		if((this.poking) && (!this.charged))
@@ -3407,8 +3470,15 @@ function entity(croom,play,smatp)
 		{
 			var juk=this.maxArrows-this.arrows;
 			var juy=this.maxBombs-this.bombs;
-			//this.giveItem(ObjectID.Bow,juy)
-			//this.giveItem(ObjectID.Bombs,juk)
+			var shinex=new object();
+			shinex.type=ObjectID.Bomb;
+			shinex.setup();
+			this.giveItem(shinex,juy)
+			
+			var shinex=new object();
+			shinex.type=ObjectID.Bow;
+			shinex.setup();
+			this.giveItem(shinex,juk)
 			this.bombs=this.maxBombs;
 			this.arrows=this.maxArrows;
 		}
@@ -3474,8 +3544,9 @@ function entity(croom,play,smatp)
 			if((this.swimming) && (!this.has[hasID.Flippers]))
 			{
 				this.hurt(20);
-				this.x=this.enteredX;
-				this.y=this.enteredY;
+				//this.x=this.enteredX;
+				//this.y=this.enteredY;
+				this.fallback();
 			}
 		}
 		if(this.dashing)
@@ -3940,6 +4011,7 @@ function entity(croom,play,smatp)
 				{
 					playSound("landing");
 					playSound("cavein");
+					floorDirty=true;
 					if((this.room.z<1) || (!curDungeon.rooms[curDungeon.roomZ-1][curDungeon.roomX][curDungeon.roomY].active))
 					{
 						this.room.tiles[this.x][this.y].data=DungeonTileType.DeathHole;
@@ -4055,6 +4127,7 @@ function entity(croom,play,smatp)
 			{
 				if((this.x!=this.lastX) || (this.y!=this.lastY))
 				{
+					floorDirty=true;
 					if((this.room.z<1) || (!curDungeon.rooms[this.room.z-1][this.room.x][this.room.y].active))
 					{
 						this.room.tiles[this.x][this.y].data=DungeonTileType.DeathHole;
@@ -4093,13 +4166,7 @@ function entity(croom,play,smatp)
 						//this.fallingY=0;
 						this.hurt(20);
 						//this.falling=false;
-						this.x=this.enteredX;
-						this.y=this.enteredY;
-						this.xSmall=0;
-						this.ySmall=0;
-						this.stopDashing();
-						this.lastX=this.x;
-						this.lastY=this.y;
+						this.fallback();
 						return;
 						//damage and find nearest standable point. 
 					}

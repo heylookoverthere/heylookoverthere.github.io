@@ -1,4 +1,4 @@
-var debugInfo=false;
+var debugInfo=true;
 var editMode=false;
 var drawingPath=false;
 var bullshitHack=true; //right click to link doors
@@ -26,6 +26,7 @@ if(checkMobile())
 if(checkXbox())
 {
 	Xbox=true;
+	customConsole=false;
 	OPTIONS.musicOn=true;
 	OPTIONS.LightingOn=false;
 	milesFree=false;
@@ -1326,15 +1327,7 @@ function popQuestion(question)
 }
 
 
-function allPoint(guy)
-{
-	for (var i=1;i<people.length;i++)
-	{
-		people[i].stopGesturing();
-		people[i].doGesture(Math.floor(Math.random()*6),50000,miles);
-		//console.log(":yar:");
-	}
-}
+
 
 //camera.center(miles);
 
@@ -1360,20 +1353,25 @@ requestAnimationFrame = window.requestAnimationFrame ||
 var canvasElement = $("<canvas width='" + CANVAS_WIDTH + "' height='" + CANVAS_HEIGHT + "'></canvas");
 var canvas = canvasElement.get(0).getContext("2d");
 
-var radarElement = $("<canvas width='" + MAP_WIDTH + "' height='" + MAP_HEIGHT + "'></canvas");
-var radarCanvas = radarElement.get(0).getContext("2d");
+/*var radarElement = $("<canvas width='" + MAP_WIDTH + "' height='" + MAP_HEIGHT + "'></canvas");
+var radarCanvas = radarElement.get(0).getContext("2d");*/
 
-var mapCanvasElement = $("<canvas width='" + MAP_WIDTH + "' height='" + MAP_HEIGHT + "'></canvas");
+var mapCanvasElement = $("<canvas width='" + CANVAS_WIDTH + "' height='" + CANVAS_HEIGHT + "'></canvas");
 var mapCanvas = mapCanvasElement.get(0).getContext("2d");
 
 var concanvasElement = $("<canvas width='" + 290 + "' height='" + CANVAS_HEIGHT + "'></canvas");
 var concanvas = concanvasElement.get(0).getContext("2d");
 
-concanvasElement.css("position", "absolute").css("z-index", "2").css("top", canvasElement.position().top).css("left", CANVAS_WIDTH);
+concanvasElement.css("position", "absolute").css("z-index", "3").css("top", canvasElement.position().top).css("left", CANVAS_WIDTH);
 concanvasElement.appendTo('body');
-canvasElement.css("position", "absolute").css("z-index", "1");
+
+
+mapCanvasElement.css("position", "absolute").css("z-index", "1").css("top", canvasElement.position().top).css("left", canvasElement.position().left);
+mapCanvasElement.appendTo('body');
+
+canvasElement.css("position", "absolute").css("z-index", "2");
 canvasElement.appendTo('body');
-canvasElement.css("position", "absolute").css("z-index", "0").css("top", canvasElement.position().top).css("left", canvasElement.position().left);
+canvasElement.css("position", "absolute").css("z-index", "2").css("top", canvasElement.position().top).css("left", canvasElement.position().left);
 canvasElement.get(0).addEventListener("mousemove", mouseXY, false);
 if(MobileMode)
 {	
@@ -1447,7 +1445,7 @@ function drawGUI(can)
 		can.fillStyle="white";
 		can.fillRect(2,2,228,68);
 		can.fillStyle="blue";
-		canvas.fillRect(6,6,221,60);
+		can.fillRect(6,6,221,60);
 		can.fillStyle="yellow";
 		can.fillText(curDungeon.name + " "+curDungeon.numRooms+" rooms",8,22);
 		can.fillText("Floor: "+curDungeon.roomZ+"/"+(curDungeon.floors-1),8,44);
@@ -1495,7 +1493,7 @@ function drawGUI(can)
 		can.globalAlpha=0.75;
 		can.fillRect(4,128,138,14);
 		can.fillStyle="black";
-		canvas.fillRect(8,130,130,10);
+		can.fillRect(8,130,130,10);
 		can.fillStyle="green";
 		var percent=miles.mp/miles.maxMp*130;
 		canvas.fillRect(8,130,percent,10);
@@ -1813,7 +1811,11 @@ function inventoryDraw() {
 	canvas.fillStyle = "black";
 	canvas.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
 
-	curDungeon.draw(canvas,camera);
+	if(floorDirty)
+	{
+		curDungeon.draw(mapCanvas,camera);
+		floorDirty=false;
+	}
 	var xFset=164;
 	var yFset=35;
 	canvas.fillStyle="white";
@@ -2696,9 +2698,16 @@ function optionsDraw() {
 function mainDraw() {
 	//SHOULDN'T
 	canvas.fillStyle = "black";
-	canvas.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
-
-	curDungeon.draw(canvas,camera);
+	//canvas.fillRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+	canvas.fillRect(0,0,xOffset,CANVAS_HEIGHT);
+	canvas.fillRect(0,0,CANVAS_WIDTH,yOffset);
+	canvas.fillRect(0,629,CANVAS_WIDTH,136);
+	canvas.fillRect(790,0,107,CANVAS_HEIGHT);
+	if(true)//(floorDirty)
+	{
+		curDungeon.draw(canvas,camera);
+		floorDirty=false;
+	}
 	//curRoom.draw(canvas,camera);
 	//curRoom.draw(canvas,camera);
 	if(customConsole)

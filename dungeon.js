@@ -63,6 +63,7 @@ function dungeon(path)
 	
 	this.changeRoom=function(dir,limited) 
 	{
+		floorDirty=true;
 		this.busyrang=false;
 		for(var i=0;i<miles.projectiles.length;i++)
 		{
@@ -916,6 +917,7 @@ function dungeon(path)
 	
 	this.changeFloor=function(up,limited,aplayer)
 	{
+		floorDirty=true;
 		this.busyrang=false;
 		for(var i=0;i<miles.projectiles.length;i++)
 		{
@@ -1701,9 +1703,9 @@ function dungeon(path)
 		var xFset=218;
 		var yFset=20;
 		can.fillStyle="white";
-		canvas.fillRect(xFset-8,yFset-28,438,754);
+		can.fillRect(xFset-8,yFset-28,438,754);
 		can.fillStyle="blue";
-		canvas.fillRect(xFset-4,yFset-24,428,744);
+		can.fillRect(xFset-4,yFset-24,428,744);
 		var size=28;
 		var gjk=3;
 		for(var zzTop=this.mapFloor;zzTop<this.mapFloor+gjk;zzTop++)
@@ -1713,7 +1715,7 @@ function dungeon(path)
 				//gjk+=1;
 				continue;
 			}
-			canvas.font = "14pt Calibri";
+			can.font = "14pt Calibri";
 			can.fillStyle="white";
 			var suffix="Who knows";
 			if(zzTop==0)
@@ -1766,7 +1768,7 @@ function dungeon(path)
 							//draw black square? nothing?
 							
 							can.fillStyle="black";
-							canvas.fillRect(xFset+size*i-1,yFset+size*k-1,size+2,size+2);
+							can.fillRect(xFset+size*i-1,yFset+size*k-1,size+2,size+2);
 						}else
 						{
 							
@@ -1775,14 +1777,14 @@ function dungeon(path)
 								//can.fillStyle="black";
 								//canvas.fillRect(xFset+size*i-1,yFset+size*k-1,size+2,size+2);
 								can.fillStyle="green";
-								canvas.fillRect(xFset+size*i,yFset+size*k,size+1,size+1);
+								can.fillRect(xFset+size*i,yFset+size*k,size+1,size+1);
 								
 							}else 
 							{
 								//if((!this.rooms[zzTop][i][k].hidden)&&(!OPTIONS.showUnexploredRooms))
 								//{
 									can.fillStyle="black";
-									canvas.fillRect(xFset+size*i-1,yFset+size*k-1,size+2,size+2);
+									can.fillRect(xFset+size*i-1,yFset+size*k-1,size+2,size+2);
 								//}else
 								//{
 									//can.fillStyle="grey";
@@ -1796,14 +1798,14 @@ function dungeon(path)
 						}
 						if((i==this.roomX) && (k==this.roomY)&&(zzTop==this.roomZ) && (editMode))
 						{
-							canvas.fillStyle="yellow";
-							canvas.fillRect(xFset+size*i+3,yFset+size*k+3,size-6,size-6); //todo: scalig issues.
+							can.fillStyle="yellow";
+							can.fillRect(xFset+size*i+3,yFset+size*k+3,size-6,size-6); //todo: scalig issues.
 						}	
 						for(var b=0;b<theParty.members.length;b++)
 						{
 							if((i==theParty.members[b].room.x) && (k==theParty.members[b].room.y)&&(zzTop==theParty.members[b].room.z))
 							{
-								theParty.members[b].mapSprite.draw(canvas,xFset+size*i-3,yFset+size*k-3)
+								theParty.members[b].mapSprite.draw(can,xFset+size*i-3,yFset+size*k-3)
 							}
 						}
 					}
@@ -1817,22 +1819,22 @@ function dungeon(path)
 							if(this.rooms[zzTop][i][k].hasVisibleDoor(0))
 							{
 								can.fillStyle="white";
-								canvas.fillRect(xFset+size*i+size/2,yFset+size*k,4,2);
+								can.fillRect(xFset+size*i+size/2,yFset+size*k,4,2);
 							}
 							if(this.rooms[zzTop][i][k].hasVisibleDoor(2))
 							{
 								can.fillStyle="white";
-								canvas.fillRect(xFset+size*i+size/2,yFset+size*k+size,4,2);
+								canv.fillRect(xFset+size*i+size/2,yFset+size*k+size,4,2);
 							}
 							if(this.rooms[zzTop][i][k].hasVisibleDoor(1))
 							{
 								can.fillStyle="white";
-								canvas.fillRect(xFset+size*i+size,yFset+size*k+size/2,2,4);
+								can.fillRect(xFset+size*i+size,yFset+size*k+size/2,2,4);
 							}
 							if(this.rooms[zzTop][i][k].hasVisibleDoor(3))
 							{
 								can.fillStyle="white";
-								canvas.fillRect(xFset+size*i,yFset+size*k+size/2,2,4);
+								can.fillRect(xFset+size*i,yFset+size*k+size/2,2,4);
 							}
 							for(var g=0;g<this.rooms[zzTop][i][k].stairs.length;g++)
 							{
@@ -1863,8 +1865,8 @@ function dungeon(path)
 			yFset=509;
 		}
 		var size=18;
-		canvas.globalAlpha=1;
-		canvas.font = "16pt Calibri";
+		can.globalAlpha=1;
+		can.font = "16pt Calibri";
 		can.fillStyle="white";
 		var suffix="Who knows";
 		if(this.roomZ==0)
@@ -1917,7 +1919,7 @@ function dungeon(path)
 						//draw black square? nothing?
 						
 						can.fillStyle="black";
-						canvas.fillRect(xFset+size*i,yFset+size*k,size,size);
+						can.fillRect(xFset+size*i,yFset+size*k,size,size);
 					}else
 					{
 						
@@ -1926,7 +1928,7 @@ function dungeon(path)
 							//can.fillStyle="black";
 							//canvas.fillRect(xFset+size*i-1,yFset+size*k-1,size+1,size+1);
 							can.fillStyle="blue";
-							canvas.fillRect(xFset+size*i,yFset+size*k,size,size);
+							can.fillRect(xFset+size*i,yFset+size*k,size,size);
 							//canvas.fillRect(xFset+size*i-1,yFset+size*k-1,size+1,size+1);
 							
 						}else 
@@ -1935,11 +1937,11 @@ function dungeon(path)
 							if((this.rooms[this.roomZ][i][k].hidden) || (!OPTIONS.showUnexploredRooms))
 							{
 								can.fillStyle="black";
-								canvas.fillRect(xFset+size*i,yFset+size*k,size,size);
+								can.fillRect(xFset+size*i,yFset+size*k,size,size);
 							}else
 							{							
 								can.fillStyle="grey";
-								canvas.fillRect(xFset+size*i-1,yFset+size*k-1,size,size);
+								can.fillRect(xFset+size*i-1,yFset+size*k-1,size,size);
 							}
 							
 						}
@@ -1949,7 +1951,7 @@ function dungeon(path)
 					if((i==this.roomX) && (k==this.roomY)) //todo and right floor?
 					{
 						can.fillStyle="yellow";
-						canvas.fillRect(xFset+size*i+3,yFset+size*k+3,size-6,size-6); //todo: scalig issues.
+						can.fillRect(xFset+size*i+3,yFset+size*k+3,size-6,size-6); //todo: scalig issues.
 					}	
 				}
 			}
@@ -1962,22 +1964,22 @@ function dungeon(path)
 						if(this.rooms[this.roomZ][i][k].hasVisibleDoor(0))
 						{
 							can.fillStyle="white";
-							canvas.fillRect(xFset+size*i+size/2,yFset+size*k,2,1);
+							can.fillRect(xFset+size*i+size/2,yFset+size*k,2,1);
 						}
 						if(this.rooms[this.roomZ][i][k].hasVisibleDoor(2))
 						{
 							can.fillStyle="white";
-							canvas.fillRect(xFset+size*i+size/2,yFset+size*k+size,2,1);
+							can.fillRect(xFset+size*i+size/2,yFset+size*k+size,2,1);
 						}
 						if(this.rooms[this.roomZ][i][k].hasVisibleDoor(1))
 						{
 							can.fillStyle="white";
-							canvas.fillRect(xFset+size*i+size,yFset+size*k+size/2,1,2);
+							can.fillRect(xFset+size*i+size,yFset+size*k+size/2,1,2);
 						}
 						if(this.rooms[this.roomZ][i][k].hasVisibleDoor(3))
 						{
 							can.fillStyle="white";
-							canvas.fillRect(xFset+size*i,yFset+size*k+size/2,1,2);
+							can.fillRect(xFset+size*i,yFset+size*k+size/2,1,2);
 						}
 						for(var g=0;g<this.rooms[this.roomZ][i][k].stairs.length;g++)
 						{
@@ -1986,7 +1988,7 @@ function dungeon(path)
 							{
 								can.fillStyle="pink";
 							}
-							canvas.fillRect(xFset+size*i+this.rooms[this.roomZ][i][k].stairs[g].x,yFset+size*k+this.rooms[this.roomZ][i][k].stairs[g].y,1,1);
+							can.fillRect(xFset+size*i+this.rooms[this.roomZ][i][k].stairs[g].x,yFset+size*k+this.rooms[this.roomZ][i][k].stairs[g].y,1,1);
 						}
 					}
 				}

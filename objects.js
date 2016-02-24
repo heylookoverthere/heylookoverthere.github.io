@@ -80,7 +80,8 @@ objectName[212]="Rock2";
 objectName[213]="Rock2 Cracked";
 objectName[214]="Skull";
 objectName[215]="Hole Plugger";
-
+objectName[216]="Mine";
+objectName[217]="Cactus";
 
 objectName[300]="Small key";
 objectName[301]="Triforce";
@@ -307,11 +308,8 @@ object.prototype.setup=function(id,par)
 		this.aniRate=5;
 		this.projPossible=false;
 		this.projPassable=false;
-		this.topLayer.push(Sprite("talllamptopoff"));
-		this.topLayer.push(Sprite("talllamptop0"));
-		this.topLayer.push(Sprite("talllamptop1"));
-		this.topLayer.push(Sprite("talllamptop2"));
-		this.topLayer.push(Sprite("talllamptop3"));
+		this.curSprite=1;
+		this.topLayer=objectTopSprites[this.type];
 		this.curTopSprite=1;
 	    this.name="Tall lamp";
 		this.playerUsable=true;
@@ -710,6 +708,7 @@ object.prototype.setup=function(id,par)
 		this.name="Shield";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
+		this.hookable=false;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -734,6 +733,7 @@ object.prototype.setup=function(id,par)
 	{
 		this.name="Better shield";
 		this.pickupable=true;
+		this.hookable=false;
 		this.alwaysWalkable=true;
 		this.activate=function()
 		{
@@ -772,6 +772,7 @@ object.prototype.setup=function(id,par)
 		this.name="Mirror shield";
 		this.pickupable=true;
 		this.alwaysWalkable=true;
+		this.hookable=false;
 		this.activate=function()
 		{
 			if(this.buried){return;}
@@ -1340,6 +1341,7 @@ object.prototype.setup=function(id,par)
 		this.width=96;
 		this.height=64;
 		this.name="Table";
+		this.curSprite=1;
 		this.activate=function() {};
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.StumpSeat) {
@@ -1351,9 +1353,10 @@ object.prototype.setup=function(id,par)
 		this.alwaysWalkable=false;
 		this.playerUsable=true;
 		this.width=96;
+		this.curSprite=1;
 		this.projPossible=false;
 		this.height=32;
-		this.topLayer.push(Sprite("bookcase0top"));
+		this.topLayer=objectTopSprites[this.type];
 		this.name="Bookcase";
 		this.playerActivate=function()
 		{
@@ -1376,8 +1379,9 @@ object.prototype.setup=function(id,par)
 		this.playerUsable=false;
 		this.projPossible=false;
 		//this.height=64;
-		this.topLayer.push(Sprite("statue1top"));
+		this.topLayer=objectTopSprites[this.type];
 		this.name="Statue";
+		this.curSprite=1;
 		this.playerActivate=this.activate;
 	}else if (this.type==ObjectID.Pot) {
 		this.bombable=true;
@@ -2145,6 +2149,7 @@ object.prototype.setup=function(id,par)
 			}
 		}
 		this.playerActivate=this.activate;
+		this.playerUsable=false;
 		if(OPTIONS.TouchableOrbs)
 		{
 			this.playerUsable=true
@@ -2179,6 +2184,7 @@ object.prototype.setup=function(id,par)
 			}
 		}
 		this.playerActivate=this.activate;
+		this.playerUsable=false;
 		if(OPTIONS.TouchableOrbs)
 		{
 			this.playerUsable=true;
@@ -3192,16 +3198,18 @@ object.prototype.setup=function(id,par)
 	}
 	else if (this.type==ObjectID.RumHam) {
 		this.alwaysWalkable=true;
-		playSound("chant");
+		
 	    this.name="RUM HAM";
 		this.floating=false;
 		this.hookable=false;
+		this.pickupable=true;
 		this.projPassable=true;
 		this.drawOrder=3;
 		bConsoleBox.log("You found the Rum Ham!");
 		//miles.holding=this.sprites[0];
 		this.activate=function()
 		{
+			playSound("chant");
 			miles.RumHam=true;
 			miles.equippedTrack=0;
 			miles.equippedTrack2=0;
@@ -3216,6 +3224,9 @@ object.prototype.setup=function(id,par)
 				}
 			}
 
+			this.exists=false;
+			
+			
 			miles.has[hasID.MasterSword]=false;
 			miles.has[hasID.BestShield]=false;
 			//miles.has[hasID.Boomerang]=false;
